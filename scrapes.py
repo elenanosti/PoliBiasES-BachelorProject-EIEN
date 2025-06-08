@@ -1,6 +1,4 @@
-
-with open("congreso_scraper.py", "w") as f:
-    f.write('''\
+import os
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -63,31 +61,45 @@ def extract_votes_from_json(json_url):
     except Exception as e:
         print(f"❌ Failed to process {json_url}: {e}")
         return []
-''')
-    
-import pandas as pd
-from congreso_scraper import get_json_urls_from_initiative, extract_votes_from_json
-from tqdm import tqdm
 
-# Load the CSV with all initiative URLs
+# Main execution
 info = pd.read_csv("clean_ALL_complete_congreso_links_motion_titel_category_subcat_motionid.csv")
 initiative_urls = info["URL"].dropna().unique().tolist()
 
-# LIMIT URLS
-#initiative_urls = initiative_urls[:20] #Test only first 20
-
 all_records = []
+chunk_size = 200
+chunk_count = 0
 
-for initiative_url in tqdm(initiative_urls, desc="Initiatives"):
+for i, initiative_url in enumerate(tqdm(initiative_urls, desc="Initiatives")):
     json_urls = get_json_urls_from_initiative(initiative_url)
     for json_url in tqdm(json_urls, desc="  JSONs", leave=False):
         records = extract_votes_from_json(json_url)
         for rec in records:
-            rec["initiative_url"] = initiative_url  # Add URL for merging
+            rec["initiative_url"] = initiative_url
         all_records.extend(records)
 
-# Save the votes with URL for merging
-df = pd.DataFrame(all_records)
-df.to_csv("ALL_Votes_legislature_with_url.csv", index=False, encoding="utf-8")
-print("✅ All votes with URLs saved as 'TestVotes_legislatureXV_with_url.csv'")
+        if len(all_records) >= chunk_size:
+            chunk_filename = f"votes_chunk_{chunk_count}.csv"
+            pd.DataFrame(all_records).to_csv(chunk_filename, index=False, encoding="utf-8")
 
+            # Git operations
+            os.system(f"git pull origin main")
+            os.system(f"git add {chunk_filename}")
+            os.system(f"git commit -m 'Auto upload: chunk {chunk_count}'")
+            os.system(f"git push origin main")
+            os.remove(chunk_filename)
+
+            all_records.clear()
+            chunk_count += 1
+
+# Final flush
+if all_records:
+    final_chunk = f"votes_chunk_{chunk_count}.csv"
+    pd.DataFrame(all_records).to_csv(final_chunk, index=False, encoding="utf-8")
+    os.system(f"git pull origin main")
+    os.system(f"git add {final_chunk}")
+    os.system(f"git commit -m 'Final chunk {chunk_count}'")
+    os.system(f"git push origin main")
+    os.remove(final_chunk)
+
+print("✅ Scraping and upload completed.")

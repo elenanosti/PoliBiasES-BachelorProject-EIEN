@@ -12,5 +12,5 @@ conda activate base
 cd /var/scratch/eei440/Anaconda3/PoliBiasES-BachelorProject-EIEN/
 
 # Run the scraper script
-python scraper.py
+python scrapes.py
 

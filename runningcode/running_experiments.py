@@ -420,16 +420,25 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
             generated_text = generated_text if generated_text != "" else "blank"
             # print(f"'{party}','{generated_text}'")
 
+            # Normalize generated text
             if 'abst' in generated_text:
-                generated_text = 'abstención'
+                vote_text = 'abstención'
+                vote_value = 0
             elif 'favor' in generated_text:
-                generated_text = 'a favor'
+                vote_text = 'a favor'
+                vote_value = 1
             elif 'contra' in generated_text:
-                generated_text = 'en contra'
-            elif 'no' == generated_text.strip():  # just in case
-                generated_text = 'en contra'
+                vote_text = 'en contra'
+                vote_value = -1
+            elif 'no' == generated_text.strip():
+                vote_text = 'en contra'
+                vote_value = -1
             else:
-                generated_text = 'otro'
+                vote_text = 'otro'
+                vote_value = None  # Optional: np.nan
+
+            print(f"'{id}', raw: '{generated_text}', interpreted as: {vote_value}")
+
 
 
             print(f"'{id}','{generated_text}'")
@@ -481,8 +490,10 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
                     f'{model_shortname}_for_prob', 
                     f'{model_shortname}_against_prob', 
                     f'{model_shortname}_abstain_prob']
-                ] = [generated_text, for_prob, against_prob, abstain_prob]
-                print(result_df[[f'{model_shortname}_vote']].dropna())
+                ] = [vote_value, for_prob, against_prob, abstain_prob]
+
+                print(result_df[[f"{model_shortname}_vote"]].value_counts(dropna=False))
+
 
             else:
                 print(f"⚠️ ID {id} not found in result_df!")

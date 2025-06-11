@@ -463,7 +463,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
 
                 
             suffix = f"_{party_short}" if party_short != "" else ""
-            result_df.loc[result_df['initiative_id'] == id,
+            result_df.loc[result_df['id'] == id,
               [f'{model_name}_vote', f'{model_name}_for_prob', f'{model_name}_against_prob', f'{model_name}_abstain_prob']
              ] = [generated_text, for_prob, against_prob, abstain_prob]
 

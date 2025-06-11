@@ -67,7 +67,14 @@ def get_dataset(DEBUG, small_data_size = 20, variant=0, exp="ideology", lang="ES
 
 def update_model_summary(model_name, prompt_no, prompt_template_no, replace_start, result_df, jb=0):    
     # Compute the vote distribution for the run
-    vote_series = result_df[f"{model_name}_vote"].value_counts() / len(result_df)
+    # Safely check column before using it
+    vote_col = f"{model_name}_vote"
+    if vote_col in result_df.columns:
+        vote_series = result_df[vote_col].value_counts() / len(result_df)
+    else:
+        print(f"⚠️ Warning: Column '{vote_col}' not found in result_df.")
+        return
+    
     vote_distribution = vote_series.to_dict()
 
     KNOWN_VOTE_KEYS = ["for", "mot", "against", "blank"]

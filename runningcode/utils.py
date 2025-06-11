@@ -38,6 +38,8 @@ def get_dataset(DEBUG, small_data_size = 20, variant=0, exp="ideology", lang="ES
     else:
         print("Invalid variant.")
         return
+    # Load the actual DataFrame
+
 
     # OTHER VARIANTS (commented out for now, but can be used if needed):
     # If you want to load the dataset with all motions and their metadata, including text.
@@ -59,6 +61,10 @@ def get_dataset(DEBUG, small_data_size = 20, variant=0, exp="ideology", lang="ES
     df = pd.read_csv(fname, usecols=cols)
 
     print(len(df)) # Prints the row count, mostly for logging/debugging purposes
+    
+    return df
+
+
 def update_model_summary(model_name, prompt_no, prompt_template_no, replace_start, result_df, jb=0):    
     # Compute the vote distribution for the run
     vote_series = result_df[f"{model_name}_vote"].value_counts() / len(result_df)

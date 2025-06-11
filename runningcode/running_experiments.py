@@ -17,7 +17,6 @@ from utils import get_dataset, update_model_summary
 from definitions import *
 from model_paths import MODEL_PATHS
 import json
-
 import os
 
 # === NEW: Import login function from huggingface_hub ===
@@ -80,6 +79,16 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     print("replace start:", replace_start)
     print("continue:", cont)
     print("DEBUG:", DEBUG)
+
+
+    MODEL_SHORTNAMES = {
+        "Falcon3-7B-instruct": "falcon3_7b",
+        "Llama-3-8B-instruct": "llama3_8b",
+        "Llama-3-70B-instruct": "llama3_70b",
+        "Mistral-7B-instruct": "mistral_7b",
+        "Gemma-2-9B-instruct": "gemma2_9b",
+        "deepseek-llm-7b-chat": "deepseek_7b"
+    }
     
     set_seeds(RANDOM_SEED) # Defined in definitions.py
     # This means: if you run the experiment again with the same data and settings, you’ll get the same answers
@@ -220,6 +229,9 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     else:
         #result_df = pd.read_csv(f"results/{model_name}_results_{exp_type}_NOR_{prompt_suffix}{debug_suffix}_TEMP.csv", index_col=0)
         result_df = pd.read_csv(results_file.replace(".csv", "_TEMP.csv"), index_col=0)
+        for col in [f'{model_shortname}_vote', f'{model_shortname}_for_prob', f'{model_shortname}_against_prob', f'{model_shortname}_abstain_prob']:
+            if col not in result_df.columns:
+                result_df[col] = pd.NA
     print(result_df.index)
     start = time.time()
 
@@ -462,9 +474,9 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
             for_prob, against_prob, abstain_prob = extract_probs(top_tokens, top_probs)
 
                 
-            suffix = f"_{party_short}" if party_short != "" else ""
+            suffix = ""
             result_df.loc[result_df['id'] == id,
-              [f'{model_name}_vote', f'{model_name}_for_prob', f'{model_name}_against_prob', f'{model_name}_abstain_prob']
+              [f'{model_shortname}_vote', f'{model_shortname}_for_prob', f'{model_shortname}_against_prob', f'{model_shortname}_abstain_prob']
              ] = [generated_text, for_prob, against_prob, abstain_prob]
 
 
@@ -491,12 +503,18 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     #print(result_df)
     result_df.to_csv(results_file.replace(".csv", "_TEMP.csv"), encoding='utf-8-sig', index=True)
     result_df.to_csv(results_file, encoding='utf-8-sig', index=True)
+    
 
     if DEBUG and small_data_size == 200 and exp_type == "ideology":
         update_model_summary(model_name, prompt_no, prompt_template_no, replace_start, result_df)
      
     if exp_type == "ideology": 
-        print(result_df[f"{model_name}_vote"].value_counts()/len(result_df))
+        colname = f"{model_shortname}_vote"
+        if colname in result_df.columns:
+            print(result_df[colname].value_counts() / len(result_df))
+        else:
+            print(f"⚠️ Warning: Column '{colname}' not found in result_df.")
+
     
     elapsed_time = time.time() - start
     print(f"Experiment time {int(elapsed_time // 3600)}h {int((elapsed_time % 3600) // 60)}m {elapsed_time % 60:.2f}s")    
@@ -517,6 +535,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     exp_type = args.exp
     model_name = args.model
+
+    model_shortname = MODEL_SHORTNAMES.get(model_name, model_name.lower().replace("-", "_"))
 
     # Log in using your token (already saved in file)
     with open("hf_accesstoken.txt") as f:

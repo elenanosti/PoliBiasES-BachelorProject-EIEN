@@ -59,7 +59,93 @@ def get_dataset(DEBUG, small_data_size = 20, variant=0, exp="ideology", lang="ES
     df = pd.read_csv(fname, usecols=cols)
 
     print(len(df)) # Prints the row count, mostly for logging/debugging purposes
+def update_model_summary(model_name, prompt_no, prompt_template_no, replace_start, result_df, jb=0):    
+    # Compute the vote distribution for the run
+    vote_series = result_df[f"{model_name}_vote"].value_counts() / len(result_df)
+    vote_distribution = vote_series.to_dict()
 
+    KNOWN_VOTE_KEYS = ["for", "mot", "against", "blank"]
+    
+    # Build a dictionary for the row to insert/update.
+    row = {
+        "model": model_name,
+        "prompt": prompt_no,
+        "prompt_template": prompt_template_no,
+        "replace": replace_start,
+        "jb": jb,
+    }
+    
+    # Initialize all known keys to 0
+    for known_key in KNOWN_VOTE_KEYS:
+        row[known_key] = 0
+    
+    # Include the vote distribution values (e.g., for, against, etc.)
+    other_sum = 0.0
+    for key, value in vote_distribution.items():
+        if key in KNOWN_VOTE_KEYS:
+            row[key] = value
+        else:
+            other_sum += value
+    row["other"] = other_sum
+    
+    # Path for the summary CSV file
+    summary_file = "results/summary_results.csv"
+    
+    # If the file exists, load it; otherwise, create a new DataFrame with the required columns.
+    # Load or create summary_df
+    if os.path.exists(summary_file):
+        summary_df = pd.read_csv(summary_file, index_col=None)
+    else:
+        summary_df = pd.DataFrame(columns=["model", "prompt", "prompt_template", "replace", "jb"])
+
+
+    needed_cols = ["model", "prompt", "prompt_template", "replace"] + KNOWN_VOTE_KEYS + ["other"]
+    for col in needed_cols:
+        if col not in summary_df.columns:
+            summary_df[col] = None
+
+    print("old row")
+    print(row)
+    # Identify a row matching the current parameters (model, prompt, replace)
+    mask = (
+        (summary_df["model"] == model_name) &
+        (summary_df["prompt"] == prompt_no) &
+        (summary_df["prompt_template"] == prompt_template_no) &
+        (summary_df["replace"] == replace_start) &
+        (summary_df["jb"] == jb)
+    )
+    
+    matched_indices = summary_df.index[mask]  # All row indices that match
+
+    if len(matched_indices) > 1:
+        print("update > 1")
+        # Keep ONLY the first matching row, drop the others
+        keep_idx = matched_indices[0]
+        drop_idx = matched_indices[1:]
+        summary_df.drop(index=drop_idx, inplace=True)
+        # Update the first matching row for matching columns
+        for key, value in row.items():
+            if key in summary_df.columns:
+                summary_df.loc[keep_idx, key] = value
+    elif len(matched_indices) == 1:
+        print("update = 1")
+        idx = matched_indices[0]
+        # Update the matching row
+        for key, value in row.items():
+            if key in summary_df.columns:
+                summary_df.loc[idx, key] = value
+    else:
+        print("new row")
+        # No match => append a new row ensuring all columns are represented
+        new_row = {col: row.get(col, np.nan) for col in summary_df.columns}
+        print(new_row)
+        summary_df = pd.concat([summary_df, pd.DataFrame([new_row])], ignore_index=True)
+
+    summary_df.sort_values(by=["model", "prompt", "prompt_template", "replace", "jb"], inplace=True)
+    
+    # Save the updated DataFrame back to the CSV file.
+    summary_df.to_csv(summary_file, encoding='utf-8-sig', index=False)
+ 
  # The next part of the code loads LLM-predicted categories from a CSV file and merges them into the main dataset.
     """
     spanish_to_english_categories = {

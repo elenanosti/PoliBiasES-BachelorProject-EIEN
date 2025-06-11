@@ -463,6 +463,9 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
             suffix = ""
             mask = result_df['id'] == id
             if mask.any():
+                print(f"Generated: {generated_text}, For: {for_prob}, Against: {against_prob}, Abstain: {abstain_prob}")
+                print(f"Updating ID: {id}, Matches found: {mask.sum()}")
+
                 result_df.loc[mask, 
                     [f'{model_shortname}_vote', 
                     f'{model_shortname}_for_prob', 

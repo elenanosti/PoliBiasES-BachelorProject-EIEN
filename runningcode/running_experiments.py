@@ -522,12 +522,10 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
             if not mask.any():
                 print(f"[WARNING] No matching row for ID {id} in result_df.")
 
-
-
             else:
                 print(f"⚠️ ID {id} not found in result_df!")
 
-            if i % 100 == 0:
+            if i % 1 == 0:
                 temp_file = results_file.replace(".csv", "_TEMP.csv")
     
                 # 1. Save temporary file

@@ -215,7 +215,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     
     #initialize df to store results
     if cont < 0:
-        result_df = pd.DataFrame({'initiative_id': df['initiative_id']})
+        result_df = pd.DataFrame({'initiative_id': df['id']})
         cont = 0
     else:
         #result_df = pd.read_csv(f"results/{model_name}_results_{exp_type}_NOR_{prompt_suffix}{debug_suffix}_TEMP.csv", index_col=0)

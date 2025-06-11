@@ -110,7 +110,7 @@ def update_model_summary(model_name, prompt_no, prompt_template_no, result_df, e
     if os.path.exists(summary_file):
         summary_df = pd.read_csv(summary_file, index_col=None)
     else:
-        summary_df = pd.DataFrame(columns=["model", "prompt", "prompt_template", "replace", "jb"])
+        summary_df = pd.DataFrame(columns=["model", "prompt", "prompt_template"])
 
 
     needed_cols = ["model", "prompt", "prompt_template", "replace"] + KNOWN_VOTE_KEYS + ["other"]
@@ -250,7 +250,7 @@ def update_model_summary(model_name, prompt_no, prompt_template_no, result_df, j
     if os.path.exists(summary_file):
         summary_df = pd.read_csv(summary_file, index_col=None)
     else:
-        summary_df = pd.DataFrame(columns=["model", "prompt", "prompt_template", "replace", "jb"])
+        summary_df = pd.DataFrame(columns=["model", "prompt", "prompt_template"])
 
 
     needed_cols = ["model", "prompt", "prompt_template", "replace"] + KNOWN_VOTE_KEYS + ["other"]

@@ -216,8 +216,8 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
     if DEBUG and len(parties)>3:
         parties = parties[:3]
     
-        #initialize df to store results
-        # Ensure all initiatives are strings and stripped
+    #initialize df to store results
+    # Ensure all initiatives are strings and stripped
     df['initiative'] = df['initiative'].astype(str).str.strip()
 
     # Results CSV path
@@ -249,16 +249,14 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
     for i, (x, id) in enumerate(zip(df['initiative'], df['id'])):
         if f'{model_shortname}{suffix}_vote' in result_df.columns:
             mask = (result_df['initiative'] == x.strip()) & (result_df['id'] == id)
-            if mask.any() and not result_df.loc[mask][f'{model_shortname}{suffix}_vote'].isna().any():
-                print("No prompt needed")
-                print("initiative=", x)
-                print(f"{x} {result_df.loc[mask][f'{model_shortname}{suffix}_vote'].iloc[0]}")
+            if mask.any() and result_df.loc[mask, f'{model_shortname}_vote'].notna().all():
                 continue
             
         #print("prompt needed")
 
-                
-            # CREATE PROMPT 
+########################################
+        """ CREATING PROMPTS """ 
+########################################
 
             # party_txt = f'{from_text}{party}' # This is for when doing an entity or persona experiment, where the party is included in the prompt.
             

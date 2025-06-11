@@ -531,10 +531,8 @@ if __name__ == "__main__":
         access_token = access_tokens.get("llama", "")
     else:
         access_token = access_tokens.get("default", "")
-
-    # Only login with the selected token
-    login(token=access_token)
     # === END: Import login function from huggingface_hub ===
+
     prompt_no = args.prompt
     prompt_template_no = args.template
     DEBUG = bool(args.debug)

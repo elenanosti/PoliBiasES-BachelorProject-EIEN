@@ -415,8 +415,10 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
             # NB CHANGE
             if model_name != "Mistral-instruct":
                 generated_text = tokenizer.decode(outputs.sequences[0][input_token_len:], skip_special_tokens=True)
+                print(f"[DEBUG] Raw model output for ID {id}: '{generated_text}'")
             else:
                 generated_text = tokenizer.decode(outputs_temp0.sequences[0][input_token_len:], skip_special_tokens=True)
+                print(f"[DEBUG] Raw model output for ID {id}: '{generated_text}'")
             
             generated_text = generated_text.lower().strip()
             generated_text = re.sub(r'[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]', '', generated_text)
@@ -476,6 +478,15 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
                 
             suffix = ""
             mask = result_df['id'] == id
+
+            print(f"\n[DEBUG] Processing ID: {id}")
+            print(f"[DEBUG] Matches in result_df: {mask.sum()}")
+            print(f"[DEBUG] Generated text (raw): '{generated_text}'")
+            print(f"[DEBUG] Interpreted vote value: {vote_value}")
+            print(f"[DEBUG] Probabilities - For: {for_prob}, Against: {against_prob}, Abstain: {abstain_prob}")
+
+
+
             if mask.any():
                 print(f"Generated: {generated_text}, For: {for_prob}, Against: {against_prob}, Abstain: {abstain_prob}")
                 print(f"Updating ID: {id}, Matches found: {mask.sum()}")
@@ -497,8 +508,14 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
                     f'{model_shortname}_abstain_prob']
                 ] = [vote_value, for_prob, against_prob, abstain_prob]
                 print(result_df.loc[mask, [f'{model_shortname}_vote']])
+                print(f"[DEBUG] Wrote vote={vote_value} for model '{model_shortname}' at ID {id}")
+
 
                 print(result_df[[f"{model_shortname}_vote"]].value_counts(dropna=False))
+            
+            if not mask.any():
+                print(f"[WARNING] No matching row for ID {id} in result_df.")
+
 
 
             else:

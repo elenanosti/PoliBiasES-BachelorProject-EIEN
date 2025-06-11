@@ -246,10 +246,15 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     
     for i, (x, id) in enumerate(zip(df['initiative'], df['id'])):
         if f'{model_shortname}{suffix}_vote' in result_df.columns:
-            if not result_df.loc[result_df['id'] == id][f'{model_shortname}{suffix}_vote'].isna().any():
+            print("[DEBUG] Initiatives matching?")
+            print("Current:", repr(x))
+            print("Sample from result_df:", repr(result_df['initiative'].iloc[0]))
+            print("Matches found:", mask.sum())
+            mask = result_df['initiative'] == x
+            if mask.any() and not result_df.loc[mask][f'{model_shortname}{suffix}_vote'].isna().any():
                 print("No prompt needed")
-                print("id=", id)
-                print(f"{id} {result_df.loc[result_df['id'] == id][f'{model_shortname}{suffix}_vote'].iloc[0]}")
+                print("initiative=", x)
+                print(f"{x} {result_df.loc[mask][f'{model_shortname}{suffix}_vote'].iloc[0]}")
                 continue
             
         print("prompt needed")
@@ -264,7 +269,6 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
             party_txt = ''  # No party-specific prefix for ideology experiment
             
             # prompt formats from model cards
-            
             if  model_shortname == 'Llama3-instruct' or model_name == 'Llama3-70B-instruct':
                 input_prompt = f"""
                 <|begin_of_text|><|start_header_id|>system<|end_header_id|>
@@ -298,6 +302,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
                             add_generation_prompt=True
                     )
                     print(input_prompt)
+                
                 elif False or prompt_template_no == 2:
                     input_prompt = f"""
                     <|im_start|> user

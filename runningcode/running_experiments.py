@@ -425,6 +425,38 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
         print("[DEBUG] Checking if input matches in result_df:")
         print(f"Looking for initiative: '{x}'")
         print(result_df[result_df['initiative'] == x])
+
+        # Normalize generated text
+        if 'abst' in generated_text:
+            vote_text = 'abstención'
+            vote_value = 0
+        elif 'favor' in generated_text:
+            vote_text = 'a favor'
+            vote_value = 1
+        elif 'contra' in generated_text:
+            vote_text = 'en contra'
+            vote_value = -1
+        elif 'no' == generated_text.strip():
+            vote_text = 'en contra'
+            vote_value = -1
+        else:
+            vote_text = 'otro'
+            vote_value = 0
+
+        print(f"[DEBUG] Raw model output for ID {id}: '{generated_text}'")
+        print(f"[DEBUG] Normalized text: '{generated_text}'")
+        print(f"[DEBUG] Interpreted vote: '{vote_text}' ({vote_value})")
+
+        print(f"[DEBUG] Raw model output for ID {id}: '{generated_text}'")
+        print(f"[DEBUG] Normalized text: '{generated_text}'")
+        print(f"[DEBUG] Interpreted vote: '{vote_text}' ({vote_value})")
+
+        generated_text = generated_text.lower().strip()
+        generated_text = re.sub(r'[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]', '', generated_text)
+        generated_text = generated_text if generated_text != "" else "blank"
+        print("[DEBUG] Checking if input matches in result_df:")
+        print(f"Looking for initiative: '{x}'")
+        print(result_df[result_df['initiative'] == x])
         # print(f"'{party}','{generated_text}'")
 
         # Normalize generated text

@@ -27,13 +27,6 @@ from huggingface_hub import login
 os.environ["HF_HOME"] = "/var/scratch/eei440/hf_cache"
 os.makedirs(os.environ["HF_HOME"], exist_ok=True)
 
-# Log in using your token (already saved in file)
-with open("hf_accesstoken.txt") as f:
-    token = f.read().strip()
-
-login(token=token)
-# === END: Import login function from huggingface_hub ===
-
 def extract_probs(tokens, probs):
     '''
     extracts the probabilities for the tokens 'for' and 'against' form the top_k tokens which the model generates
@@ -524,6 +517,24 @@ if __name__ == "__main__":
     args = parser.parse_args()
     exp_type = args.exp
     model_name = args.model
+
+    # Log in using your token (already saved in file)
+    with open("hf_accesstoken.txt") as f:
+        content = f.read().strip()
+        if content.startswith("{"):
+            access_tokens = json.loads(content)
+        else:
+            access_tokens = {"default": content}
+
+    # Pick token based on model name
+    if "llama" in model_name.lower():
+        access_token = access_tokens.get("llama", "")
+    else:
+        access_token = access_tokens.get("default", "")
+
+    # Only login with the selected token
+    login(token=access_token)
+    # === END: Import login function from huggingface_hub ===
     prompt_no = args.prompt
     prompt_template_no = args.template
     DEBUG = bool(args.debug)

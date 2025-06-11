@@ -79,6 +79,8 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     print("replace start:", replace_start)
     print("continue:", cont)
     print("DEBUG:", DEBUG)
+    model_shortname = MODEL_SHORTNAMES.get(model_name, model_name.lower().replace("-", "_"))
+
     
     set_seeds(RANDOM_SEED) # Defined in definitions.py
     # This means: if you run the experiment again with the same data and settings, you’ll get the same answers
@@ -225,6 +227,14 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
         for col in [f'{model_shortname}_vote', f'{model_shortname}_for_prob', f'{model_shortname}_against_prob', f'{model_shortname}_abstain_prob']:
             if col not in result_df.columns:
                 result_df[col] = pd.NA
+    required_cols = [f'{model_shortname}_vote', f'{model_shortname}_for_prob',
+                 f'{model_shortname}_against_prob', f'{model_shortname}_abstain_prob']
+
+    for col in required_cols:
+        if col not in result_df.columns:
+            print(f"⚠️ Column '{col}' missing in result_df, creating it.")
+            result_df[col] = pd.NA
+
     
     print(result_df.index)
     start = time.time()

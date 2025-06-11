@@ -227,6 +227,8 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     
     print(result_df.index)
     start = time.time()
+
+    suffix = ""  # No party suffix for ideology experiment
     
     for x, id in zip(df['initiative'], df['id']):
         if f'{model_name}{suffix}_vote' in result_df.columns:

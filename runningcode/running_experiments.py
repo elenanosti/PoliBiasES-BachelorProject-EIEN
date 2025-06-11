@@ -218,6 +218,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
         for col in [f'{model_shortname}_vote', f'{model_shortname}_for_prob',
             f'{model_shortname}_against_prob', f'{model_shortname}_abstain_prob']:
             result_df[col] = pd.NA
+        cont = 0
     else:
         #result_df = pd.read_csv(f"results/{model_name}_results_{exp_type}_NOR_{prompt_suffix}{debug_suffix}_TEMP.csv", index_col=0)
         result_df = pd.read_csv(results_file.replace(".csv", "_TEMP.csv"), index_col=0)

@@ -259,15 +259,15 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
                     print("vote=", vote_val)
                     continue  # <-- This skips to the next item if already answered
 
-    # Now, for items that need answers, generate the prompt and call the LLM
-    ########################################
+        # Now, for items that need answers, generate the prompt and call the LLM
+        ########################################
         """ CREATING PROMPTS """ 
-    ########################################
+        ########################################
 
-            # party_txt = f'{from_text}{party}' # This is for when doing an entity or persona experiment, where the party is included in the prompt.
-            
+        # party_txt = f'{from_text}{party}' # This is for when doing an entity or persona experiment, where the party is included in the prompt.
+        
         # prompt formats from model cards
-        if  model_shortname == 'Llama3-instruct' or model_name == 'Llama3-70B-instruct':
+        if model_shortname == 'llama3_8b' or model_shortname == 'llama3_70b':
             input_prompt = f"""
             <|begin_of_text|><|start_header_id|>system<|end_header_id|>
             {system_prompt_1}{system_prompt_2}<|eot_id|>
@@ -275,8 +275,8 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
             {user_prompt_1}{x}{user_prompt_2}<|eot_id|>
             <|start_header_id|>assistant<|end_header_id|>
             """
-            
-        elif model_name == "Mistral-instruct":
+        
+        elif model_shortname == "mistral_7b":
             if prompt_template_no == 0:
                 input_prompt = f"""
                 System: {system_prompt_1}{system_prompt_2}
@@ -303,242 +303,244 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
                 {user_prompt_1}{x}{user_prompt_2}<|im_end|>
                 <|im_start|> assistant
                 """
-                
-            elif model_name == "deepseek-llm-7b-base":
-                messages = [
-                    {"role": "system", "content": f"{system_prompt_1}{system_prompt_2}"},
-                    {"role": "user", "content": f"{user_prompt_1}{x}{user_prompt_2}"},
-                ]
-                input_prompt = tokenizer.apply_chat_template(
-                    messages,
-                    tokenize=False,
-                    add_generation_prompt=True
-                ) 
-            
-            elif model_name == "Falcon3-instruct" or model_name == "Gemma2-instruct":
-                messages = [
-                         {"role": "user", "content": f"{system_prompt_1}{system_prompt_2}\n\n{user_prompt_1}{x}{user_prompt_2}"},
-                        {"role": "assistant", "content": f""}
-                ]
-            
-                input_prompt = tokenizer.apply_chat_template(
-                    messages,
-                    tokenize=False,
-                    add_generation_prompt=True
-                )
-            
+        
+        elif model_shortname == "deepseek_7b":
+            messages = [
+                {"role": "system", "content": f"{system_prompt_1}{system_prompt_2}"},
+                {"role": "user", "content": f"{user_prompt_1}{x}{user_prompt_2}"},
+            ]
+            input_prompt = tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True
+            ) 
+        
+        elif model_shortname in ["falcon3_7b", "gemma2_9b"]:
+            messages = [
+                {"role": "user", "content": f"{system_prompt_1}{system_prompt_2}\n\n{user_prompt_1}{x}{user_prompt_2}"},
+                {"role": "assistant", "content": f""}
+            ]
+            input_prompt = tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True
+            )
 
-            if True or DEBUG:
-                print(input_prompt)
-            
-            # Prepare input 
-            inputs = tokenizer(input_prompt, return_tensors="pt").to(device)
-            input_ids = inputs['input_ids'].to(device)
-            attention_mask = inputs['attention_mask'].to(device)
-            input_token_len = input_ids.shape[-1]
+        else:
+            print(f"[WARNING] No prompt template defined for model_shortname '{model_shortname}'")
+            continue
 
-            if model_name in ['Llama3-instruct', 'Llama3-70B-instruct']: # Llama 3 models require a custom pad token ID
-                pad_token_id = 128001
-            else:
-                pad_token_id = tokenizer.eos_token_id
-            
-            #PROMPT Model
-            #prompt the model with temperature near 0 to produce deterministic responses
-            if model_name != "Mistral-instruct":
-                """
-                outputs_temp0 = model.generate(
-                    input_ids,
-                    attention_mask=attention_mask,
-                    pad_token_id=pad_token_id,
-                    max_new_tokens=max_new_tokens,
-                    do_sample=True,
-                    temperature=temp_low,
-                    return_dict_in_generate=True,
-                )
-                #prompt the model with temperature 1 to extract the logit scores before temperature scaling (needed to produce the probability metric)
-                outputs_probabilities = model.generate(
-                    input_ids,
-                    attention_mask=attention_mask,
-                    pad_token_id=pad_token_id,
-                    max_new_tokens=max_new_tokens,
-                    do_sample=True,
-                    temperature=temp_high, 
-                    output_scores=True,
-                    return_dict_in_generate=True,
-                )
-                """
-                #"""
-                outputs = model.generate(
-                    input_ids,
-                    attention_mask=attention_mask,
-                    pad_token_id=pad_token_id,
-                    max_new_tokens=max_new_tokens,
-                    do_sample=False, # deterministic
-                    temperature=1, # No scaling
-                    #top_k=0, # No cut off
-                    #top_p=1, # No cut off
-                    output_scores=True,
-                    return_dict_in_generate=True,
-                )
-                #"""
-            else:
-                outputs_temp0 = model.generate(
-                    input_ids,
-                    attention_mask=attention_mask,
-                    max_new_tokens=max_new_tokens,
-                    temperature=.0001,
-                    output_scores=True,
-                    return_dict_in_generate=True,
-                    do_sample=True,
-                    pad_token_id=tokenizer.eos_token_id
-                )
-                #print(outputs_temp0)
-                #prompt the model with temperature 1 to extract the logit scores before temperature scaling (needed to produce the probability metric)
-                outputs_probabilities = model.generate(
-                    input_ids,
-                    attention_mask=attention_mask,
-                    max_new_tokens=max_new_tokens,
-                    temperature=1,
-                    output_scores=True,
-                    return_dict_in_generate=True,
-                    do_sample=True,
-                    pad_token_id=tokenizer.eos_token_id
-                )
-            
-            # NB CHANGE
-            if model_name != "Mistral-instruct":
-                generated_text = tokenizer.decode(outputs.sequences[0][input_token_len:], skip_special_tokens=True)
-                print(f"[DEBUG] Raw model output for ID {id}: '{generated_text}'")
-            else:
-                generated_text = tokenizer.decode(outputs_temp0.sequences[0][input_token_len:], skip_special_tokens=True)
-                print(f"[DEBUG] Raw model output for ID {id}: '{generated_text}'")
-            
+        if True or DEBUG:
+            print(input_prompt)
+        
+        # Prepare input 
+        inputs = tokenizer(input_prompt, return_tensors="pt").to(device)
+        input_ids = inputs['input_ids'].to(device)
+        attention_mask = inputs['attention_mask'].to(device)
+        input_token_len = input_ids.shape[-1]
+
+        if model_name in ['Llama3-instruct', 'Llama3-70B-instruct']: # Llama 3 models require a custom pad token ID
+            pad_token_id = 128001
+        else:
+            pad_token_id = tokenizer.eos_token_id
+        
+        #PROMPT Model
+        #prompt the model with temperature near 0 to produce deterministic responses
+        if model_name != "Mistral-instruct":
+            """
+            outputs_temp0 = model.generate(
+                input_ids,
+                attention_mask=attention_mask,
+                pad_token_id=pad_token_id,
+                max_new_tokens=max_new_tokens,
+                do_sample=True,
+                temperature=temp_low,
+                return_dict_in_generate=True,
+            )
+            #prompt the model with temperature 1 to extract the logit scores before temperature scaling (needed to produce the probability metric)
+            outputs_probabilities = model.generate(
+                input_ids,
+                attention_mask=attention_mask,
+                pad_token_id=pad_token_id,
+                max_new_tokens=max_new_tokens,
+                do_sample=True,
+                temperature=temp_high, 
+                output_scores=True,
+                return_dict_in_generate=True,
+            )
+            """
+            #"""
+            outputs = model.generate(
+                input_ids,
+                attention_mask=attention_mask,
+                pad_token_id=pad_token_id,
+                max_new_tokens=max_new_tokens,
+                do_sample=False, # deterministic
+                temperature=1, # No scaling
+                #top_k=0, # No cut off
+                #top_p=1, # No cut off
+                output_scores=True,
+                return_dict_in_generate=True,
+            )
+            #"""
+        else:
+            outputs_temp0 = model.generate(
+                input_ids,
+                attention_mask=attention_mask,
+                max_new_tokens=max_new_tokens,
+                temperature=.0001,
+                output_scores=True,
+                return_dict_in_generate=True,
+                do_sample=True,
+                pad_token_id=tokenizer.eos_token_id
+            )
+            #print(outputs_temp0)
+            #prompt the model with temperature 1 to extract the logit scores before temperature scaling (needed to produce the probability metric)
+            outputs_probabilities = model.generate(
+                input_ids,
+                attention_mask=attention_mask,
+                max_new_tokens=max_new_tokens,
+                temperature=1,
+                output_scores=True,
+                return_dict_in_generate=True,
+                do_sample=True,
+                pad_token_id=tokenizer.eos_token_id
+            )
+        
+        # NB CHANGE
+        if model_name != "Mistral-instruct":
+            generated_text = tokenizer.decode(outputs.sequences[0][input_token_len:], skip_special_tokens=True)
             print(f"[DEBUG] Raw model output for ID {id}: '{generated_text}'")
-            print(f"[DEBUG] Normalized text: '{generated_text}'")
-            print(f"[DEBUG] Interpreted vote: '{vote_text}' ({vote_value})")
-
-            generated_text = generated_text.lower().strip()
-            generated_text = re.sub(r'[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]', '', generated_text)
-            generated_text = generated_text if generated_text != "" else "blank"
-            print("[DEBUG] Checking if input matches in result_df:")
-            print(f"Looking for initiative: '{x}'")
-            print(result_df[result_df['initiative'] == x])
-            # print(f"'{party}','{generated_text}'")
-
-            # Normalize generated text
-            if 'abst' in generated_text:
-                vote_text = 'abstención'
-                vote_value = 0
-            elif 'favor' in generated_text:
-                vote_text = 'a favor'
-                vote_value = 1
-            elif 'contra' in generated_text:
-                vote_text = 'en contra'
-                vote_value = -1
-            elif 'no' == generated_text.strip():
-                vote_text = 'en contra'
-                vote_value = -1
-            else:
-                vote_text = 'otro'
-                vote_value = 0
-
-
-            print(f"[DEBUG] generated_text = '{generated_text}', vote_value = {vote_value}")
-            print(f"'{id}', raw: '{generated_text}', interpreted as: {vote_value}")
-
-
-            print(f"'{id}','{generated_text}'")
-            suffix = ""  # No party suffix
-
-
-            for_prob = 0
-            against_prob = 0
-            
-            # Retrieve logit scores
-            # NB CHANGE
-            #logits = outputs_probabilities.scores
-            if model_name != "Mistral-instruct":
-                logits = outputs.scores
-            else:
-                logits = outputs_probabilities.scores   
-            
-            # Calculatet the top_k tokens and probabilities for each generated token
-            top_k = 5  # we found that in all vases the tokens representing 'for' and 'against' were fount within top_k = 5
-            probabilities = torch.softmax(logits[0], dim=-1) # transform logit scores to probabilities
+        else:
+            generated_text = tokenizer.decode(outputs_temp0.sequences[0][input_token_len:], skip_special_tokens=True)
+            print(f"[DEBUG] Raw model output for ID {id}: '{generated_text}'")
         
-            top_probs, top_indices = torch.topk(probabilities, top_k)
-            top_indices = top_indices.tolist()[0]  # Convert the tensor to a list of indices
-            top_probs = top_probs.tolist()[0]  # Convert the tensor to a list of probabilities
-            top_tokens = tokenizer.convert_ids_to_tokens(top_indices) # Convert the indices to tokens
+        print(f"[DEBUG] Raw model output for ID {id}: '{generated_text}'")
+        print(f"[DEBUG] Normalized text: '{generated_text}'")
+        print(f"[DEBUG] Interpreted vote: '{vote_text}' ({vote_value})")
+
+        generated_text = generated_text.lower().strip()
+        generated_text = re.sub(r'[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]', '', generated_text)
+        generated_text = generated_text if generated_text != "" else "blank"
+        print("[DEBUG] Checking if input matches in result_df:")
+        print(f"Looking for initiative: '{x}'")
+        print(result_df[result_df['initiative'] == x])
+        # print(f"'{party}','{generated_text}'")
+
+        # Normalize generated text
+        if 'abst' in generated_text:
+            vote_text = 'abstención'
+            vote_value = 0
+        elif 'favor' in generated_text:
+            vote_text = 'a favor'
+            vote_value = 1
+        elif 'contra' in generated_text:
+            vote_text = 'en contra'
+            vote_value = -1
+        elif 'no' == generated_text.strip():
+            vote_text = 'en contra'
+            vote_value = -1
+        else:
+            vote_text = 'otro'
+            vote_value = 0
+
+
+        print(f"[DEBUG] generated_text = '{generated_text}', vote_value = {vote_value}")
+        print(f"'{id}', raw: '{generated_text}', interpreted as: {vote_value}")
+
+
+        print(f"'{id}','{generated_text}'")
+        suffix = ""  # No party suffix
+
+
+        for_prob = 0
+        against_prob = 0
         
-            #extract the probabilities for the tokens 'for' and 'against' from the top_k tokens
-            for_prob, against_prob, abstain_prob = extract_probs(top_tokens, top_probs)
-
-                
-            suffix = ""
-
-            print("[DEBUG] Sample IDs from result_df:", result_df['id'].head(3).tolist())
-            print("[DEBUG] Current ID being processed:", repr(id))
-
-            mask = result_df['initiative'] == x
-
-            print(f"\n[DEBUG] Processing ID: {id}")
-            print(f"[DEBUG] Matches in result_df: {mask.sum()}")
-            print(f"[DEBUG] Generated text (raw): '{generated_text}'")
-            print(f"[DEBUG] Interpreted vote value: {vote_value}")
-            print(f"[DEBUG] Probabilities - For: {for_prob}, Against: {against_prob}, Abstain: {abstain_prob}")
-
-
-
-            if mask.any():
-                print(f"Generated: {generated_text}, For: {for_prob}, Against: {against_prob}, Abstain: {abstain_prob}")
-                print(f"Updating ID: {id}, Matches found: {mask.sum()}")
-
-                # # Map to integer vote
-                # if generated_text == 'a favor':
-                #     vote_value = 1
-                # elif generated_text == 'en contra':
-                #     vote_value = -1
-                # elif generated_text == 'abstención':
-                #     vote_value = 0
-                # else:
-                #     vote_value = None  # Or np.nan
-
-                result_df.loc[mask, 
-                    [f'{model_shortname}_vote', 
-                    f'{model_shortname}_for_prob', 
-                    f'{model_shortname}_against_prob', 
-                    f'{model_shortname}_abstain_prob']
-                ] = [vote_value, for_prob, against_prob, abstain_prob]
-                print(result_df.loc[mask, [f'{model_shortname}_vote']])
-                print(f"[DEBUG] Wrote vote={vote_value} for model '{model_shortname}' at ID {id}")
-
-
-                print(result_df[[f"{model_shortname}_vote"]].value_counts(dropna=False))
-            
-            if not mask.any():
-                print(f"[WARNING] No matching row for ID {id} in result_df.")
-
-            else:
-                print(f"⚠️ ID {id} not found in result_df!")
-
-
-            if i % 1 == 0:
-                temp_file = results_file.replace(".csv", "_TEMP.csv")
+        # Retrieve logit scores
+        # NB CHANGE
+        #logits = outputs_probabilities.scores
+        if model_name != "Mistral-instruct":
+            logits = outputs.scores
+        else:
+            logits = outputs_probabilities.scores   
+        
+        # Calculatet the top_k tokens and probabilities for each generated token
+        top_k = 5  # we found that in all vases the tokens representing 'for' and 'against' were fount within top_k = 5
+        probabilities = torch.softmax(logits[0], dim=-1) # transform logit scores to probabilities
     
-                # 1. Save temporary file
-                result_df.to_csv(temp_file, encoding='utf-8-sig', index=True)
-                print(f"Saved {temp_file}")
+        top_probs, top_indices = torch.topk(probabilities, top_k)
+        top_indices = top_indices.tolist()[0]  # Convert the tensor to a list of indices
+        top_probs = top_probs.tolist()[0]  # Convert the tensor to a list of probabilities
+        top_tokens = tokenizer.convert_ids_to_tokens(top_indices) # Convert the indices to tokens
+    
+        #extract the probabilities for the tokens 'for' and 'against' from the top_k tokens
+        for_prob, against_prob, abstain_prob = extract_probs(top_tokens, top_probs)
 
-                # 2. Git commit and push
-                commit_message = f"Autosave {model_name} after {i} motions"
-                os.system(f"git add {temp_file}")
-                os.system(f"git commit -m '{commit_message}'")
-                os.system("git push origin main")
+            
+        suffix = ""
 
-                # 3. Remove local file to save space
-                os.remove(temp_file)
-                print(f"Deleted local {temp_file} after pushing to GitHub")
+        print("[DEBUG] Sample IDs from result_df:", result_df['id'].head(3).tolist())
+        print("[DEBUG] Current ID being processed:", repr(id))
+
+        mask = result_df['initiative'] == x
+
+        print(f"\n[DEBUG] Processing ID: {id}")
+        print(f"[DEBUG] Matches in result_df: {mask.sum()}")
+        print(f"[DEBUG] Generated text (raw): '{generated_text}'")
+        print(f"[DEBUG] Interpreted vote value: {vote_value}")
+        print(f"[DEBUG] Probabilities - For: {for_prob}, Against: {against_prob}, Abstain: {abstain_prob}")
+
+
+
+        if mask.any():
+            print(f"Generated: {generated_text}, For: {for_prob}, Against: {against_prob}, Abstain: {abstain_prob}")
+            print(f"Updating ID: {id}, Matches found: {mask.sum()}")
+
+            # # Map to integer vote
+            # if generated_text == 'a favor':
+            #     vote_value = 1
+            # elif generated_text == 'en contra':
+            #     vote_value = -1
+            # elif generated_text == 'abstención':
+            #     vote_value = 0
+            # else:
+            #     vote_value = None  # Or np.nan
+
+            result_df.loc[mask, 
+                [f'{model_shortname}_vote', 
+                f'{model_shortname}_for_prob', 
+                f'{model_shortname}_against_prob', 
+                f'{model_shortname}_abstain_prob']
+            ] = [vote_value, for_prob, against_prob, abstain_prob]
+            print(result_df.loc[mask, [f'{model_shortname}_vote']])
+            print(f"[DEBUG] Wrote vote={vote_value} for model '{model_shortname}' at ID {id}")
+
+
+            print(result_df[[f"{model_shortname}_vote"]].value_counts(dropna=False))
+        
+        if not mask.any():
+            print(f"[WARNING] No matching row for ID {id} in result_df.")
+
+        else:
+            print(f"⚠️ ID {id} not found in result_df!")
+
+
+        if i % 1 == 0:
+            temp_file = results_file.replace(".csv", "_TEMP.csv")
+    
+            # 1. Save temporary file
+            result_df.to_csv(temp_file, encoding='utf-8-sig', index=True)
+            print(f"Saved {temp_file}")
+
+            # 2. Git commit and push
+            commit_message = f"Autosave {model_name} after {i} motions"
+            os.system(f"git add {temp_file}")
+            os.system(f"git commit -m '{commit_message}'")
+            os.system("git push origin main")
+
+            # 3. Remove local file to save space
+            os.remove(temp_file)
+            print(f"Deleted local {temp_file} after pushing to GitHub")
 
     
     #save the df

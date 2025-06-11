@@ -101,8 +101,13 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     # Clean up the GPU’s memory before starting
     torch.cuda.empty_cache()
     start = time.time() # This records the starting time, so later you can see how long it took to load the model
-    torch_dtype = torch.bfloat16 if torch.cuda.get_device_name().startswith("NVIDIA H100") else torch.float16 # Use bfloat16 for H100 GPUs, otherwise use float16
+    if torch.cuda.is_available():
+        gpu_name = torch.cuda.get_device_name()
+        torch_dtype = torch.bfloat16 if "H100" in gpu_name else torch.float16
+    else:
+        torch_dtype = torch.float32  # safest fallback for CPU-only environments
     
+        
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch_dtype, low_cpu_mem_usage=True, token=access_token if access_token != "" else None)
     

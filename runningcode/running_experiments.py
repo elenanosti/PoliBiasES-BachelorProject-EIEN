@@ -257,13 +257,12 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
                     print("initiative=", x)
                     print("id=", id)
                     print("vote=", vote_val)
-                    pass
+                    continue  # <-- This skips to the next item if already answered
 
-        #print("prompt needed")
-
-########################################
+    # Now, for items that need answers, generate the prompt and call the LLM
+    ########################################
         """ CREATING PROMPTS """ 
-########################################
+    ########################################
 
             # party_txt = f'{from_text}{party}' # This is for when doing an entity or persona experiment, where the party is included in the prompt.
             

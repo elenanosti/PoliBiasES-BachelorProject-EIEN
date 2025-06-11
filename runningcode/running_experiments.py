@@ -241,7 +241,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
 
     suffix = ""  # No party suffix for ideology experiment
     
-    for i, (x, id) in enumerate(zip(df['initiative_text'], df['id'])):
+    for i, (x, id) in enumerate(zip(df['initiative'], df['id'])):
         if f'{model_shortname}{suffix}_vote' in result_df.columns:
             if not result_df.loc[result_df['id'] == id][f'{model_shortname}{suffix}_vote'].isna().any():
                 print("No prompt needed")

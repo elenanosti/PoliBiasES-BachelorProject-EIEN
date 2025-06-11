@@ -1,11 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=main 
 #SBATCH --account=eei440                
-#SBATCH --nodes=1                      
-#SBATCH --ntasks-per-node=1          
-#SBATCH --mem=20G             
+#SBATCH --nodes=1                                     
 #SBATCH --time=0-03:00:00        
-#SBATCH --gpus=1
 #SBATCH --output=out/%x_%j.out 
 
 # Purge existing modules

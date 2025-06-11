@@ -442,10 +442,22 @@ for x, id in zip(df['initiative_text'], df['initiative_id']):
 
 
 
-            i += 1
-            if i % 10 == 0:
-                i = 0
-                result_df.to_csv(results_file.replace(".csv", "_TEMP.csv"), encoding='utf-8-sig', index=True)
+            if i % 100 == 0:
+                temp_file = results_file.replace(".csv", "_TEMP.csv")
+    
+                # 1. Save temporary file
+                result_df.to_csv(temp_file, encoding='utf-8-sig', index=True)
+                print(f"Saved {temp_file}")
+
+                # 2. Git commit and push
+                commit_message = f"Autosave {model_name} after {i} motions"
+                os.system(f"git add {temp_file}")
+                os.system(f"git commit -m '{commit_message}'")
+                os.system("git push origin main")
+
+                # 3. Remove local file to save space
+                os.remove(temp_file)
+                print(f"Deleted local {temp_file} after pushing to GitHub")
 
     
     #save the df

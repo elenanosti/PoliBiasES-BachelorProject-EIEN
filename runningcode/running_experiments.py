@@ -28,33 +28,28 @@ os.makedirs(os.environ["HF_HOME"], exist_ok=True)
 
 def extract_probs(tokens, probs):
     '''
-    extracts the probabilities for the tokens 'for' and 'against' form the top_k tokens which the model generates
+    extracts the probabilities for the tokens 'for' and 'against' from the top_k tokens which the model generates
     '''
-    #define the set of possible first tokens for the model response
     for_synonyms = ['afavor', 'favor', 'sí', 'si']
     against_synonyms = ['encontra', 'contra', 'no']
     abstain_synonyms = ['abstencion', 'abstención', 'me abstengo', 'abstenerse']
 
-    
-    #initialize probabilities
     for_prob = 0
     against_prob = 0
     abstain_prob = 0
 
-    #sum the tokens representing the output 'for' and 'against' (seperately)
-    for tok in tokens:
+    print("[DEBUG] Top tokens and probs:", list(zip(tokens, probs)))  # Debug print
+
+    for i, tok in enumerate(tokens):
         clean_tok = tok.strip().lstrip('▁').lower()
         clean_tok = re.sub(r'[^\w\s]', '', clean_tok)
 
-        if clean_tok in for_synonyms:
-            idx = tokens.index(tok)
-            for_prob += probs[idx]
-        elif clean_tok in against_synonyms:
-            idx = tokens.index(tok)
-            against_prob += probs[idx]
-        elif clean_tok in abstain_synonyms:
-            idx = tokens.index(tok)
-            abstain_prob += probs[idx]
+        if any(s in clean_tok for s in for_synonyms):
+            for_prob += probs[i]
+        elif any(s in clean_tok for s in against_synonyms):
+            against_prob += probs[i]
+        elif any(s in clean_tok for s in abstain_synonyms):
+            abstain_prob += probs[i]
     return for_prob, against_prob, abstain_prob
 
 
@@ -163,8 +158,8 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
     #     parties = direction_ES  # Defined in definitions.py
     #     parties_short = direction_codes  # Already language-agnostic
     
-    # Tells the model: “Only generate up to 2 new tokens (words or pieces of words)” for each answer.
-    max_new_tokens = 2
+    # Tells the model: “Only generate up to 5 new tokens (words or pieces of words)” for each answer.
+    max_new_tokens = 5
     
     # Prompts
     # exact replication from paper
@@ -410,17 +405,18 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
         # NB CHANGE
         if model_name != "Mistral-instruct":
             generated_text = tokenizer.decode(outputs.sequences[0][input_token_len:], skip_special_tokens=True)
-            print(f"[DEBUG] Raw model output for ID {id}: '{generated_text}'")
         else:
             generated_text = tokenizer.decode(outputs_temp0.sequences[0][input_token_len:], skip_special_tokens=True)
-            print(f"[DEBUG] Raw model output for ID {id}: '{generated_text}'")
+
+        # Print the actual LLM output, including invisible characters
+        print("\n" + "="*40)
+        print(f"LLM OUTPUT for ID {id} (before normalization):")
+        print(repr(generated_text))  # Shows whitespace and special chars
+        print("="*40 + "\n")
 
         generated_text = generated_text.lower().strip()
         generated_text = re.sub(r'[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]', '', generated_text)
         generated_text = generated_text if generated_text != "" else "blank"
-        print("[DEBUG] Checking if input matches in result_df:")
-        print(f"Looking for initiative: '{x}'")
-        print(result_df[result_df['initiative'] == x])
 
         # Normalize generated text
         if 'abst' in generated_text:
@@ -439,75 +435,32 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
             vote_text = 'otro'
             vote_value = 0
 
-        print(f"[DEBUG] Raw model output for ID {id}: '{generated_text}'")
         print(f"[DEBUG] Normalized text: '{generated_text}'")
         print(f"[DEBUG] Interpreted vote: '{vote_text}' ({vote_value})")
 
-
-        generated_text = generated_text.lower().strip()
-        generated_text = re.sub(r'[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]', '', generated_text)
-        generated_text = generated_text if generated_text != "" else "blank"
-        print("[DEBUG] Checking if input matches in result_df:")
-        print(f"Looking for initiative: '{x}'")
-        print(result_df[result_df['initiative'] == x])
-        # print(f"'{party}','{generated_text}'")
-
-        # Normalize generated text
-        if 'abst' in generated_text:
-            vote_text = 'abstención'
-            vote_value = 0
-        elif 'favor' in generated_text:
-            vote_text = 'a favor'
-            vote_value = 1
-        elif 'contra' in generated_text:
-            vote_text = 'en contra'
-            vote_value = -1
-        elif 'no' == generated_text.strip():
-            vote_text = 'en contra'
-            vote_value = -1
-        else:
-            vote_text = 'otro'
-            vote_value = 0
-
-
-        print(f"[DEBUG] generated_text = '{generated_text}', vote_value = {vote_value}")
-        print(f"'{id}', raw: '{generated_text}', interpreted as: {vote_value}")
-
-
-        print(f"'{id}','{generated_text}'")
-        suffix = ""  # No party suffix
-
-
-        for_prob = 0
-        against_prob = 0
-        
         # Retrieve logit scores
-        # NB CHANGE
-        #logits = outputs_probabilities.scores
         if model_name != "Mistral-instruct":
             logits = outputs.scores
         else:
             logits = outputs_probabilities.scores   
-        
-        # Calculatet the top_k tokens and probabilities for each generated token
-        top_k = 5  # we found that in all vases the tokens representing 'for' and 'against' were fount within top_k = 5
-        probabilities = torch.softmax(logits[0], dim=-1) # transform logit scores to probabilities
-    
+
+        # Calculate the top_k tokens and probabilities for each generated token
+        top_k = 5
+        probabilities = torch.softmax(logits[0], dim=-1)
         top_probs, top_indices = torch.topk(probabilities, top_k)
-        top_indices = top_indices.tolist()[0]  # Convert the tensor to a list of indices
-        top_probs = top_probs.tolist()[0]  # Convert the tensor to a list of probabilities
-        top_tokens = tokenizer.convert_ids_to_tokens(top_indices) # Convert the indices to tokens
-    
-        #extract the probabilities for the tokens 'for' and 'against' from the top_k tokens
+        top_indices = top_indices.tolist()[0]
+        top_probs = top_probs.tolist()[0]
+        top_tokens = tokenizer.convert_ids_to_tokens(top_indices)
+
+        # Print top tokens and probabilities for debugging
+        print("[DEBUG] Top tokens:", top_tokens)
+        print("[DEBUG] Top probs:", top_probs)
+
+        # Extract the probabilities for the tokens 'for' and 'against' from the top_k tokens
         for_prob, against_prob, abstain_prob = extract_probs(top_tokens, top_probs)
 
-            
-        suffix = ""
-
-        print("[DEBUG] Sample IDs from result_df:", result_df['id'].head(3).tolist())
-        print("[DEBUG] Current ID being processed:", repr(id))
-
-        mask = result_df['initiative'] == x
+        # Use both 'initiative' and 'id' for DataFrame mask
+        mask = (result_df['initiative'] == x.strip()) & (result_df['id'] == id)
 
         print(f"\n[DEBUG] Processing ID: {id}")
         print(f"[DEBUG] Matches in result_df: {mask.sum()}")
@@ -515,21 +468,9 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
         print(f"[DEBUG] Interpreted vote value: {vote_value}")
         print(f"[DEBUG] Probabilities - For: {for_prob}, Against: {against_prob}, Abstain: {abstain_prob}")
 
-
-
         if mask.any():
             print(f"Generated: {generated_text}, For: {for_prob}, Against: {against_prob}, Abstain: {abstain_prob}")
             print(f"Updating ID: {id}, Matches found: {mask.sum()}")
-
-            # # Map to integer vote
-            # if generated_text == 'a favor':
-            #     vote_value = 1
-            # elif generated_text == 'en contra':
-            #     vote_value = -1
-            # elif generated_text == 'abstención':
-            #     vote_value = 0
-            # else:
-            #     vote_value = None  # Or np.nan
 
             result_df.loc[mask, 
                 [f'{model_shortname}_vote', 
@@ -540,15 +481,9 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
             print(result_df.loc[mask, [f'{model_shortname}_vote']])
             print(f"[DEBUG] Wrote vote={vote_value} for model '{model_shortname}' at ID {id}")
 
-
             print(result_df[[f"{model_shortname}_vote"]].value_counts(dropna=False))
-        
-        if not mask.any():
-            print(f"[WARNING] No matching row for ID {id} in result_df.")
-
         else:
-            print(f"⚠️ ID {id} not found in result_df!")
-
+            print(f"[WARNING] No matching row for ID {id} in result_df!")
 
         if i % 1 == 0:
             temp_file = results_file.replace(".csv", "_TEMP.csv")

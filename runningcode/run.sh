@@ -22,7 +22,7 @@ mkdir -p $HF_HOME
 # module load JupyterLab/4.0.3-GCCcore-12.2.0
 
 # -------------------- PARAMETERS --------------------
-MODELS=("Llama-3-8B-instruct" "Llama-3-70B-Instruct" "Mistral-7B-instruct" "Gemma-2-9B-instruct" "Falcon3-7B-instruct" "deepseek-llm-7b-chat")
+MODELS=("Llama-3-8B-instruct") # "Llama-3-70B-Instruct" "Mistral-7B-instruct" "Gemma-2-9B-instruct" "Falcon3-7B-instruct" "deepseek-llm-7b-chat")
 PROMPTS=(1)
 PROMPT_TEMPLATES=(0)
 REPLACES=(2)

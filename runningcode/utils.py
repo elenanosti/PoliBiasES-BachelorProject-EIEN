@@ -65,7 +65,7 @@ def get_dataset(DEBUG, small_data_size = 20, variant=0, exp="ideology", lang="ES
     return df
 
 
-def update_model_summary(model_name, prompt_no, prompt_template_no, result_df, exp, jb=0):
+def update_model_summary(model_name, prompt_no, prompt_template_no, result_df, exp):
  
     # Compute the vote distribution for the run
     # Safely check column before using it
@@ -85,8 +85,7 @@ def update_model_summary(model_name, prompt_no, prompt_template_no, result_df, e
     row = {
         "model": model_name,
         "prompt": prompt_no,
-        "prompt_template": prompt_template_no,
-        "jb": jb,
+        "prompt_template": prompt_template_no
     }
     
     # Initialize all known keys to 0
@@ -113,7 +112,7 @@ def update_model_summary(model_name, prompt_no, prompt_template_no, result_df, e
         summary_df = pd.DataFrame(columns=["model", "prompt", "prompt_template"])
 
 
-    needed_cols = ["model", "prompt", "prompt_template", "replace"] + KNOWN_VOTE_KEYS + ["other"]
+    needed_cols = ["model", "prompt", "prompt_template"] + KNOWN_VOTE_KEYS + ["other"]
     for col in needed_cols:
         if col not in summary_df.columns:
             summary_df[col] = None

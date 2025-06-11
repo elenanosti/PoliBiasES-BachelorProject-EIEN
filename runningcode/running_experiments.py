@@ -407,6 +407,10 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
                 generated_text = tokenizer.decode(outputs_temp0.sequences[0][input_token_len:], skip_special_tokens=True)
                 print(f"[DEBUG] Raw model output for ID {id}: '{generated_text}'")
             
+            print(f"[DEBUG] Raw model output for ID {id}: '{generated_text}'")
+            print(f"[DEBUG] Normalized text: '{generated_text}'")
+            print(f"[DEBUG] Interpreted vote: '{vote_text}' ({vote_value})")
+
             generated_text = generated_text.lower().strip()
             generated_text = re.sub(r'[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]', '', generated_text)
             generated_text = generated_text if generated_text != "" else "blank"

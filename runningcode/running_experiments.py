@@ -506,7 +506,7 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
     parser.add_argument("--exp", type=str, default="ide", help="type of experiment")
-    parser.add_argument("--model", type=str, default="Llama-3-8B-instruct", help="model to run")
+    parser.add_argument("--model", type=str, default="Falcon3-7B-instruct", help="model to run")
     parser.add_argument("--prompt", type=int, default=1, help="prompt no")
     parser.add_argument("--template", type=int, default=0, help="prompt template, for models with more than one.")
     parser.add_argument("--replace", type=int, default=0, help="remove start")

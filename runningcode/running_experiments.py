@@ -79,16 +79,6 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     print("replace start:", replace_start)
     print("continue:", cont)
     print("DEBUG:", DEBUG)
-
-
-    MODEL_SHORTNAMES = {
-        "Falcon3-7B-instruct": "falcon3_7b",
-        "Llama-3-8B-instruct": "llama3_8b",
-        "Llama-3-70B-instruct": "llama3_70b",
-        "Mistral-7B-instruct": "mistral_7b",
-        "Gemma-2-9B-instruct": "gemma2_9b",
-        "deepseek-llm-7b-chat": "deepseek_7b"
-    }
     
     set_seeds(RANDOM_SEED) # Defined in definitions.py
     # This means: if you run the experiment again with the same data and settings, you’ll get the same answers
@@ -519,7 +509,14 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     elapsed_time = time.time() - start
     print(f"Experiment time {int(elapsed_time // 3600)}h {int((elapsed_time % 3600) // 60)}m {elapsed_time % 60:.2f}s")    
     
-    
+MODEL_SHORTNAMES = {
+        "Falcon3-7B-instruct": "falcon3_7b",
+        "Llama-3-8B-instruct": "llama3_8b",
+        "Llama-3-70B-instruct": "llama3_70b",
+        "Mistral-7B-instruct": "mistral_7b",
+        "Gemma-2-9B-instruct": "gemma2_9b",
+        "deepseek-llm-7b-chat": "deepseek_7b"
+    }    
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()

@@ -434,6 +434,9 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
             generated_text = generated_text.lower().strip()
             generated_text = re.sub(r'[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]', '', generated_text)
             generated_text = generated_text if generated_text != "" else "blank"
+            print("[DEBUG] Checking if input matches in result_df:")
+            print(f"Looking for initiative: '{x}'")
+            print(result_df[result_df['initiative'] == x])
             # print(f"'{party}','{generated_text}'")
 
             # Normalize generated text
@@ -598,7 +601,7 @@ if __name__ == "__main__":
     parser.add_argument("--model", type=str, default="Falcon3-7B-instruct", help="model to run")
     parser.add_argument("--prompt", type=int, default=1, help="prompt no")
     parser.add_argument("--template", type=int, default=0, help="prompt template, for models with more than one.")
-    parser.add_argument("--replace", type=int, default=0, help="remove start")
+    #parser.add_argument("--replace", type=int, default=0, help="remove start")
     parser.add_argument("--cont", type=int, default=-1, help="continue exp")
     parser.add_argument("--debug", type=int, default=0, help="Debug. 0: No or 1: Yes")
     parser.add_argument("--datasize", type=int, default=20, help="Size of debug dataset (no effect if not debug)")

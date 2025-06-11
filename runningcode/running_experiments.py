@@ -216,7 +216,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     
     #initialize df to store results
     if cont < 0:
-        result_df = df[['id']].copy()  # Ensures you keep the ID column
+        result_df = df[['id', 'initiative']].copy()  # Ensures you keep the ID and initiative column 
         for col in [f'{model_shortname}_vote', f'{model_shortname}_for_prob',
                     f'{model_shortname}_against_prob', f'{model_shortname}_abstain_prob']:
             result_df[col] = pd.NA
@@ -477,7 +477,11 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
 
                 
             suffix = ""
-            mask = result_df['id'] == id
+
+            print("[DEBUG] Sample IDs from result_df:", result_df['id'].head(3).tolist())
+            print("[DEBUG] Current ID being processed:", repr(id))
+
+            mask = result_df['initiative'] == x
 
             print(f"\n[DEBUG] Processing ID: {id}")
             print(f"[DEBUG] Matches in result_df: {mask.sum()}")

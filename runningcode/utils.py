@@ -347,57 +347,57 @@ def make_landscape_plot(pca_df, title, models, exp, party_codes, colors_models, 
     plt.close()
 
 """
-def make_landscape_plot2(...):
-    # … all your setup up to the scatter loop …
-    fig, ax = plt.subplots(figsize=(13,13))
-    # shift the plotting area up a bit so legend fits below
-    fig.subplots_adjust(bottom=0.2)
+# def make_landscape_plot2(...):
+#     # … all your setup up to the scatter loop …
+#     fig, ax = plt.subplots(figsize=(13,13))
+#     # shift the plotting area up a bit so legend fits below
+#     fig.subplots_adjust(bottom=0.2)
 
-    for idx, col in enumerate(df_plot.index):
-        # decide if this point is one of the “models”
-        is_model = (idx >= len(df_plot.index) - len(models))
+#     for idx, col in enumerate(df_plot.index):
+#         # decide if this point is one of the “models”
+#         is_model = (idx >= len(df_plot.index) - len(models))
 
-        # choose marker
-        if idx >= 9+7:
-            marker_style = '^'
-        elif is_model:
-            marker_style = '*'
-        else:
-            marker_style = 'o'
+#         # choose marker
+#         if idx >= 9+7:
+#             marker_style = '^'
+#         elif is_model:
+#             marker_style = '*'
+#         else:
+#             marker_style = 'o'
 
-        # only give a real label to models; suppress legend for others
-        this_label = col if is_model else '_nolegend_'
+#         # only give a real label to models; suppress legend for others
+#         this_label = col if is_model else '_nolegend_'
 
-        ax.scatter(df_plot.loc[col, pca_cols[0]],
-                   df_plot.loc[col, pca_cols[1]],
-                   label=this_label,
-                   s=400,
-                   color=colors[idx % len(colors)],
-                   marker=marker_style)
+#         ax.scatter(df_plot.loc[col, pca_cols[0]],
+#                    df_plot.loc[col, pca_cols[1]],
+#                    label=this_label,
+#                    s=400,
+#                    color=colors[idx % len(colors)],
+#                    marker=marker_style)
 
-        # only annotate non‑models
-        if not is_model:
-            x_off, y_off = 0.05, 0.05
-            ax.text(df_plot.loc[col, pca_cols[0]]+x_off,
-                    df_plot.loc[col, pca_cols[1]]+y_off,
-                    col,
-                    fontsize=15,
-                    fontweight='medium')
+#         # only annotate non‑models
+#         if not is_model:
+#             x_off, y_off = 0.05, 0.05
+#             ax.text(df_plot.loc[col, pca_cols[0]]+x_off,
+#                     df_plot.loc[col, pca_cols[1]]+y_off,
+#                     col,
+#                     fontsize=15,
+#                     fontweight='medium')
 
-    # … your adjust_text, labels, grid, etc. …
+#     # … your adjust_text, labels, grid, etc. …
 
-    # put legend under the plot, one column per model
-    ax.legend(title="Models",
-              loc='upper center',
-              bbox_to_anchor=(0.5, -0.1),
-              ncol=len(models),
-              fontsize=12)
+#     # put legend under the plot, one column per model
+#     ax.legend(title="Models",
+#               loc='upper center',
+#               bbox_to_anchor=(0.5, -0.1),
+#               ncol=len(models),
+#               fontsize=12)
 
-    # save & show as before
-    plt.savefig(...)
-    if show: plt.show()
-    plt.close()
-"""
+#     # save & show as before
+#     plt.savefig(...)
+#     if show: plt.show()
+#     plt.close()
+# """
 
 
 """

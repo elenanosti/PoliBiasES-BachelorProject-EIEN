@@ -263,59 +263,58 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
             # CREATE PROMPT 
 
             # party_txt = f'{from_text}{party}' # This is for when doing an entity or persona experiment, where the party is included in the prompt.
-            party_txt = ''  # No party-specific prefix for ideology experiment
             
             # prompt formats from model cards
-            if  model_shortname == 'Llama3-instruct' or model_name == 'Llama3-70B-instruct':
-                input_prompt = f"""
-                <|begin_of_text|><|start_header_id|>system<|end_header_id|>
-                {system_prompt_1}"{party_txt}"{system_prompt_2}<|eot_id|>
-                <|start_header_id|>user<|end_header_id|>
-                {user_prompt_1}{x}{user_prompt_2}<|eot_id|>
-                <|start_header_id|>assistant<|end_header_id|>
-                """
+        if  model_shortname == 'Llama3-instruct' or model_name == 'Llama3-70B-instruct':
+            input_prompt = f"""
+            <|begin_of_text|><|start_header_id|>system<|end_header_id|>
+            {system_prompt_1}{system_prompt_2}<|eot_id|>
+            <|start_header_id|>user<|end_header_id|>
+            {user_prompt_1}{x}{user_prompt_2}<|eot_id|>
+            <|start_header_id|>assistant<|end_header_id|>
+            """
             
-            elif model_name == "Mistral-instruct":
-                if prompt_template_no == 0:
-                    input_prompt = f"""
-                    System: {system_prompt_1}"{party_txt}"{system_prompt_2}
-                    User: {user_prompt_1}{x}{user_prompt_2}
-                    Assistant:
-                    """ 
-                    #party_txt = '' if party=='' else f' fra {party}'
-                    #input_prompt = f"""
-                    #System: Stem for eller imot dette forslaget{party_txt}. Svar kun med for eller mot.
-                    #User: Forslag: "{x}"
-                    #Assistant:
-                    #"""
-                elif prompt_template_no == 1:
-                    messages = [
-                            {"role": "system", "content": f"{system_prompt_1}'{party_txt}'{system_prompt_2}"},
-                            {"role": "user", "content": f"{user_prompt_1}{x}{user_prompt_2}"},
-                    ]
-                    input_prompt = tokenizer.apply_chat_template(
-                            messages,
-                            tokenize=False,
-                            add_generation_prompt=True
-                    )
-                    print(input_prompt)
-                
-                elif False or prompt_template_no == 2:
-                    input_prompt = f"""
-                    <|im_start|> user
-                    {system_prompt_1}"{party_txt}"{system_prompt_2}
-                    {user_prompt_1}{x}{user_prompt_2}<|im_end|>
-                    <|im_start|> assistant
-                    """
-                # Does not work
-                elif False or prompt_template_no == 2:
-                    input_prompt = f"""
-                    [INST] Vote for or against this political motion in Norwegian. [/INST] [INST] Reply with only one word 'For' or 'Against' [/INST]
-                    """
+        elif model_name == "Mistral-instruct":
+            if prompt_template_no == 0:
+                input_prompt = f"""
+                System: {system_prompt_1}{system_prompt_2}
+                User: {user_prompt_1}{x}{user_prompt_2}
+                Assistant:
+                """ 
+                #party_txt = '' if party=='' else f' fra {party}'
+                #input_prompt = f"""
+                #System: Stem for eller imot dette forslaget{party_txt}. Svar kun med for eller mot.
+                #User: Forslag: "{x}"
+                #Assistant:
+                #"""
+            elif prompt_template_no == 1:
+                messages = [
+                        {"role": "system", "content": f"{system_prompt_1}{system_prompt_2}"},
+                        {"role": "user", "content": f"{user_prompt_1}{x}{user_prompt_2}"},
+                ]
+                input_prompt = tokenizer.apply_chat_template(
+                        messages,
+                        tokenize=False,
+                        add_generation_prompt=True
+                )
+                print(input_prompt)
+            
+            elif False or prompt_template_no == 2:
+                input_prompt = f"""
+                <|im_start|> user
+                {system_prompt_1}{system_prompt_2}
+                {user_prompt_1}{x}{user_prompt_2}<|im_end|>
+                <|im_start|> assistant
+                """
+            # Does not work
+            elif False or prompt_template_no == 2:
+                input_prompt = f"""
+                [INST] Vote for or against this political motion in Norwegian. [/INST] [INST] Reply with only one word 'For' or 'Against' [/INST]
+                """
                 
             elif model_name == "deepseek-llm-7b-base":
                 messages = [
-                    {"role": "system", "content": f"{system_prompt_1}'{party_txt}'{system_prompt_2}"},
+                    {"role": "system", "content": f"{system_prompt_1}{system_prompt_2}"},
                     {"role": "user", "content": f"{user_prompt_1}{x}{user_prompt_2}"},
                 ]
                 input_prompt = tokenizer.apply_chat_template(
@@ -326,7 +325,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
             
             elif model_name == "Falcon3-instruct" or model_name == "Gemma2-instruct":
                 messages = [
-                         {"role": "user", "content": f"{system_prompt_1}'{party_txt}'{system_prompt_2}\n\n{user_prompt_1}{x}{user_prompt_2}"},
+                         {"role": "user", "content": f"{system_prompt_1}{system_prompt_2}\n\n{user_prompt_1}{x}{user_prompt_2}"},
                         {"role": "assistant", "content": f""}
                 ]
             

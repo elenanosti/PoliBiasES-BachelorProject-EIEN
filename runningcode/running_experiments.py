@@ -554,7 +554,6 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
     elapsed_time = time.time() - start
     print(f"Experiment time {int(elapsed_time // 3600)}h {int((elapsed_time % 3600) // 60)}m {elapsed_time % 60:.2f}s")  
 
-
     
 MODEL_SHORTNAMES = {
         "Falcon3-7B-instruct": "falcon3_7b",

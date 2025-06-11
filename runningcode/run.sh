@@ -26,13 +26,13 @@ module use -a /fp/projects01/ec30/software/easybuild/modules/all/
 MODELS=("Falcon3-7B-instruct") # ("Llama-3-8B-instruct", "Llama-3-70B-Instruct" "Mistral-7B-instruct" "Gemma-2-9B-instruct" "Falcon3-7B-instruct" "deepseek-llm-7b-chat")
 PROMPTS=(1)
 PROMPT_TEMPLATES=(0)
-REPLACES=(2)
+#REPLACES=(2)
 
 # -------------------- EXPERIMENT LOOP --------------------
 for model in "${MODELS[@]}"; do
   for prompt in "${PROMPTS[@]}"; do
     for prompt_template in "${PROMPT_TEMPLATES[@]}"; do
-      for replace in "${REPLACES[@]}"; do
+      #for replace in "${REPLACES[@]}"; do
         echo "Running with model=$model, prompt=$prompt, prompt_template=$prompt_template, replace=$replace"
         python3 -u running_experiments.py \
           --exp=ide \

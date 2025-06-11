@@ -52,10 +52,10 @@ def get_dataset(DEBUG, small_data_size = 20, variant=0, exp="ideology", lang="ES
     # Load the dataset based on the experiment type (exp):
     fname = ""  # Chooses a file to load:
     if exp == "topic": # for annotating with missing topic 
-        fname =f"data/all_votes_no_top_ES.csv" # If you're running a topic prediction task (exp == "category"), 
+        fname =f"data/All_initiatives_2016-2025.csv" # If you're running a topic prediction task (exp == "category"), 
                                                # it loads a file where the topic column is missing or incomplete, i.e., all_votes_no_top_ES.csv.
     else:
-        fname = "data/cleaned_initiatives_per_party_dataset.csv"  # If not, it loads the default dataset with full motion metadata and text, e.g., all_motions_ES.csv.
+        fname = "data/All_initiatives_2016-2025.csv"  # If not, it loads the default dataset with full motion metadata and text.
     df = pd.read_csv(fname, usecols=cols)
 
     print(len(df)) # Prints the row count, mostly for logging/debugging purposes

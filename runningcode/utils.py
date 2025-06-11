@@ -65,7 +65,8 @@ def get_dataset(DEBUG, small_data_size = 20, variant=0, exp="ideology", lang="ES
     return df
 
 
-def update_model_summary(model_name, prompt_no, prompt_template_no, replace_start, result_df, jb=0):    
+def update_model_summary(model_name, prompt_no, prompt_template_no, replace_start, result_df, exp, jb=0):
+ 
     # Compute the vote distribution for the run
     # Safely check column before using it
     vote_col = f"{model_name}_vote"
@@ -75,9 +76,10 @@ def update_model_summary(model_name, prompt_no, prompt_template_no, replace_star
         print(f"⚠️ Warning: Column '{vote_col}' not found in result_df.")
         return
     
+    vote_series = result_df[vote_col].value_counts(normalize=True)
     vote_distribution = vote_series.to_dict()
 
-    KNOWN_VOTE_KEYS = ["for", "mot", "against", "blank"]
+    KNOWN_VOTE_KEYS = ["a favor", "en contra", "abstención"]
     
     # Build a dictionary for the row to insert/update.
     row = {
@@ -299,7 +301,7 @@ def update_model_summary(model_name, prompt_no, prompt_template_no, replace_star
     
     # Save the updated DataFrame back to the CSV file.
     summary_df.to_csv(summary_file, encoding='utf-8-sig', index=False)
-
+"""
 
 
 ##########  process log probabilities   ########################
@@ -333,7 +335,7 @@ def normalize_probs(voor_probs, tegen_probs, no_log=True):
 
     return normalised_probs
 
-
+"""
 ##########  plotting  ##########
 
 def plot_landscape2(df, title, models, exp, party_codes, colors_models, colors_parties, exp_var, x_pts=None, y_pts=None, signs=[1, 1], pca_model=None, show=True):
@@ -362,8 +364,7 @@ def do_PCA(df, models, party_codes, pca_model=None, n_components=2):
     return pca_df, pca_model
 
 def make_landscape_plot(pca_df, title, models, exp, party_codes, colors_models, colors_parties, exp_var, x_pts=None, y_pts=None, signs=[1, 1], show=True, xlim=None, ylim=None):
-    """
-    if exp == "NL":
+    if exp == "ES":
         colors_parties = [
         '#E00000',  # Replaces Indigo
         '#0CB54F',  # Forest Green
@@ -383,8 +384,8 @@ def make_landscape_plot(pca_df, title, models, exp, party_codes, colors_models, 
     else:
         colors_parties = ['#D91A39','#3C79C1','#0A8E3E','#18295E','#FC9A2B','#85C046','#B21D62','#064B2F','#701C44','#F75822']
     
-    colors_models = ['#4682B4', '#87CEEB', '#1E90FF','#000080']
-    """
+    colors_models = ['#BC77B4', '#9342A7', '#B5AAC5', '#4520AD', '#4682B4','#000080','#1E90FF'] 
+
     print(colors_parties)
     print(colors_models)
     colors = colors_parties + colors_models
@@ -445,7 +446,6 @@ def make_landscape_plot(pca_df, title, models, exp, party_codes, colors_models, 
         plt.show()
     plt.close()
 
-"""
 # def make_landscape_plot2(...):
 #     # … all your setup up to the scatter loop …
 #     fig, ax = plt.subplots(figsize=(13,13))
@@ -496,10 +496,8 @@ def make_landscape_plot(pca_df, title, models, exp, party_codes, colors_models, 
 #     plt.savefig(...)
 #     if show: plt.show()
 #     plt.close()
-# """
+# 
 
-
-"""
 def plot_landscape(df, title, models, exp, x_pts=None, y_pts=None):
     '''
     given the df consisting of the votes of party and the votes of each of them models, we apply PCA do compress the vectors into 2-dimensions,
@@ -586,7 +584,6 @@ def plot_landscape(df, title, models, exp, x_pts=None, y_pts=None):
     plt.show()
     
     return pca_df
-"""
 
 def violinplot(certainty_vals, labels, colors, exp_var, fname):
     '''
@@ -700,3 +697,4 @@ def plot_heatmap(fname, positive_data, negative_data, party_codes, models, exp_v
     pio.write_image(fig, f'{results_latex_folder}/{fname}_{exp_var}.png', format='png')
     fig.show()
     #pio.write_image(fig, 'Results/plots/heatmap_plot.pdf', format='pdf')
+"""

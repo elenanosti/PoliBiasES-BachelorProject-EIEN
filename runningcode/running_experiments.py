@@ -492,7 +492,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     
 
     if DEBUG and small_data_size == 200 and exp_type == "ideology":
-        update_model_summary(model_shortname, prompt_no, prompt_template_no, replace_start, result_df)
+        update_model_summary(model_shortname, prompt_no, prompt_template_no, replace_start, result_df, exp_type)
      
     if exp_type == "ideology": 
         colname = f"{model_shortname}_vote"

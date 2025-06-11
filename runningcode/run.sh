@@ -38,10 +38,10 @@ for model in "${MODELS[@]}"; do
           --exp=ide \
           --model="$model" \
           --prompt="$prompt" \
-          --replace="$replace" \
+          #--replace="$replace" \
           --debug=1 \
           --datasize=200
-      done
+      #done
     done
   done
 done

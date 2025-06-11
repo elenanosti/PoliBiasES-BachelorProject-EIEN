@@ -601,4 +601,3 @@ def plot_heatmap(fname, positive_data, negative_data, party_codes, models, exp_v
     pio.write_image(fig, f'{results_latex_folder}/{fname}_{exp_var}.png', format='png')
     fig.show()
     #pio.write_image(fig, 'Results/plots/heatmap_plot.pdf', format='pdf')
-"""

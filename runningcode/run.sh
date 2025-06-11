@@ -5,8 +5,8 @@
 #SBATCH --time=0-00:15:00
 
 # === NEW: Set cache directory to scratch space ===
-export HF_HOME=/var/scratch/eei440/hf_cache
-mkdir -p "$HF_HOME"
+export HF_HOME=/local-ssd/$USER/hf_cache
+mkdir -p /local-ssd/$USER/hf_cache
 # === END: Set cache directory to scratch space ===E
 
 

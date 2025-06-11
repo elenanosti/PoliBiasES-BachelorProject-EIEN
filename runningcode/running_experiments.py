@@ -5,6 +5,12 @@ from transformers import T5Tokenizer, T5ForConditionalGeneration
 from transformers import GemmaTokenizer
 from transformers import set_seed
 
+# === NEW: Set cache directory to scratch space ===
+export HF_HOME=/var/scratch/eei440/hf_cache
+mkdir -p $HF_HOME 
+# === END: Set cache directory to scratch space ===
+
+
 import torch
 import os, sys
 #import torch.nn.functional as F
@@ -16,6 +22,22 @@ from utils import get_dataset, update_model_summary
 from definitions import *
 from model_paths import MODEL_PATHS
 import json
+
+import os
+
+# === NEW: Import login function from huggingface_hub ===
+from huggingface_hub import login
+
+# Set HF cache to scratch
+os.environ["HF_HOME"] = "/var/scratch/eei440/hf_cache"
+os.makedirs(os.environ["HF_HOME"], exist_ok=True)
+
+# Log in using your token (already saved in file)
+with open("hf_accesstoken.txt") as f:
+    token = f.read().strip()
+
+login(token=token)
+# === END: Import login function from huggingface_hub ===
 
 def extract_probs(tokens, probs):
     '''
@@ -94,27 +116,40 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
 
     model_path = MODEL_PATHS[model_name]
 
-    # Decide if using the computer’s (CPU) or cuda (GPU)
+    # Set device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
-    
-    # Clean up the GPU’s memory before starting
-    torch.cuda.empty_cache()
-    start = time.time() # This records the starting time, so later you can see how long it took to load the model
+
+    # Optional: Clear GPU memory (if using CUDA)
     if torch.cuda.is_available():
-        gpu_name = torch.cuda.get_device_name()
-        torch_dtype = torch.bfloat16 if "H100" in gpu_name else torch.float16
+        torch.cuda.empty_cache()
+
+    # Determine torch dtype
+    if torch.cuda.is_available():
+        try:
+            gpu_name = torch.cuda.get_device_name()
+            torch_dtype = torch.bfloat16 if "H100" in gpu_name else torch.float16
+        except:
+            torch_dtype = torch.float16
     else:
-        torch_dtype = torch.float32  # safest fallback for CPU-only environments
-    
-        
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
-    model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch_dtype, low_cpu_mem_usage=True, token=access_token if access_token != "" else None)
-    
-    print(f"Model loaded in {time.time() - start:.2f} seconds")
-    
-    model = model.to(device)
-    print("model on GPU")
+        torch_dtype = torch.float32
+
+    # Load model + tokenizer with token
+    start = time.time()
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(model_path, token=access_token)
+        model = AutoModelForCausalLM.from_pretrained(
+            model_path,
+            torch_dtype=torch_dtype,
+            low_cpu_mem_usage=True,
+            token=access_token
+        )
+        model = model.to(device)
+        print(f"Model loaded in {time.time() - start:.2f} seconds and moved to {device}")
+    except Exception as e:
+        print(f"Failed to load model {model_name}: {e}")
+        exit(1)
+
 
     # get the motions
     df = get_dataset(DEBUG, small_data_size, variant=0, exp=exp_type, lang=lang, replace_start=replace_start) # Defined in utils.py

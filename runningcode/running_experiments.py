@@ -83,14 +83,14 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
         else:
             access_tokens = {"default": content}
 
-# Pick token based on model name: Pick the right password (token) for the model you want to use
-if "llama" in model_name.lower():
-    access_token = access_tokens.get("llama", "")
-else:
-    access_token = access_tokens.get("default", "")
-    
-    if model_name not in MODEL_PATHS:
-        raise ValueError(f"Unknown model: {model_name}")
+    # Pick token based on model name: Pick the right password (token) for the model you want to use
+    if "llama" in model_name.lower():
+        access_token = access_tokens.get("llama", "")
+    else:
+        access_token = access_tokens.get("default", "")
+        
+        if model_name not in MODEL_PATHS:
+            raise ValueError(f"Unknown model: {model_name}")
 
     model_path = MODEL_PATHS[model_name]
 

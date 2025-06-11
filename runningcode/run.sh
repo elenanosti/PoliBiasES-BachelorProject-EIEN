@@ -8,13 +8,13 @@
 module purge
 module use -a /fp/projects01/ec30/software/easybuild/modules/all/
 
-module load nlpl-pytorch/2.1.2-foss-2022b-cuda-12.0.0-Python-3.10.8
-module load nlpl-transformers/4.47.1-foss-2022b-Python-3.10.8
-module load nlpl-tokenizers/0.21.0-foss-2022b-Python-3.10.8
-module load nlpl-accelerate/0.34.2-foss-2022b-Python-3.10.8
-module load nlpl-sentencepiece/0.1.99-foss-2022b-Python-3.10.8
-module load nlpl-llmtools/06-foss-2022b-Python-3.10.8
-module load JupyterLab/4.0.3-GCCcore-12.2.0
+# module load nlpl-pytorch/2.1.2-foss-2022b-cuda-12.0.0-Python-3.10.8
+# module load nlpl-transformers/4.47.1-foss-2022b-Python-3.10.8
+# module load nlpl-tokenizers/0.21.0-foss-2022b-Python-3.10.8
+# module load nlpl-accelerate/0.34.2-foss-2022b-Python-3.10.8
+# module load nlpl-sentencepiece/0.1.99-foss-2022b-Python-3.10.8
+# module load nlpl-llmtools/06-foss-2022b-Python-3.10.8
+# module load JupyterLab/4.0.3-GCCcore-12.2.0
 
 # -------------------- PARAMETERS --------------------
 MODELS=("Llama-3-8B-instruct" "Llama-3-70B-Instruct" "Mistral-7B-instruct" "Gemma-2-9B-instruct" "Falcon3-7B-instruct" "deepseek-llm-7b-base")

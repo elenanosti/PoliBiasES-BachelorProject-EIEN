@@ -171,7 +171,6 @@ else:
 
     else:
         print("unknown prompt")
-        return
     
     temp_high = 1 # Model answers can be creative/random (temperature = 1, fully random).
     temp_low = 0.0000001 # # Model answers are deterministic (temperature = 0, no randomness).

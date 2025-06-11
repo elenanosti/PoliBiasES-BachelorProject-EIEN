@@ -141,7 +141,12 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
 
 
     # get the motions
-    df = get_dataset(DEBUG, small_data_size, variant=0, exp=exp_type, lang=lang, replace_start=replace_start) # Defined in utils.py
+    df = get_dataset(DEBUG, small_data_size, variant=0, exp=exp_type, lang=lang, replace_start=replace_start)
+    result_df = df[['id', 'initiative']].copy()  # Ensure they both have the same rows!
+
+    df['initiative'] = df['initiative'].astype(str).str.strip() # Ensure initiative is a string and stripped of whitespace
+    result_df['initiative'] = result_df['initiative'].astype(str).str.strip() 
+
     
     # Builds a filename for saving your results, so you always know what experiment they belong to
     prompt_suffix = f"prompt={prompt_no}"+(f",REM={replace_start}" if replace_start > 0 else "")+(f",TEMPLATE={prompt_template_no}" if prompt_template_no > 0 else "")
@@ -246,11 +251,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     
     for i, (x, id) in enumerate(zip(df['initiative'], df['id'])):
         if f'{model_shortname}{suffix}_vote' in result_df.columns:
-            mask = result_df['initiative'] == x
-            print("[DEBUG] Initiatives matching?")
-            print("Current:", repr(x))
-            print("Sample from result_df:", repr(result_df['initiative'].iloc[0]))
-            print("Matches found:", mask.sum())
+            mask = result_df['initiative'] == x.strip()
             if mask.any() and not result_df.loc[mask][f'{model_shortname}{suffix}_vote'].isna().any():
                 print("No prompt needed")
                 print("initiative=", x)

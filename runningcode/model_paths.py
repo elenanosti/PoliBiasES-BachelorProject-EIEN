@@ -3,10 +3,11 @@ from definitions import (
 )
 
 MODEL_PATHS = {
-    "mistral": "mistralai/Mistral-7B-Instruct-v0.2",
-    # "gemma": "google/gemma-2-9b-it",
-    # "falcon": "tiiuae/Falcon3-7B-Instruct",
-    # "llama3": "meta-llama/Meta-Llama-3-8B-Instruct",
-    # "deepseek": "deepseek-ai/deepseek-llm-7b-chat",
-    # "llama70": "meta-llama/Meta-Llama-3-70B-Instruct"
+    "Llama-3-8B-instruct": "meta-llama/Meta-Llama-3-8B-Instruct",
+    "Llama-3-70B-Instruct": "meta-llama/Meta-Llama-3-70B-Instruct",
+    "Mistral-7B-instruct": "mistralai/Mistral-7B-Instruct-v0.1",
+    "Gemma-2-9B-instruct": "google/gemma-2b-it",  # No official 9B; this is a placeholder if needed
+    "Falcon3-7B-instruct": "tiiuae/falcon-7b-instruct",
+    "deepseek-llm-7b-chat": "deepseek-ai/deepseek-llm-7b-chat",
 }
+

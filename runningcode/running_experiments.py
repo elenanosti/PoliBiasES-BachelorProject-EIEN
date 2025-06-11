@@ -55,7 +55,9 @@ def extract_probs(tokens, probs):
         elif clean_tok in abstain_synonyms:
             idx = tokens.index(tok)
             abstain_prob += probs[idx]
-    
+    print(f"[DEBUG] Top tokens: {tokens}")
+    print(f"[DEBUG] Top probs: {probs}")
+    print(f"[DEBUG] Probabilities: For={for_prob}, Against={against_prob}, Abstain={abstain_prob}") #DEBUGPRINT
     return for_prob, against_prob, abstain_prob
 
 
@@ -80,7 +82,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
     print("DEBUG:", DEBUG)
     model_shortname = MODEL_SHORTNAMES.get(model_name, model_name.lower().replace("-", "_"))
 
-    
+    print("[DEBUG] Calling set_seeds") #DEBUGPRINT
     set_seeds(RANDOM_SEED) # Defined in definitions.py
     # This means: if you run the experiment again with the same data and settings, you’ll get the same answers
 
@@ -105,6 +107,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
     model_path = MODEL_PATHS[model_name]
 
     # Set device
+    print("[DEBUG] Checking CUDA and dtype...") #DEBUGPRINT
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
@@ -123,6 +126,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
         torch_dtype = torch.float32
 
     # Load model + tokenizer with token
+    print("[DEBUG] Loading model and tokenizer...") #DEBUGPRINT
     start = time.time()
     try:
         tokenizer = AutoTokenizer.from_pretrained(model_path, token=access_token)
@@ -140,6 +144,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
 
 
     # get the motions
+    print("[DEBUG] Loading dataset...") #DEBUGPRINT
     df = get_dataset(DEBUG, small_data_size, variant=0, exp=exp_type, lang=lang)
     result_df = df[['id', 'initiative']].copy()  # Ensure they both have the same rows!
 
@@ -151,7 +156,8 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
     prompt_suffix = f"prompt={prompt_no}" + (f",TEMPLATE={prompt_template_no}" if prompt_template_no > 0 else "")
     debug_suffix = (f'_debug' if DEBUG else '')+(f'{small_data_size}' if DEBUG else '')
     results_file = f"results/{model_shortname}_results_{exp_type}_ES_{prompt_suffix}{debug_suffix}.csv"
-        
+    
+    print(f"[DEBUG] Will save results to: {results_file}") #DEBUGPRINT
     from_text = " de "  # Use Spanish preposition for "from"
 
     # Picks which parties or personas are being asked to vote.
@@ -227,6 +233,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
 
     # Initialize or continue result_df
     if cont < 0 or not os.path.exists(temp_results_path):
+        print("[DEBUG] Creating new result_df") #DEBUGPRINT
         result_df = df[['id', 'initiative']].copy()
         result_df['initiative'] = result_df['initiative'].astype(str).str.strip()
 
@@ -234,6 +241,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
                     f'{model_shortname}_against_prob', f'{model_shortname}_abstain_prob']:
             result_df[col] = pd.NA
     else:
+        print("[DEBUG] Loading previous results from TEMP file") #DEBUGPRINT
         result_df = pd.read_csv(temp_results_path, index_col=0)
 
         # Make sure 'initiative' exists and is aligned
@@ -248,6 +256,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
 
     suffix = ""  # No party suffix for ideology experiment
     
+    print("[DEBUG] Beginning main loop...") #DEBUGPRINT
     for i, (x, id) in enumerate(zip(df['initiative'], df['id'])):
         if f'{model_shortname}{suffix}_vote' in result_df.columns:
             mask = result_df['initiative'] == x.strip()
@@ -257,7 +266,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
                 print(f"{x} {result_df.loc[mask][f'{model_shortname}{suffix}_vote'].iloc[0]}")
                 continue
             
-        print("prompt needed")
+        #print("prompt needed")
 
                 
             # CREATE PROMPT 
@@ -265,6 +274,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
             # party_txt = f'{from_text}{party}' # This is for when doing an entity or persona experiment, where the party is included in the prompt.
             
             # prompt formats from model cards
+        print(f"[DEBUG] Preparing input prompt for ID {id}...") #DEBUGPRINT
         if  model_shortname == 'Llama3-instruct' or model_name == 'Llama3-70B-instruct':
             input_prompt = f"""
             <|begin_of_text|><|start_header_id|>system<|end_header_id|>
@@ -525,7 +535,12 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
             else:
                 print(f"⚠️ ID {id} not found in result_df!")
 
+            print("[DEBUG] Finished prompting, saving row...") #DEBUGPRINT
+            print(result_df.loc[mask, [f'{model_shortname}_vote']]) #DEBUGPRINT
+            print(f"[DEBUG] Wrote vote=... for model '{model_shortname}' at ID {id}")  #DEBUGPRINT
+
             if i % 1 == 0:
+                print("[DEBUG] Saving temp CSV and committing to Git...") #DEBUGPRINT
                 temp_file = results_file.replace(".csv", "_TEMP.csv")
     
                 # 1. Save temporary file
@@ -545,8 +560,11 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
     
     #save the df
     #print(result_df)
+    print("[DEBUG] Saving final results...") #DEBUGPRINT
     result_df.to_csv(results_file.replace(".csv", "_TEMP.csv"), encoding='utf-8-sig', index=True)
     result_df.to_csv(results_file, encoding='utf-8-sig', index=True)
+    print(f"[DEBUG] Final saved file: {results_file} with {len(result_df)} rows")
+    print("[DEBUG] Done with run_experiment") #DEBUGPRINT
     
 
     if DEBUG and small_data_size == 200 and exp_type == "ideology":
@@ -556,13 +574,14 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
         colname = f"{model_shortname}_vote"
         if colname in result_df.columns:
             print(result_df[colname].value_counts() / len(result_df))
-
         else:
             print(f"⚠️ Warning: Column '{colname}' not found in model_name.")
 
-    
+
     elapsed_time = time.time() - start
-    print(f"Experiment time {int(elapsed_time // 3600)}h {int((elapsed_time % 3600) // 60)}m {elapsed_time % 60:.2f}s")    
+    print(f"Experiment time {int(elapsed_time // 3600)}h {int((elapsed_time % 3600) // 60)}m {elapsed_time % 60:.2f}s")  
+
+
     
 MODEL_SHORTNAMES = {
         "Falcon3-7B-instruct": "falcon3_7b",

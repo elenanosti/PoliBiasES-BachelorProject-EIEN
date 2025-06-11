@@ -491,6 +491,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
                     f'{model_shortname}_against_prob', 
                     f'{model_shortname}_abstain_prob']
                 ] = [vote_value, for_prob, against_prob, abstain_prob]
+                print(result_df.loc[mask, [f'{model_shortname}_vote']])
 
                 print(result_df[[f"{model_shortname}_vote"]].value_counts(dropna=False))
 
@@ -528,7 +529,8 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     if exp_type == "ideology": 
         colname = f"{model_shortname}_vote"
         if colname in result_df.columns:
-            print(result_df[colname].value_counts() / len(model_name))
+            print(result_df[colname].value_counts() / len(result_df))
+
         else:
             print(f"⚠️ Warning: Column '{colname}' not found in model_name.")
 

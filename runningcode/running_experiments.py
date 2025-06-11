@@ -231,11 +231,11 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     suffix = ""  # No party suffix for ideology experiment
     
     for x, id in zip(df['initiative'], df['id']):
-        if f'{model_name}{suffix}_vote' in result_df.columns:
-            if not result_df.loc[result_df['id'] == id][f'{model_name}{suffix}_vote'].isna().any():
+        if f'{model_shortname}{suffix}_vote' in result_df.columns:
+            if not result_df.loc[result_df['id'] == id][f'{model_shortname}{suffix}_vote'].isna().any():
                 print("No prompt needed")
                 print("id=", id)
-                print(f"{id} {result_df.loc[result_df['id'] == id][f'{model_name}{suffix}_vote'].iloc[0]}")
+                print(f"{id} {result_df.loc[result_df['id'] == id][f'{model_shortname}{suffix}_vote'].iloc[0]}")
                 continue
             
         print("prompt needed")

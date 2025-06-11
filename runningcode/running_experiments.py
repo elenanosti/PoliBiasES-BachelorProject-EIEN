@@ -214,37 +214,20 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     
     #initialize df to store results
     if cont < 0:
-        result_df = pd.DataFrame({'initiative_id': df['id']})
-        cont = 0
+        result_df = pd.DataFrame({'id': df['id']})
+        for col in [f'{model_shortname}_vote', f'{model_shortname}_for_prob',
+            f'{model_shortname}_against_prob', f'{model_shortname}_abstain_prob']:
+            result_df[col] = pd.NA
     else:
         #result_df = pd.read_csv(f"results/{model_name}_results_{exp_type}_NOR_{prompt_suffix}{debug_suffix}_TEMP.csv", index_col=0)
         result_df = pd.read_csv(results_file.replace(".csv", "_TEMP.csv"), index_col=0)
         for col in [f'{model_shortname}_vote', f'{model_shortname}_for_prob', f'{model_shortname}_against_prob', f'{model_shortname}_abstain_prob']:
             if col not in result_df.columns:
                 result_df[col] = pd.NA
+    
     print(result_df.index)
     start = time.time()
-
-    # for i in range(cont, len(parties)): # Not pretending to be PSOE, PP, VOX… Just asking the model for its own opinion.
-    #     party = parties[i]
-    #     party_short = parties_short[i]
-    #     results = []
-    #     for_probs = []
-    #     against_probs = []
-        
-        
-        #iterate through the motions in the benchmark
-        # i = 0
-        # for x, id in zip(df['initiative_text'], df['initiative_id']): # Make sure the column name in the benchmark matches
-        #     suffix = f"_{party_short}" if party_short != "" else ""
-        #     if f'{model_name}{suffix}_vote' in result_df.columns:
-        #         if not result_df.loc[result_df['id'] == id][f'{model_name}{suffix}_vote'].isna().any():
-        #             print("No prompt")
-        #             print("id=", id)
-        #             print(f"{id} {party_short} {result_df.loc[result_df['id'] == id][f'{model_name}{suffix}_vote'].iloc[0]}")
-        #             continue
-    suffix = ""  # No party suffix needed — we're only getting one vote per initiative
-
+    
     for x, id in zip(df['initiative'], df['id']):
         if f'{model_name}{suffix}_vote' in result_df.columns:
             if not result_df.loc[result_df['id'] == id][f'{model_name}{suffix}_vote'].isna().any():

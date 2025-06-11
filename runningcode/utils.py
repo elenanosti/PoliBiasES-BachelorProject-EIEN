@@ -125,9 +125,8 @@ def update_model_summary(model_name, prompt_no, prompt_template_no, result_df, e
     mask = (
         (summary_df["model"] == model_name) &
         (summary_df["prompt"] == prompt_no) &
-        (summary_df["prompt_template"] == prompt_template_no) &
-        (summary_df["jb"] == jb)
-    )
+        (summary_df["prompt_template"] == prompt_template_no)
+        )
     
     matched_indices = summary_df.index[mask]  # All row indices that match
 

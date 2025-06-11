@@ -146,7 +146,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     # Builds a filename for saving your results, so you always know what experiment they belong to
     prompt_suffix = f"prompt={prompt_no}"+(f",REM={replace_start}" if replace_start > 0 else "")+(f",TEMPLATE={prompt_template_no}" if prompt_template_no > 0 else "")
     debug_suffix = (f'_debug' if DEBUG else '')+(f'{small_data_size}' if DEBUG else '')
-    results_file = f"results/{model_name}_results_{exp_type}_ES_{prompt_suffix}{debug_suffix}.csv"
+    results_file = f"results/{model_shortname}_results_{exp_type}_ES_{prompt_suffix}{debug_suffix}.csv"
         
     from_text = " de "  # Use Spanish preposition for "from"
 
@@ -492,14 +492,14 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     
 
     if DEBUG and small_data_size == 200 and exp_type == "ideology":
-        update_model_summary(model_name, prompt_no, prompt_template_no, replace_start, result_df)
+        update_model_summary(model_shortname, prompt_no, prompt_template_no, replace_start, result_df)
      
     if exp_type == "ideology": 
         colname = f"{model_shortname}_vote"
         if colname in result_df.columns:
-            print(result_df[colname].value_counts() / len(result_df))
+            print(result_df[colname].value_counts() / len(model_name))
         else:
-            print(f"⚠️ Warning: Column '{colname}' not found in result_df.")
+            print(f"⚠️ Warning: Column '{colname}' not found in model_name.")
 
     
     elapsed_time = time.time() - start

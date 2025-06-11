@@ -466,12 +466,24 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
                 print(f"Generated: {generated_text}, For: {for_prob}, Against: {against_prob}, Abstain: {abstain_prob}")
                 print(f"Updating ID: {id}, Matches found: {mask.sum()}")
 
+                # Map to integer vote
+                if generated_text == 'a favor':
+                    vote_value = 1
+                elif generated_text == 'en contra':
+                    vote_value = -1
+                elif generated_text == 'abstención':
+                    vote_value = 0
+                else:
+                    vote_value = None  # Or np.nan
+
                 result_df.loc[mask, 
                     [f'{model_shortname}_vote', 
                     f'{model_shortname}_for_prob', 
                     f'{model_shortname}_against_prob', 
                     f'{model_shortname}_abstain_prob']
                 ] = [generated_text, for_prob, against_prob, abstain_prob]
+                print(result_df[[f'{model_shortname}_vote']].dropna())
+
             else:
                 print(f"⚠️ ID {id} not found in result_df!")
 

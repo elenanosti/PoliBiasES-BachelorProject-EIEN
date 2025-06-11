@@ -70,13 +70,12 @@ def set_seeds(seed): #Balatro: same randomness for recreation purposes
 
 
 
-def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, DEBUG=False, small_data_size=20, prompt_template_no=0, lang="NO"):
+def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small_data_size=20, prompt_template_no=0, lang="NO"):
     print("exp_type:", exp_type)
     print("model_name:", model_name)
     print("prompt_no:", prompt_no)
     print("prompt_template_no:", prompt_template_no)
     print("lang:", lang)
-    print("replace start:", replace_start)
     print("continue:", cont)
     print("DEBUG:", DEBUG)
     model_shortname = MODEL_SHORTNAMES.get(model_name, model_name.lower().replace("-", "_"))
@@ -141,7 +140,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
 
 
     # get the motions
-    df = get_dataset(DEBUG, small_data_size, variant=0, exp=exp_type, lang=lang, replace_start=replace_start)
+    df = get_dataset(DEBUG, small_data_size, variant=0, exp=exp_type, lang=lang)
     result_df = df[['id', 'initiative']].copy()  # Ensure they both have the same rows!
 
     df['initiative'] = df['initiative'].astype(str).str.strip() # Ensure initiative is a string and stripped of whitespace
@@ -149,7 +148,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
 
     
     # Builds a filename for saving your results, so you always know what experiment they belong to
-    prompt_suffix = f"prompt={prompt_no}"+(f",REM={replace_start}" if replace_start > 0 else "")+(f",TEMPLATE={prompt_template_no}" if prompt_template_no > 0 else "")
+    prompt_suffix = f"prompt={prompt_no}" + (f",TEMPLATE={prompt_template_no}" if prompt_template_no > 0 else "")
     debug_suffix = (f'_debug' if DEBUG else '')+(f'{small_data_size}' if DEBUG else '')
     results_file = f"results/{model_shortname}_results_{exp_type}_ES_{prompt_suffix}{debug_suffix}.csv"
         
@@ -219,30 +218,30 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     if DEBUG and len(parties)>3:
         parties = parties[:3]
     
-    #initialize df to store results
-    if cont < 0:
-        result_df = df[['id', 'initiative']].copy()  # Ensures you keep the ID and initiative column 
+        #initialize df to store results
+        # Ensure all initiatives are strings and stripped
+    df['initiative'] = df['initiative'].astype(str).str.strip()
+
+    # Results CSV path
+    temp_results_path = results_file.replace(".csv", "_TEMP.csv")
+
+    # Initialize or continue result_df
+    if cont < 0 or not os.path.exists(temp_results_path):
+        result_df = df[['id', 'initiative']].copy()
+        result_df['initiative'] = result_df['initiative'].astype(str).str.strip()
+
         for col in [f'{model_shortname}_vote', f'{model_shortname}_for_prob',
                     f'{model_shortname}_against_prob', f'{model_shortname}_abstain_prob']:
             result_df[col] = pd.NA
-
-        cont = 0
     else:
-        #result_df = pd.read_csv(f"results/{model_name}_results_{exp_type}_NOR_{prompt_suffix}{debug_suffix}_TEMP.csv", index_col=0)
-        result_df = pd.read_csv(results_file.replace(".csv", "_TEMP.csv"), index_col=0)
-        result_df["id"] = result_df["id"].astype(df["id"].dtype)  # ← 👈 INSERT THIS LINE HERE
+        result_df = pd.read_csv(temp_results_path, index_col=0)
 
-        for col in [f'{model_shortname}_vote', f'{model_shortname}_for_prob', f'{model_shortname}_against_prob', f'{model_shortname}_abstain_prob']:
-            if col not in result_df.columns:
-                result_df[col] = pd.NA
-    required_cols = [f'{model_shortname}_vote', f'{model_shortname}_for_prob',
-                 f'{model_shortname}_against_prob', f'{model_shortname}_abstain_prob']
+        # Make sure 'initiative' exists and is aligned
+        if 'initiative' not in result_df.columns:
+            raise ValueError("Missing 'initiative' column in result_df!")
 
-    for col in required_cols:
-        if col not in result_df.columns:
-            print(f"⚠️ Column '{col}' missing in result_df, creating it.")
-            result_df[col] = pd.NA
-
+        result_df['initiative'] = result_df['initiative'].astype(str).str.strip()
+        df['initiative'] = df['initiative'].astype(str).str.strip()
     
     print(result_df.index)
     start = time.time()
@@ -259,10 +258,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
                 continue
             
         print("prompt needed")
-            
-        if replace_start == 1:
-            for replace_from, replace_to in replace_from_to:
-                x = x.replace(replace_from, replace_to)
+
                 
             # CREATE PROMPT 
 
@@ -556,7 +552,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     
 
     if DEBUG and small_data_size == 200 and exp_type == "ideology":
-        update_model_summary(model_shortname, prompt_no, prompt_template_no, replace_start, result_df, exp_type)
+        update_model_summary(model_shortname, prompt_no, prompt_template_no, result_df, exp_type)
      
     if exp_type == "ideology": 
         colname = f"{model_shortname}_vote"
@@ -614,7 +610,6 @@ if __name__ == "__main__":
     prompt_no = args.prompt
     prompt_template_no = args.template
     DEBUG = bool(args.debug)
-    replace_start = args.replace
     cont = args.cont
     small_data_size = args.datasize
 
@@ -624,4 +619,4 @@ if __name__ == "__main__":
 
     lang = "ES"
     
-    run_experiment(exp_type, model_name, prompt_no, replace_start, cont, DEBUG, prompt_template_no=prompt_template_no, small_data_size=small_data_size, lang=lang)
+    run_experiment(exp_type, model_name, prompt_no, cont, DEBUG, prompt_template_no=prompt_template_no, small_data_size=small_data_size, lang=lang)

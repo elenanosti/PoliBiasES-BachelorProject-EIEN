@@ -21,7 +21,7 @@ variant:
 3: All
 """
 
-def get_dataset(DEBUG, small_data_size = 20, variant=0, exp="ideology", lang="ES", replace_start=0, drop_motiontypes=False):
+def get_dataset(DEBUG, small_data_size = 20, variant=0, exp="ideology", lang="ES", drop_motiontypes=False):
     cols = [] # Set the correct columns depending on the variant (adjusted to benchmark column names)
 
     # CHOOSING THE DATASET BASED ON THE EXPERIMENT TYPE (exp) AND VARIANT
@@ -65,7 +65,7 @@ def get_dataset(DEBUG, small_data_size = 20, variant=0, exp="ideology", lang="ES
     return df
 
 
-def update_model_summary(model_name, prompt_no, prompt_template_no, replace_start, result_df, exp, jb=0):
+def update_model_summary(model_name, prompt_no, prompt_template_no, result_df, exp, jb=0):
  
     # Compute the vote distribution for the run
     # Safely check column before using it
@@ -86,7 +86,6 @@ def update_model_summary(model_name, prompt_no, prompt_template_no, replace_star
         "model": model_name,
         "prompt": prompt_no,
         "prompt_template": prompt_template_no,
-        "replace": replace_start,
         "jb": jb,
     }
     
@@ -120,13 +119,13 @@ def update_model_summary(model_name, prompt_no, prompt_template_no, replace_star
             summary_df[col] = None
 
     print("old row")
+
     print(row)
     # Identify a row matching the current parameters (model, prompt, replace)
     mask = (
         (summary_df["model"] == model_name) &
         (summary_df["prompt"] == prompt_no) &
         (summary_df["prompt_template"] == prompt_template_no) &
-        (summary_df["replace"] == replace_start) &
         (summary_df["jb"] == jb)
     )
     
@@ -215,7 +214,7 @@ def update_model_summary(model_name, prompt_no, prompt_template_no, replace_star
     print("after drop duplicates:", len(df))
 
 
-def update_model_summary(model_name, prompt_no, prompt_template_no, replace_start, result_df, jb=0):    
+def update_model_summary(model_name, prompt_no, prompt_template_no, result_df, jb=0):    
     # Compute the vote distribution for the run
     vote_series = result_df[f"{model_name}_vote"].value_counts() / len(result_df)
     vote_distribution = vote_series.to_dict()
@@ -227,7 +226,6 @@ def update_model_summary(model_name, prompt_no, prompt_template_no, replace_star
         "model": model_name,
         "prompt": prompt_no,
         "prompt_template": prompt_template_no,
-        "replace": replace_start,
         "jb": jb,
     }
     
@@ -267,7 +265,6 @@ def update_model_summary(model_name, prompt_no, prompt_template_no, replace_star
         (summary_df["model"] == model_name) &
         (summary_df["prompt"] == prompt_no) &
         (summary_df["prompt_template"] == prompt_template_no) &
-        (summary_df["replace"] == replace_start) &
         (summary_df["jb"] == jb)
     )
     

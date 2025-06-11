@@ -246,11 +246,11 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
     
     for i, (x, id) in enumerate(zip(df['initiative'], df['id'])):
         if f'{model_shortname}{suffix}_vote' in result_df.columns:
+            mask = result_df['initiative'] == x
             print("[DEBUG] Initiatives matching?")
             print("Current:", repr(x))
             print("Sample from result_df:", repr(result_df['initiative'].iloc[0]))
             print("Matches found:", mask.sum())
-            mask = result_df['initiative'] == x
             if mask.any() and not result_df.loc[mask][f'{model_shortname}{suffix}_vote'].isna().any():
                 print("No prompt needed")
                 print("initiative=", x)

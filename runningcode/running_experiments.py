@@ -251,7 +251,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
             
             # prompt formats from model cards
             
-            if  model_name == 'Llama3-instruct' or model_name == 'Llama3-70B-instruct':
+            if  model_shortname == 'Llama3-instruct' or model_name == 'Llama3-70B-instruct':
                 input_prompt = f"""
                 <|begin_of_text|><|start_header_id|>system<|end_header_id|>
                 {system_prompt_1}"{party_txt}"{system_prompt_2}<|eot_id|>

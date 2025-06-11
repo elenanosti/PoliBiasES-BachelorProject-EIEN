@@ -5,11 +5,6 @@ from transformers import T5Tokenizer, T5ForConditionalGeneration
 from transformers import GemmaTokenizer
 from transformers import set_seed
 
-# === NEW: Set cache directory to scratch space ===
-export HF_HOME=/var/scratch/eei440/hf_cache
-mkdir -p $HF_HOME 
-# === END: Set cache directory to scratch space ===
-
 
 import torch
 import os, sys

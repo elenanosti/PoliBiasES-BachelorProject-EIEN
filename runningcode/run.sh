@@ -10,7 +10,7 @@ module use -a /fp/projects01/ec30/software/easybuild/modules/all/
 
 # === NEW: Set cache directory to scratch space ===
 export HF_HOME=/var/scratch/eei440/hf_cache
-mkdir -p $HF_HOME 
+mkdir -p $HF_HOME
 # === END: Set cache directory to scratch space ===E
 
 # module load nlpl-pytorch/2.1.2-foss-2022b-cuda-12.0.0-Python-3.10.8

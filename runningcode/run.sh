@@ -1,13 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=main 
 #SBATCH --account=eei440                
-#SBATCH --nodes=1                      
-#SBATCH --ntasks-per-node=1          
-#SBATCH --mem=16G             
-#SBATCH --time=0-03:00:00        
-#SBATCH --output=out/%x_%j.out 
-# #SBATCH --partition=gpu             # Uncomment if needed
-# #SBATCH --exclude=gpu-14            # Optional, only if you confirm this node exists
+#SBATCH --nodes=1                                        
+#SBATCH --time=0-03:00:00
 
 # -------------------- MODULE SETUP --------------------
 module purge

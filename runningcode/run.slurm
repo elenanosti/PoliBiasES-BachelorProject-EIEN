@@ -7,7 +7,6 @@
 #SBATCH --time=0-03:00:00        
 #SBATCH --gpus=1
 #SBATCH --output=out/%x_%j.out 
-#SBATCH --exclude=gpu-14
 
 # Purge existing modules
 module purge

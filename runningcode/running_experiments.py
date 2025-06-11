@@ -439,6 +439,8 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
             else:
                 vote_text = 'otro'
                 vote_value = None  # Optional: np.nan
+            print(f"[DEBUG] Generated text: '{generated_text}' → vote_text: '{vote_text}', vote_value: {vote_value}")
+
 
             print(f"'{id}', raw: '{generated_text}', interpreted as: {vote_value}")
 
@@ -478,15 +480,15 @@ def run_experiment(exp_type, model_name, prompt_no=1, replace_start=0, cont=0, D
                 print(f"Generated: {generated_text}, For: {for_prob}, Against: {against_prob}, Abstain: {abstain_prob}")
                 print(f"Updating ID: {id}, Matches found: {mask.sum()}")
 
-                # Map to integer vote
-                if generated_text == 'a favor':
-                    vote_value = 1
-                elif generated_text == 'en contra':
-                    vote_value = -1
-                elif generated_text == 'abstención':
-                    vote_value = 0
-                else:
-                    vote_value = None  # Or np.nan
+                # # Map to integer vote
+                # if generated_text == 'a favor':
+                #     vote_value = 1
+                # elif generated_text == 'en contra':
+                #     vote_value = -1
+                # elif generated_text == 'abstención':
+                #     vote_value = 0
+                # else:
+                #     vote_value = None  # Or np.nan
 
                 result_df.loc[mask, 
                     [f'{model_shortname}_vote', 

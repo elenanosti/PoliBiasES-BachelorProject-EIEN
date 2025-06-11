@@ -155,7 +155,7 @@ def update_model_summary(model_name, prompt_no, prompt_template_no, result_df, e
         print(new_row)
         summary_df = pd.concat([summary_df, pd.DataFrame([new_row])], ignore_index=True)
 
-    summary_df.sort_values(by=["model", "prompt", "prompt_template", "replace", "jb"], inplace=True)
+    summary_df.sort_values(by=["model", "prompt", "prompt_template"], inplace=True)
     
     # Save the updated DataFrame back to the CSV file.
     summary_df.to_csv(summary_file, encoding='utf-8-sig', index=False)

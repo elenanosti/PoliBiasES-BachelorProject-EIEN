@@ -246,12 +246,18 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
 
     suffix = ""  # No party suffix for ideology experiment
     
-    for i, (x, id) in enumerate(zip(df['initiative'], df['id'])):
-        if f'{model_shortname}{suffix}_vote' in result_df.columns:
-            mask = (result_df['initiative'] == x.strip()) & (result_df['id'] == id)
-            if mask.any() and result_df.loc[mask, f'{model_shortname}_vote'].notna().all():
-                continue
-            
+    if f'{model_shortname}{suffix}_vote' in result_df.columns:
+        mask = (result_df['initiative'] == x.strip()) & (result_df['id'] == id)
+        # Only skip if row is found and vote is NOT NaN (i.e., it's already done)
+        if mask.any():
+            vote_val = result_df.loc[mask, f'{model_shortname}{suffix}_vote'].values[0]
+            if pd.notna(vote_val):
+                print("[DEBUG] Skipping already voted item")
+                print("initiative=", x)
+                print("id=", id)
+                print("vote=", vote_val)
+                pass
+
         #print("prompt needed")
 
 ########################################

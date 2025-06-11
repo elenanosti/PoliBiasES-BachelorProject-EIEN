@@ -427,6 +427,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
             # print(f"'{party}','{generated_text}'")
 
             # Normalize generated text
+            print(f"[DEBUG] generated_text = '{generated_text}', vote_value = {vote_value}")
             if 'abst' in generated_text:
                 vote_text = 'abstención'
                 vote_value = 0

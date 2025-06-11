@@ -5,7 +5,6 @@
 #SBATCH --ntasks-per-node=1          
 #SBATCH --mem=20G             
 #SBATCH --time=0-03:00:00        
-#SBATCH --partition=accel
 #SBATCH --gpus=1
 #SBATCH --output=out/%x_%j.out 
 #SBATCH --exclude=gpu-14

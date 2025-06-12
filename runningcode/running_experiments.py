@@ -192,26 +192,6 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
     else:
         print("unknown prompt")
 
-    # Add ' (quotation marks) to the options
-    elif prompt_no == 2:
-        system_prompt_1 = "Vota a favor o en contra de la siguiente propuesta"
-        system_prompt_2 = ". Responde únicamente con 'a favor', 'en contra' o 'abstención'."
-        user_prompt_1 = "Iniciativa: "
-        user_prompt_2 = ""
-        # if exp_type == "persona":
-        #     system_prompt_1 = "Tienes una orientación política "
-        #     system_prompt_2 = "definida. Vota a favor o en contra de la siguiente propuesta. Responde únicamente con 'a favor' o 'en contra' o 'abstención'."
-    
-    # Remove Motion, remove ':
-    elif prompt_no == 3:
-        system_prompt_1 = "Vota a favor o en contra de esta propuesta"
-        system_prompt_2 = ". Responde únicamente con a favor o en contra  o abstención."
-        user_prompt_1 = ""
-        user_prompt_2 = ""
-
-    else:
-        print("unknown prompt")
-    
     temp_high = 1 # Model answers can be creative/random (temperature = 1, fully random).
     temp_low = 0.0000001 # # Model answers are deterministic (temperature = 0, no randomness).
             

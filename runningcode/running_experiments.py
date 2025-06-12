@@ -30,10 +30,16 @@ def extract_probs(tokens, probs):
     '''
     extracts the probabilities for the tokens 'for' and 'against' from the top_k tokens which the model generates
     '''
-    for_synonyms = ['afavor', 'favor', 'sí', 'si']
-    against_synonyms = ['encontra', 'contra', 'no']
-    abstain_synonyms = ['abstencion', 'abstención', 'me abstengo', 'abstenerse']
-
+    for_synonyms = [
+        'afavor', 'a favor', 'favor', 'fav', 'sí', 'si', 's', 'a fa', 'a fa', 'favour', 'favo', 'fa'
+    ]
+    against_synonyms = [
+        'encontra', 'en contra', 'contra', 'contr', 'no', 'n', 'en co', 'en co', 'contre', 'against'
+    ]
+    abstain_synonyms = [
+        'abstencion', 'abstención', 'abst', 'ab', 'stenc', 'stención', 'me abstengo', 'abstenerse', 'abste', 'absten'
+    ]
+    
     favor_prob = 0
     contra_prob = 0
     otro_prob = 0

@@ -6,10 +6,14 @@
 
 # === NEW: Set cache directory to scratch space ===
 # === This is necessary to avoid running out of disk space on the home directory ===
+export HF_HOME=/var/scratch/eei440/hf_cache
 export TRANSFORMERS_CACHE=/var/scratch/eei440/hf_cache/transformers
 export HF_DATASETS_CACHE=/var/scratch/eei440/hf_cache/datasets
+export TMPDIR=/var/scratch/eei440/tmp
+mkdir -p "$HF_HOME"
 mkdir -p "$TRANSFORMERS_CACHE"
 mkdir -p "$HF_DATASETS_CACHE"
+mkdir -p "$TMPDIR"
 # === END: Set cache directory to scratch space ===E
 
 

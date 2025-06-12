@@ -325,7 +325,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
                 input_ids,
                 attention_mask=attention_mask,
                 max_new_tokens=max_new_tokens,
-                temperature=.5,
+                temperature=1, # high temperature for more creative output
                 output_scores=True,
                 return_dict_in_generate=True,
                 do_sample=True,

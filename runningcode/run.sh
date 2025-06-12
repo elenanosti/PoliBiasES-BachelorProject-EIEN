@@ -36,7 +36,7 @@ module use -a /fp/projects01/ec30/software/easybuild/modules/all/
 # module load JupyterLab/4.0.3-GCCcore-12.2.0
 
 # -------------------- PARAMETERS --------------------
-MODELS=("Llama-3-70B-Instruct") # ("Llama-3-8B-instruct", , "Mistral-7B-instruct", "Falcon3-7B-instruct", "Gemma-2-9B-instruct", "deepseek-llm-7b-chat")
+MODELS=("Falcon3-7B-instruct") # ("Llama-3-8B-instruct", "Llama-3-70B-Instruct" , "Mistral-7B-instruct", , "Gemma-2-9B-instruct", "deepseek-llm-7b-chat")
 PROMPTS=(1)
 PROMPT_TEMPLATES=(0)
 #REPLACES=(2)

@@ -2,7 +2,7 @@
 #SBATCH --job-name=main 
 #SBATCH --account=eei440                
 #SBATCH --nodes=1                                        
-#SBATCH --time=0-00:05:00
+#SBATCH --time=0-00:15:00
 
 # === NEW: Set cache directory to scratch space ===
 # === This is necessary to avoid running out of disk space on the home directory ===

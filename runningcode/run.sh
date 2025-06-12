@@ -2,7 +2,7 @@
 #SBATCH --job-name=main 
 #SBATCH --account=eei440                
 #SBATCH --nodes=1                                        
-#SBATCH --time=0-00:15:00
+#SBATCH --time=0-00:05:00
 
 # === NEW: Set cache directory to scratch space ===
 export HF_HOME=/var/scratch/eei440/hf_cache

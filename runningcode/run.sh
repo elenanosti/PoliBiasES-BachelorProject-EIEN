@@ -40,6 +40,6 @@ for prompt in "${PROMPTS[@]}"; do
       --prompt="$prompt" \
       --debug=1 \
       --datasize=200 \
-      --prompt_template="$prompt_template"
+      --template="$prompt_template"
   done
 done

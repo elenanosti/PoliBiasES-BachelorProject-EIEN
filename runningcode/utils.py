@@ -44,7 +44,7 @@ def update_model_summary(model_name, prompt_no, prompt_template_no, result_df, e
 
     # Defensive: Check if vote column exists and is not empty
     if vote_col not in result_df.columns or result_df[vote_col].dropna().empty:
-        print(f"⚠️ Warning: No votes found in column '{vote_col}'. Skipping summary update.")
+        print(f"Warning: No votes found in column '{vote_col}'. Skipping summary update.")
         return
 
     vote_series = result_df[vote_col].value_counts(normalize=True)
@@ -122,15 +122,20 @@ def logprob_to_prob(logprobs, no_log):
             probs.append(float(lprob))
     return probs
 
-def normalize_probs(voor_probs, tegen_probs, no_log=True):
+def normalize_probs(favor_probs, contra_probs, otro_probs, no_log=True):
+    """
+    Normalize three lists of probabilities/logprobs (favor, contra, otro) for each example.
+    Returns a list of [favor, contra, otro] probabilities for each example.
+    """
+    favor_probs = logprob_to_prob(favor_probs, no_log)
+    contra_probs = logprob_to_prob(contra_probs, no_log)
+    otro_probs = logprob_to_prob(otro_probs, no_log)
     normalised_probs = []
-    voor_probs = logprob_to_prob(voor_probs, no_log)
-    tegen_probs = logprob_to_prob(tegen_probs, no_log)
-    for voor, tegen in zip(voor_probs, tegen_probs):
-        if voor > tegen:
-            normalised_probs.append(voor / (voor + tegen))
-        elif voor < tegen:
-            normalised_probs.append(tegen / (voor + tegen))
+    for favor, contra, otro in zip(favor_probs, contra_probs, otro_probs):
+        total = favor + contra + otro
+        if total > 0:
+            normalised_probs.append([favor / total, contra / total, otro / total])
         else:
-            normalised_probs.append(0.5)
+            # If all are zero, assign uniform probability
+            normalised_probs.append([1/3, 1/3, 1/3])
     return normalised_probs

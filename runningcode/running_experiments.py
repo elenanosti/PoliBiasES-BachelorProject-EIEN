@@ -34,9 +34,9 @@ def extract_probs(tokens, probs):
     against_synonyms = ['encontra', 'contra', 'no']
     abstain_synonyms = ['abstencion', 'abstención', 'me abstengo', 'abstenerse']
 
-    for_prob = 0
-    against_prob = 0
-    abstain_prob = 0
+    favor_prob = 0
+    contra_prob = 0
+    otro_prob = 0
 
     print("[DEBUG] Top tokens and probs:", list(zip(tokens, probs)))  # Debug print
 
@@ -45,12 +45,18 @@ def extract_probs(tokens, probs):
         clean_tok = re.sub(r'[^\w\s]', '', clean_tok)
 
         if any(s in clean_tok for s in for_synonyms):
-            for_prob += probs[i]
+            favor_prob += probs[i]
         elif any(s in clean_tok for s in against_synonyms):
-            against_prob += probs[i]
+            contra_prob += probs[i]
         elif any(s in clean_tok for s in abstain_synonyms):
-            abstain_prob += probs[i]
-    return for_prob, against_prob, abstain_prob
+            otro_prob += probs[i]
+    total = favor_prob + contra_prob + otro_prob
+    if total > 0:
+        favor_prob /= total
+        contra_prob /= total
+        otro_prob /= total
+    # If all are zero, leave as zero or set to uniform (optional)
+    return favor_prob, contra_prob, otro_prob
 
 
 def set_seeds(seed): #Balatro: same randomness for recreation purposes
@@ -410,7 +416,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
         print("[DEBUG] Top probs:", all_top_probs)
 
         # Extract the probabilities for the tokens 'for' and 'against' from the top_k tokens
-        for_prob, against_prob, abstain_prob = extract_probs(all_top_tokens, all_top_probs)
+        favor_prob, contra_prob, otro_prob = extract_probs(all_top_tokens, all_top_probs)
 
         # Use both 'initiative' and 'id' for DataFrame mask
         mask = (result_df['initiative'] == x.strip()) & (result_df['id'] == id)
@@ -419,10 +425,10 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
         print(f"[DEBUG] Matches in result_df: {mask.sum()}")
         print(f"[DEBUG] Generated text (raw): '{generated_text}'")
         print(f"[DEBUG] Interpreted vote value: {vote_value}")
-        print(f"[DEBUG] Probabilities - For: {for_prob}, Against: {against_prob}, Abstain: {abstain_prob}")
+        print(f"[DEBUG] Probabilities - For: {favor_prob}, Against: {contra_prob}, Abstain: {otro_prob}")
 
         if mask.any():
-            print(f"Generated: {generated_text}, For: {for_prob}, Against: {against_prob}, Abstain: {abstain_prob}")
+            print(f"Generated: {generated_text}, For: {favor_prob}, Against: {contra_prob}, Abstain: {otro_prob}")
             print(f"Updating ID: {id}, Matches found: {mask.sum()}")
 
             result_df.loc[mask, 
@@ -430,7 +436,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
                 f'{model_shortname}_for_prob', 
                 f'{model_shortname}_against_prob', 
                 f'{model_shortname}_abstain_prob']
-            ] = [vote_value, for_prob, against_prob, abstain_prob]
+            ] = [vote_value, favor_prob, contra_prob, otro_prob]
             print(result_df.loc[mask, [f'{model_shortname}_vote']])
             print(f"[DEBUG] Wrote vote={vote_value} for model '{model_shortname}' at ID {id}")
 

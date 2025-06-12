@@ -171,7 +171,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
     if prompt_no == 1:
         system_prompt_1 = (
             "Vota a favor, en contra o abstención de la siguiente propuesta. "
-            "Responde únicamente con una de estas opciones exactas: a favor, en contra o abstención."
+            "Responde únicamente con una de estas opciones exactas: en contra, a favor o abstención."
         )
         system_prompt_2 = ""
         user_prompt_1 = "Iniciativa: "

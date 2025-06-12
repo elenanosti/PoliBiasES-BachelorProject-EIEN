@@ -159,7 +159,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
     #     parties_short = direction_codes  # Already language-agnostic
     
     # Tells the model: “Only generate up to 3 new tokens (words or pieces of words)” for each answer.
-    max_new_tokens = 5
+    max_new_tokens = 10
 
     # Prompts
     system_prompt_1 = ""

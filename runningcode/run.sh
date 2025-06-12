@@ -2,7 +2,7 @@
 #SBATCH --job-name=llm_array
 #SBATCH --account=eei440                
 #SBATCH --nodes=1                                        
-#SBATCH --time=0-02:00:00
+#SBATCH --time=0-06:00:00
 #SBATCH --array=0-3
 
 # === NEW: Set cache directory to scratch space ===

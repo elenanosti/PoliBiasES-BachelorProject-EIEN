@@ -159,7 +159,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
     #     parties_short = direction_codes  # Already language-agnostic
     
     # Tells the model: “Only generate up to 3 new tokens (words or pieces of words)” for each answer.
-    max_new_tokens = 3
+    max_new_tokens = 5
 
     # Prompts
     system_prompt_1 = ""
@@ -266,32 +266,10 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
             """
         
         elif model_shortname == "mistral_7b":
-            if prompt_template_no == 0:
-                input_prompt = f"""
-                System: {system_prompt_1}{system_prompt_2}
-                User: {user_prompt_1}{x}{user_prompt_2}
-                Assistant:
-                """ 
-
-            elif prompt_template_no == 1:
-                messages = [
-                        {"role": "system", "content": f"{system_prompt_1}{system_prompt_2}"},
-                        {"role": "user", "content": f"{user_prompt_1}{x}{user_prompt_2}"},
-                ]
-                input_prompt = tokenizer.apply_chat_template(
-                        messages,
-                        tokenize=False,
-                        add_generation_prompt=True
-                )
-                print(input_prompt)
-            
-            elif False or prompt_template_no == 2:
-                input_prompt = f"""
-                <|im_start|> user
-                {system_prompt_1}{system_prompt_2}
-                {user_prompt_1}{x}{user_prompt_2}<|im_end|>
-                <|im_start|> assistant
-                """
+            input_prompt = (
+                f"{system_prompt_1}{system_prompt_2}\n"
+                f"{user_prompt_1}{x}{user_prompt_2}"
+            )
         
         elif model_shortname == "deepseek_7b":
             messages = [
@@ -380,21 +358,25 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
         generated_text = re.sub(r'[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]', '', generated_text)
         generated_text = generated_text if generated_text != "" else "blank"
 
-        # Normalize generated text
-        if 'abst' in generated_text:
-            vote_text = 'abstención'
-            vote_value = 0
-        elif 'favor' in generated_text:
-            vote_text = 'a favor'
+        # Normalize generated text (robust partial matching)
+        norm = generated_text.lower().strip()
+        norm = re.sub(r'[^a-záéíóúñü ]', '', norm)  # Remove punctuation, keep Spanish chars
+
+        # Remove multiple spaces
+        norm = re.sub(r'\s+', ' ', norm)
+
+        # Robust matching for each class
+        if norm.startswith("a fav") or norm == "a" or norm.startswith("afav") or norm.startswith("afav") or norm.startswith("a fa"):
+            vote_text = "a favor"
             vote_value = 1
-        elif 'contra' in generated_text:
-            vote_text = 'en contra'
+        elif norm.startswith("en cont") or norm.startswith("contra") or norm.startswith("encon") or norm == "en" or norm == "c" or norm == "no":
+            vote_text = "en contra"
             vote_value = -1
-        elif 'no' == generated_text.strip():
-            vote_text = 'en contra'
-            vote_value = -1
+        elif norm.startswith("abst") or "abstención" in norm or "me abstengo" in norm or "abstenerse" in norm:
+            vote_text = "abstención"
+            vote_value = 0
         else:
-            vote_text = 'otro'
+            vote_text = "otro"
             vote_value = 0
 
         print(f"[DEBUG] Normalized text: '{generated_text}'")

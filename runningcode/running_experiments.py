@@ -348,6 +348,10 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
         else:
             generated_text = tokenizer.decode(outputs_temp0.sequences[0][input_token_len:], skip_special_tokens=True)
 
+        # ...existing code...
+        print("Raw model output:", generated_text)
+        # ...existing code...
+
         # Print the actual LLM output, including invisible characters
         print("\n" + "="*40)
         print(f"LLM OUTPUT for ID {id} (before normalization):")

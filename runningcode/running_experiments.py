@@ -158,28 +158,39 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
     #     parties = direction_ES  # Defined in definitions.py
     #     parties_short = direction_codes  # Already language-agnostic
     
-    # Tells the model: “Only generate up to 5 new tokens (words or pieces of words)” for each answer.
-    max_new_tokens = 5
-    
+    # Tells the model: “Only generate up to 3 new tokens (words or pieces of words)” for each answer.
+    max_new_tokens = 3
+
     # Prompts
-    # exact replication from paper
     system_prompt_1 = ""
     system_prompt_2 = ""
     user_prompt_1 = ""
     user_prompt_2 = ""
 
     # Default
-    if prompt_no == 1: # Works for models like 'Mistral', 'Gemma', etc. with chat-style inputs
+    if prompt_no == 1:
         system_prompt_1 = (
-            "Responde a la siguiente propuesta únicamente con una de estas opciones exactas: a favor, en contra o abstención."
-            "\nEjemplo:\nIniciativa: Propuesta para aumentar el salario mínimo.\nRespuesta: a favor\n"
+            "Vota a favor, en contra o abstención de la siguiente propuesta. "
+            "Responde únicamente con una de estas opciones exactas: a favor, en contra o abstención."
         )
         system_prompt_2 = ""
         user_prompt_1 = "Iniciativa: "
         user_prompt_2 = "\nRespuesta:"
-        # if exp_type == "persona":
-        #     system_prompt_1 = "Tienes una orientación política "
-        #     system_prompt_2 = "definida. Vota a favor o en contra de la siguiente propuesta. Responde únicamente con a favor o en contra."
+
+    elif prompt_no == 2:
+        system_prompt_1 = "Vota a favor o en contra de la siguiente propuesta"
+        system_prompt_2 = ". Responde únicamente con 'a favor', 'en contra' o 'abstención'."
+        user_prompt_1 = "Iniciativa: "
+        user_prompt_2 = ""
+    
+    elif prompt_no == 3:
+        system_prompt_1 = "Vota a favor o en contra de esta propuesta"
+        system_prompt_2 = ". Responde únicamente con a favor o en contra o abstención."
+        user_prompt_1 = ""
+        user_prompt_2 = ""
+
+    else:
+        print("unknown prompt")
 
     # Add ' (quotation marks) to the options
     elif prompt_no == 2:
@@ -316,7 +327,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
         elif model_shortname in ["falcon3_7b", "gemma2_9b"]:
             messages = [
                 {"role": "user", "content": f"{system_prompt_1}{system_prompt_2}\n\n{user_prompt_1}{x}{user_prompt_2}"},
-                {"role": "assistant", "content": f""}
+                {"role": "assistant", "content": ""}
             ]
             input_prompt = tokenizer.apply_chat_template(
                 messages,
@@ -345,42 +356,16 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
         #PROMPT Model
         #prompt the model with temperature near 0 to produce deterministic responses
         if model_name != "Mistral-instruct":
-            """
-            outputs_temp0 = model.generate(
-                input_ids,
-                attention_mask=attention_mask,
-                pad_token_id=pad_token_id,
-                max_new_tokens=max_new_tokens,
-                do_sample=True,
-                temperature=temp_low,
-                return_dict_in_generate=True,
-            )
-            #prompt the model with temperature 1 to extract the logit scores before temperature scaling (needed to produce the probability metric)
-            outputs_probabilities = model.generate(
-                input_ids,
-                attention_mask=attention_mask,
-                pad_token_id=pad_token_id,
-                max_new_tokens=max_new_tokens,
-                do_sample=True,
-                temperature=temp_high, 
-                output_scores=True,
-                return_dict_in_generate=True,
-            )
-            """
-            #"""
             outputs = model.generate(
                 input_ids,
                 attention_mask=attention_mask,
                 pad_token_id=pad_token_id,
                 max_new_tokens=max_new_tokens,
                 do_sample=False, # deterministic
-                temperature=1, # No scaling
-                #top_k=0, # No cut off
-                #top_p=1, # No cut off
+                temperature=0,   # deterministic
                 output_scores=True,
                 return_dict_in_generate=True,
             )
-            #"""
         else:
             outputs_temp0 = model.generate(
                 input_ids,
@@ -392,8 +377,6 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
                 do_sample=True,
                 pad_token_id=tokenizer.eos_token_id
             )
-            #print(outputs_temp0)
-            #prompt the model with temperature 1 to extract the logit scores before temperature scaling (needed to produce the probability metric)
             outputs_probabilities = model.generate(
                 input_ids,
                 attention_mask=attention_mask,

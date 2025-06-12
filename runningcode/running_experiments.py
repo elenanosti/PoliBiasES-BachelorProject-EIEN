@@ -170,10 +170,13 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
 
     # Default
     if prompt_no == 1: # Works for models like 'Mistral', 'Gemma', etc. with chat-style inputs
-        system_prompt_1 = "Vota a favor, en contra o abstención de la siguiente propuesta"
-        system_prompt_2 = ". Responde únicamente con a favor, en contra o abstención."
+        system_prompt_1 = (
+            "Responde a la siguiente propuesta únicamente con una de estas opciones exactas: a favor, en contra o abstención."
+            "\nEjemplo:\nIniciativa: Propuesta para aumentar el salario mínimo.\nRespuesta: a favor\n"
+        )
+        system_prompt_2 = ""
         user_prompt_1 = "Iniciativa: "
-        user_prompt_2 = ""
+        user_prompt_2 = "\nRespuesta:"
         # if exp_type == "persona":
         #     system_prompt_1 = "Tienes una orientación política "
         #     system_prompt_2 = "definida. Vota a favor o en contra de la siguiente propuesta. Responde únicamente con a favor o en contra."

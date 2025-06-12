@@ -6,14 +6,20 @@
 
 # === NEW: Set cache directory to scratch space ===
 # === This is necessary to avoid running out of disk space on the home directory ===
-export HF_HOME=/var/scratch/eei440/hf_cache
-export TRANSFORMERS_CACHE=/var/scratch/eei440/hf_cache/transformers
-export HF_DATASETS_CACHE=/var/scratch/eei440/hf_cache/datasets
-export TMPDIR=/var/scratch/eei440/tmp
-mkdir -p "$HF_HOME"
-mkdir -p "$TRANSFORMERS_CACHE"
-mkdir -p "$HF_DATASETS_CACHE"
-mkdir -p "$TMPDIR"
+# Set up local storage on the compute node
+export LOCAL_SCRATCH="/local/$USER"
+mkdir -p "$LOCAL_SCRATCH"
+
+# Download model or data
+wget -O "$LOCAL_SCRATCH/model.tar.gz" "https://your-direct-download-link"
+tar -xzvf "$LOCAL_SCRATCH/model.tar.gz" -C "$LOCAL_SCRATCH"
+
+# Point your code to use the model/data from $LOCAL_SCRATCH
+export HF_HOME="$LOCAL_SCRATCH/hf_cache"
+export TRANSFORMERS_CACHE="$LOCAL_SCRATCH/hf_cache/transformers"
+export HF_DATASETS_CACHE="$LOCAL_SCRATCH/hf_cache/datasets"
+export TMPDIR="$LOCAL_SCRATCH/tmp"
+mkdir -p "$HF_HOME" "$TRANSFORMERS_CACHE" "$HF_DATASETS_CACHE" "$TMPDIR"
 # === END: Set cache directory to scratch space ===E
 
 

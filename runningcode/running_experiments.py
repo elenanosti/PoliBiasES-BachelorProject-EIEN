@@ -305,14 +305,10 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
             ) 
         
         elif model_shortname in ["falcon3_7b", "gemma2_9b"]:
-            messages = [
-                {"role": "user", "content": f"{system_prompt_1}{system_prompt_2}\n\n{user_prompt_1}{x}{user_prompt_2}"},
-                {"role": "assistant", "content": ""}
-            ]
-            input_prompt = tokenizer.apply_chat_template(
-                messages,
-                tokenize=False,
-                add_generation_prompt=True
+            # Try plain prompt, no chat template
+            input_prompt = (
+                f"{system_prompt_1}{system_prompt_2}\n"
+                f"{user_prompt_1}{x}{user_prompt_2}"
             )
 
         else:

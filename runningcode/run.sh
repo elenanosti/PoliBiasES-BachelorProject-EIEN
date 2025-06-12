@@ -2,7 +2,7 @@
 #SBATCH --job-name=main 
 #SBATCH --account=eei440                
 #SBATCH --nodes=1                                        
-#SBATCH --time=0-00:15:00
+#SBATCH --time=0-00:08:00
 
 # === NEW: Set cache directory to scratch space ===
 # === This is necessary to avoid running out of disk space on the home directory ===
@@ -36,7 +36,7 @@ module use -a /fp/projects01/ec30/software/easybuild/modules/all/
 # module load JupyterLab/4.0.3-GCCcore-12.2.0
 
 # -------------------- PARAMETERS --------------------
-MODELS=("deepseek-llm-7b-chat") # ("Llama-3-8B-instruct", "Llama-3-70B-Instruct" , "Mistral-7B-instruct", "Falcon3-7B-instruct", "Gemma-2-9B-instruct", )
+MODELS=("Llama-3-8B-instruct") # (, "Llama-3-70B-Instruct" , "Mistral-7B-instruct", "Falcon3-7B-instruct", "Gemma-2-9B-instruct", "deepseek-llm-7b-chat")
 PROMPTS=(1)
 PROMPT_TEMPLATES=(0)
 #REPLACES=(2)

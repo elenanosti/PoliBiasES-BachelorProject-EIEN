@@ -5,8 +5,11 @@
 #SBATCH --time=0-00:05:00
 
 # === NEW: Set cache directory to scratch space ===
-export HF_HOME=/var/scratch/eei440/hf_cache
-mkdir -p "$HF_HOME"
+# === This is necessary to avoid running out of disk space on the home directory ===
+export TRANSFORMERS_CACHE=/var/scratch/eei440/hf_cache/transformers
+export HF_DATASETS_CACHE=/var/scratch/eei440/hf_cache/datasets
+mkdir -p "$TRANSFORMERS_CACHE"
+mkdir -p "$HF_DATASETS_CACHE"
 # === END: Set cache directory to scratch space ===E
 
 

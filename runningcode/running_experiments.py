@@ -408,18 +408,24 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
 
         # Calculate the top_k tokens and probabilities for each generated token
         top_k = 5
-        probabilities = torch.softmax(logits[0], dim=-1)
-        top_probs, top_indices = torch.topk(probabilities, top_k)
-        top_indices = top_indices.tolist()[0]
-        top_probs = top_probs.tolist()[0]
-        top_tokens = tokenizer.convert_ids_to_tokens(top_indices)
+        all_top_tokens = []
+        all_top_probs = []
+
+        for step_logits in logits:
+            probs = torch.softmax(step_logits[0], dim=-1)
+            top_probs, top_indices = torch.topk(probs, top_k)
+            top_probs = top_probs.tolist()
+            top_indices = top_indices.tolist()
+            top_tokens = tokenizer.convert_ids_to_tokens(top_indices)
+            all_top_tokens.extend(top_tokens)
+            all_top_probs.extend(top_probs)
 
         # Print top tokens and probabilities for debugging
-        print("[DEBUG] Top tokens:", top_tokens)
-        print("[DEBUG] Top probs:", top_probs)
+        print("[DEBUG] Top tokens:", all_top_tokens)
+        print("[DEBUG] Top probs:", all_top_probs)
 
         # Extract the probabilities for the tokens 'for' and 'against' from the top_k tokens
-        for_prob, against_prob, abstain_prob = extract_probs(top_tokens, top_probs)
+        for_prob, against_prob, abstain_prob = extract_probs(all_top_tokens, all_top_probs)
 
         # Use both 'initiative' and 'id' for DataFrame mask
         mask = (result_df['initiative'] == x.strip()) & (result_df['id'] == id)

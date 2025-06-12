@@ -2,7 +2,7 @@
 #SBATCH --job-name=main 
 #SBATCH --account=eei440                
 #SBATCH --nodes=1                                        
-#SBATCH --time=0-00:05:00
+#SBATCH --time=0-00:15:00
 
 # === NEW: Set cache directory to scratch space ===
 # === This is necessary to avoid running out of disk space on the home directory ===
@@ -11,8 +11,8 @@ export LOCAL_SCRATCH="/local/$USER"
 mkdir -p "$LOCAL_SCRATCH"
 
 # Download model or data
-wget -O "$LOCAL_SCRATCH/model.tar.gz" "https://your-direct-download-link"
-tar -xzvf "$LOCAL_SCRATCH/model.tar.gz" -C "$LOCAL_SCRATCH"
+# wget -O "$LOCAL_SCRATCH/model.tar.gz" "https://your-direct-download-link"
+# tar -xzvf "$LOCAL_SCRATCH/model.tar.gz" -C "$LOCAL_SCRATCH"
 
 # Point your code to use the model/data from $LOCAL_SCRATCH
 export HF_HOME="$LOCAL_SCRATCH/hf_cache"

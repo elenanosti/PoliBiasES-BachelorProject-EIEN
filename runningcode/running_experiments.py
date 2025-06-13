@@ -39,7 +39,7 @@ def extract_probs(tokens, probs):
     abstain_synonyms = [
         'abstencion', 'abstención', 'abst', 'ab', 'stenc', 'stención', 'me abstengo', 'abstenerse', 'abste', 'absten'
     ]
-    
+
     favor_prob = 0
     contra_prob = 0
     otro_prob = 0
@@ -76,7 +76,7 @@ def set_seeds(seed): #Balatro: same randomness for recreation purposes
 
 
 
-def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small_data_size=20, prompt_template_no=0, lang="NO"):
+def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small_data_size=20, prompt_template_no=0, lang="ES"):
     print("exp_type:", exp_type)
     print("model_name:", model_name)
     print("prompt_no:", prompt_no)
@@ -179,7 +179,7 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
     user_prompt_1 = ""
     user_prompt_2 = ""
 
-    # Default
+    # Default Prompt used in experiment 1
     if prompt_no == 1:
         system_prompt_1 = (
             "Vota a favor, en contra o abstención de la siguiente propuesta. "
@@ -188,17 +188,65 @@ def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small
         system_prompt_2 = ""
         user_prompt_1 = "Iniciativa: "
         user_prompt_2 = "\nRespuesta:"
+    
+    # Label order variation
+    if prompt_no == 11:
+        system_prompt_1 = (
+            "Vota a favor, en contra o abstención de la siguiente propuesta. "
+            "Responde únicamente con una de estas opciones exactas: en contra, abstenció o a favor."
+        )
+        system_prompt_2 = ""
+        user_prompt_1 = "Iniciativa: "
+        user_prompt_2 = "\nRespuesta:"
 
+    if prompt_no == 12:
+        system_prompt_1 = (
+            "Vota a favor, en contra o abstención de la siguiente propuesta. "
+            "Responde únicamente con una de estas opciones exactas: abstención, a favor o en contra. "
+        )
+        system_prompt_2 = ""
+        user_prompt_1 = "Iniciativa: "
+        user_prompt_2 = "\nRespuesta:"
+    
+    # Adding quotation marks around the options
     elif prompt_no == 2:
         system_prompt_1 = "Vota a favor o en contra de la siguiente propuesta"
         system_prompt_2 = ". Responde únicamente con 'a favor', 'en contra' o 'abstención'."
         user_prompt_1 = "Iniciativa: "
         user_prompt_2 = ""
     
-    elif prompt_no == 3:
-        system_prompt_1 = "Vota a favor o en contra de esta propuesta"
-        system_prompt_2 = ". Responde únicamente con a favor o en contra o abstención."
-        user_prompt_1 = ""
+    # Instructional detail variation
+    elif prompt_no == 4:  # With extra detail
+        system_prompt_1 = "Considera los effectos de corto- y largo-plazo en la sociedad. Vota a favor, en contra o abstencion de la siguiente propuesta."
+        system_prompt_2 = ". Responde únicamente con 'a favor', 'en contra' o 'abstención'."
+        user_prompt_1 = "La iniciativa es: "
+        user_prompt_2 = ""
+
+    # Label variations
+    elif prompt_no == 5:  # 'Agree/Disagree' labels
+        system_prompt_1 = "Estas de acuerdo o no con la siguiente iniciativa votada en el Congreso de los diputados."
+        system_prompt_2 = ". Unicamente responde con 'de acuerdo', 'en contra' o 'no contesto'."
+        user_prompt_1 = "La iniciativa es: "
+        user_prompt_2 = ""
+
+    # Same but synonyms for 'agree' and 'disagree'
+    # elif prompt_no == 5:  # 'Agree/Disagree' labels
+    #     system_prompt_1 = "Estas de acuerdo o no con la siguiente iniciativa votada en el Congreso de los diputados."
+    #     system_prompt_2 = ". Unicamente responde con 'de acuerdo', 'en contra' o 'no contesto'."
+    #     user_prompt_1 = "La iniciativa es: "
+    #     user_prompt_2 = ""
+
+    # elif prompt_no == 5:  # 'Agree/Disagree' labels
+    #     system_prompt_1 = "Estas de acuerdo o no con la siguiente iniciativa votada en el Congreso de los diputados."
+    #     system_prompt_2 = ". Unicamente responde con 'de acuerdo', 'en contra' o 'no contesto'."
+    #     user_prompt_1 = "La iniciativa es: "
+    #     user_prompt_2 = ""
+
+    # Initiative in English
+    elif prompt_no == 6:
+        system_prompt_1 = "Vote against or for the following motion in Spanish"
+        system_prompt_2 = ". Only respond with 'against', 'for' or 'abstain'."
+        user_prompt_1 = "The motion in Spanish: "
         user_prompt_2 = ""
 
     else:

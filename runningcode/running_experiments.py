@@ -76,7 +76,7 @@ def set_seeds(seed): #Balatro: same randomness for recreation purposes
 
 
 
-def run_experiment(exp_type, model_name, prompt_no=6, cont=0, DEBUG=False, small_data_size=20, prompt_template_no=0, lang="ES"):
+def run_experiment(exp_type, model_name, prompt_no=1, cont=0, DEBUG=False, small_data_size=20, prompt_template_no=0, lang="ES"):
     print("exp_type:", exp_type)
     print("model_name:", model_name)
     print("prompt_no:", prompt_no)

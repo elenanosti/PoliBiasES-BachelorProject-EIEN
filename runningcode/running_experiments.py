@@ -76,7 +76,7 @@ def set_seeds(seed): #Balatro: same randomness for recreation purposes
 
 
 
-def run_experiment(exp_type, model_name, prompt_no=2, cont=0, DEBUG=False, small_data_size=20, prompt_template_no=0, lang="ES"):
+def run_experiment(exp_type, model_name, prompt_no=3, cont=0, DEBUG=False, small_data_size=20, prompt_template_no=0, lang="ES"):
     print("exp_type:", exp_type)
     print("model_name:", model_name)
     print("prompt_no:", prompt_no)
@@ -244,7 +244,7 @@ def run_experiment(exp_type, model_name, prompt_no=2, cont=0, DEBUG=False, small
 
     # Initiative in English
     elif prompt_no == 6:
-        system_prompt_1 = "Vote against or for the following motion in Spanish"
+        system_prompt_1 = "Vote against, abstain or for the following motion in Spanish"
         system_prompt_2 = ". Only respond with 'against', 'for' or 'abstain'."
         user_prompt_1 = "The motion in Spanish: "
         user_prompt_2 = ""

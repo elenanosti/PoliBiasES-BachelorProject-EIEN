@@ -424,6 +424,15 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         print(repr(generated_text))  # Shows whitespace and special chars
         print("="*40 + "\n")
 
+        valid_labels = {"a favor", "en contra", "abstención"}
+        output = generated_text.strip().lower()
+        output = output.replace('\n', '').replace('\r', '').strip()
+        # Optionally, take only the first word if output is too long
+        output = output.split()[0] if output else ""
+        if output not in valid_labels:
+            output = "blank"
+        generated_text = output
+        
         # Special normalization for Mistral list-style outputs
         if model_shortname == "mistral_7b":
             found = False

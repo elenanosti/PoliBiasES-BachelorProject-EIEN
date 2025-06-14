@@ -424,15 +424,6 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         print(repr(generated_text))  # Shows whitespace and special chars
         print("="*40 + "\n")
 
-        valid_labels = {"a favor", "en contra", "abstención"}
-        output = generated_text.strip().lower()
-        output = output.replace('\n', '').replace('\r', '').strip()
-        # Optionally, take only the first word if output is too long
-        output = output.split()[0] if output else ""
-        if output not in valid_labels:
-            output = "blank"
-        generated_text = output
-        
         # Special normalization for Mistral list-style outputs
         if model_shortname == "mistral_7b":
             found = False
@@ -462,14 +453,33 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         norm = generated_text.lower().strip()
         norm = re.sub(r'[^a-záéíóúñü ]', '', norm)  # Remove punctuation, keep Spanish chars
         norm = re.sub(r'\s+', ' ', norm)  # Remove multiple spaces
+        
+        # Use the same synonym lists as in extract_probs
+        for_synonyms = [
+            'afavor', 'a favor', 'favor', 'fav', 'sí', 'si', 's', 'a fa', 'favour', 'favo', 'fa', '1',
+            'aprobar', 'apruebo', 'aceptar', 'acepto', 'consentir', 'consiento', 'acceder', 'accedo',
+            'convenir', 'convengo', 'concordar', 'concordamos', 'coincidir', 'coincido', 'asentir', 'asiento',
+            'de acuerdo', 'apoyo', 'apoyar', 'afirmativo', 'positivo'
+        ]
+        against_synonyms = [
+            'encontra', 'en contra', 'contra', 'contr', 'no', 'n', 'en co', 'contre', 'against', '-1',
+            'desaprobar', 'desapruebo', 'rechazar', 'rechazo', 'oponerse', 'me opongo', 'disentir', 'disiento',
+            'discrepar', 'discrepo', 'vetar', 'veto', 'oponer resistencia', 'resisto', 'opinión contraria',
+            'en desacuerdo', 'negativo'
+        ]
+        abstain_synonyms = [
+            'abstencion', 'abstención', 'abst', 'ab', 'stenc', 'stención', 'me abstengo', 'abstenerse', 'abste', 'absten', '0',
+            'blank', '', ' ', 'omitir', 'omito', 'ignorar', 'ignoro', 'callar', 'me callo', 'silenciar', 'silencio',
+            'prescindir', 'me reservo', 'no contesto', 'sin respuesta', 'me abstendré'
+        ]
 
-        if "a favor" in norm or "afavor" in norm:
+        if any(s in norm for s in for_synonyms):
             vote_text = "a favor"
             vote_value = 1
-        elif "en contra" in norm or "encontra" in norm or "contra" in norm:
+        elif any(s in norm for s in against_synonyms):
             vote_text = "en contra"
             vote_value = -1
-        elif "abstención" in norm or "abstencion" in norm or "me abstengo" in norm or "abstenerse" in norm:
+        elif any(s in norm for s in abstain_synonyms):
             vote_text = "abstención"
             vote_value = 0
         else:

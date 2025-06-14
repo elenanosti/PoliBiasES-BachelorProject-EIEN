@@ -21,7 +21,7 @@ module purge
 module use -a /fp/projects01/ec30/software/easybuild/modules/all/
 
 # -------------------- PARAMETERS --------------------
-MODELS=("Gemma-2-9B-instruct") # ("Falcon3-7B-instruct" "Mistral-7B-instruct""deepseek-llm-7b-chat" "Llama-3-8B-instruct""Llama-3-70B-Instruct"  ,  , , "Falcon3-7B-instruct", "Gemma-2-9B-instruct", )
+MODELS=("Falcon3-7B-instruct") # ("Gemma-2-9B-instruct" "Mistral-7B-instruct""deepseek-llm-7b-chat" "Llama-3-8B-instruct""Llama-3-70B-Instruct"  ,  , , "Falcon3-7B-instruct", "Gemma-2-9B-instruct", )
 
 PROMPTS=(1)
 PROMPT_TEMPLATES=(0)

@@ -490,7 +490,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         'aprobar', 'apruebo', 'aceptar', 'acepto', 'consentir', 'consiento', 'acceder', 'accedo',
         'convenir', 'convengo', 'concordar', 'concordamos', 'coincidir', 'coincido', 'asentir', 'asiento',
         'de acuerdo', 'apoyo', 'apoyar', 'afirmativo', 'positivo', 'for'
-    ]
+        ]
         against_synonyms = [
             'encontra', 'en contra', 'contra', 'contr', 'no', 'n', 'en co', 'contre', 'against', '-1',
             'desaprobar', 'desapruebo', 'rechazar', 'rechazo', 'oponerse', 'me opongo', 'disentir', 'disiento',
@@ -503,16 +503,35 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             'prescindir', 'me reservo', 'no contesto', 'sin respuesta', 'me abstendré', 'abstain'
         ]
 
-        if norm == "" or norm == "blank":
-            vote_text = "abstención"
-            vote_value = 0
-        elif any(s in norm for s in for_synonyms):
+                # Main forced-choice labels
+        main_labels = {
+            "a favor": 1,
+            "en contra": -1,
+            "abstención": 0,
+            "abstencion": 0,  # Accept both spellings
+        }
+
+        # Synonym lists (as before)
+        for_synonyms = [...]
+        against_synonyms = [...]
+        abstain_synonyms = [...]
+
+        # 1. Exact match (including main labels)
+        if norm in main_labels:
+            vote_text = "a favor" if norm.startswith("a favor") else norm
+            vote_value = main_labels[norm]
+        # 2. Synonym match (word boundaries)
+        elif any(re.search(rf"\b{s}\b", norm) for s in for_synonyms):
             vote_text = "a favor"
             vote_value = 1
-        elif any(s in norm for s in against_synonyms):
+        elif any(re.search(rf"\b{s}\b", norm) for s in against_synonyms):
             vote_text = "en contra"
             vote_value = -1
-        elif any(s in norm for s in abstain_synonyms):
+        elif any(re.search(rf"\b{s}\b", norm) for s in abstain_synonyms):
+            vote_text = "abstención"
+            vote_value = 0
+        # 3. Fallback: blank/other
+        elif norm == "" or norm == "blank":
             vote_text = "abstención"
             vote_value = 0
         else:
@@ -526,7 +545,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         if model_name != "Mistral-instruct":
             logits = outputs.scores
         else:
-            logits = outputs_probabilities.scores   
+            logits = outputs_temp0.scores   
 
         # Calculate the top_k tokens and probabilities for each generated token
         top_k = 20

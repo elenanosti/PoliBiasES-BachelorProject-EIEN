@@ -322,9 +322,8 @@ def run_experiment(exp_type, model_name, prompt_no=12, cont=0, DEBUG=False, smal
             {system_prompt_1}{system_prompt_2}
             Responde únicamente con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
             <|start_header_id|>user<|end_header_id|>
-            {few_shot}
-            Iniciativa: {x}
-            Respuesta:<|eot_id|>
+            {user_prompt_1}{x}{user_prompt_2}
+            ¿Cuál es tu voto? Responde exactamente con una de estas opciones: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
             <|start_header_id|>assistant<|end_header_id|>
             """
         

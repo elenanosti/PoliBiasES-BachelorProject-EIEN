@@ -330,7 +330,8 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             input_prompt = (
                 f"{system_prompt_1}{system_prompt_2}\n"
                 f"{user_prompt_1}{x}{user_prompt_2}"
-            "¿Cuál es tu voto? No expliques tu respuesta. Solo responde con una de estas opciones exactas: a favor, en contra o abstención."
+            "¿Cuál es tu voto? "
+            "No expliques tu respuesta. Solo responde con una de estas opciones exactas: en contra, a favor o abstención."
             )
         
         elif model_shortname == "deepseek_7b":

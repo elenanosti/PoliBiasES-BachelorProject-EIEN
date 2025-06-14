@@ -46,7 +46,7 @@ def extract_probs(tokens, probs):
     contra_prob = 0
     otro_prob = 0
 
-    for i, tok in enumerate(tokens[:10]):
+    for i, tok in enumerate(tokens[:20]):
         clean_tok = tok.strip().lstrip('▁').lower()
         clean_tok = re.sub(r'[^\w\s]', '', clean_tok)
         if any(s in clean_tok for s in for_synonyms):
@@ -170,7 +170,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     #     parties_short = direction_codes  # Already language-agnostic
     
     # Tells the model: “Only generate up to 3 new tokens (words or pieces of words)” for each answer.
-    max_new_tokens = 10
+    max_new_tokens = 20
 
     # Prompts
     system_prompt_1 = ""
@@ -472,7 +472,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             logits = outputs_probabilities.scores   
 
         # Calculate the top_k tokens and probabilities for each generated token
-        top_k = 5
+        top_k = 20
         all_top_tokens = []
         all_top_probs = []
 

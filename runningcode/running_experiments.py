@@ -177,7 +177,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     #     parties_short = direction_codes  # Already language-agnostic
     
     # Tells the model: “Only generate up to 3 new tokens (words or pieces of words)” for each answer.
-    max_new_tokens = 5
+    max_new_tokens = 3
 
     # Prompts
     system_prompt_1 = ""
@@ -352,10 +352,25 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         #                     add_generation_prompt=True
         #             )
         #             print(input_prompt)
+        # elif model_shortname == "mistral_7b":
+        #     input_prompt = (
+        #         f"Iniciativa: {x}"
+        #         "Vota: (elige solo: a favor, en contra, abstención)"
+        #     )
+
         elif model_shortname == "mistral_7b":
-            input_prompt = (
-                f"Iniciativa: {x}"
-                "Vota: (elige solo: a favor, en contra, abstención)"
+            messages = [
+                {"role": "system", "content": (
+                    f"{system_prompt_1}{system_prompt_2}\n"
+                    "SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
+                    "No expliques tu respuesta. No añadas nada más."
+                )},
+                {"role": "user", "content": f"{user_prompt_1}{x}{user_prompt_2}\nRespuesta:"},
+            ]
+            input_prompt = tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True
             )
         
         elif model_shortname == "deepseek_7b":
@@ -376,8 +391,9 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         elif model_shortname in ["falcon3_7b", "gemma2_9b"]:
             # Try plain prompt, no chat template
             input_prompt = (
-                f"{system_prompt_1}{system_prompt_2}\n"
-                f"{user_prompt_1}{x}{user_prompt_2}"
+                f"Solo responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
+                "No expliques. No añadas nada más.\n"
+                f"Iniciativa: {x}\nRespuesta:"
             )
 
         else:
@@ -416,17 +432,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 input_ids,
                 attention_mask=attention_mask,
                 max_new_tokens=max_new_tokens,
-                temperature=1, # high temperature for more creative output
-                output_scores=True,
-                return_dict_in_generate=True,
-                do_sample=True,
-                pad_token_id=tokenizer.eos_token_id
-            )
-            outputs_probabilities = model.generate(
-                input_ids,
-                attention_mask=attention_mask,
-                max_new_tokens=max_new_tokens,
-                temperature=1,
+                temperature=0, # high temperature for more creative output
                 output_scores=True,
                 return_dict_in_generate=True,
                 do_sample=True,

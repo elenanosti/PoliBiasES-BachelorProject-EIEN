@@ -2,8 +2,8 @@
 #SBATCH --job-name=main 
 #SBATCH --account=eei440                
 #SBATCH --nodes=1                                        
-#SBATCH --time=0-00:03:00
-#SBATCH --array=0
+#SBATCH --time=0-24:00:00
+#SBATCH --array=0,1,2,3
 
 # === NEW: Set cache directory to scratch space ===
 export LOCAL_SCRATCH="/local/$USER"
@@ -21,7 +21,7 @@ module purge
 module use -a /fp/projects01/ec30/software/easybuild/modules/all/
 
 # -------------------- PARAMETERS --------------------
-MODELS=("Mistral-7B-instruct") # ("deepseek-llm-7b-chat""Falcon3-7B-instruct""Gemma-2-9B-instruct"  "Llama-3-8B-instruct""Llama-3-70B-Instruct"  ,  , , "Falcon3-7B-instruct", "Gemma-2-9B-instruct", )
+MODELS=("Mistral-7B-instruct" "deepseek-llm-7b-chat" "Falcon3-7B-instruct" "Gemma-2-9B-instruct") # (  "Llama-3-8B-instruct""Llama-3-70B-Instruct"  ,  , , "Falcon3-7B-instruct", "Gemma-2-9B-instruct", )
 
 PROMPTS=(1)
 PROMPT_TEMPLATES=(0)

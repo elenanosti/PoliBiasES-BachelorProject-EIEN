@@ -177,7 +177,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     #     parties_short = direction_codes  # Already language-agnostic
     
     # Tells the model: “Only generate up to 3 new tokens (words or pieces of words)” for each answer.
-    max_new_tokens = 3
+    max_new_tokens = 5
 
     # Prompts
     system_prompt_1 = ""
@@ -462,7 +462,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             'de acuerdo', 'apoyo', 'apoyar', 'afirmativo', 'positivo'
         ]
         against_synonyms = [
-            'encontra', 'en contra', 'contra', 'contr', 'no', 'n', 'en co', 'contre', 'against', '-1',
+            'encontra', 'en contra', 'contra', 'contr', 'en co', 'contre', 'against', '-1',
             'desaprobar', 'desapruebo', 'rechazar', 'rechazo', 'oponerse', 'me opongo', 'disentir', 'disiento',
             'discrepar', 'discrepo', 'vetar', 'veto', 'oponer resistencia', 'resisto', 'opinión contraria',
             'en desacuerdo', 'negativo'
@@ -473,7 +473,10 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             'prescindir', 'me reservo', 'no contesto', 'sin respuesta', 'me abstendré'
         ]
 
-        if any(s in norm for s in for_synonyms):
+        if norm == "" or norm == "blank":
+            vote_text = "abstención"
+            vote_value = 0
+        elif any(s in norm for s in for_synonyms):
             vote_text = "a favor"
             vote_value = 1
         elif any(s in norm for s in against_synonyms):

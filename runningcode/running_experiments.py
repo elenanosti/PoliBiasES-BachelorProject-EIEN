@@ -422,6 +422,21 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         print(repr(generated_text))  # Shows whitespace and special chars
         print("="*40 + "\n")
 
+        # Special normalization for Mistral list-style outputs
+        if model_shortname == "mistral_7b":
+            # Look for the first line containing a recognizable vote
+            for line in generated_text.splitlines():
+                l = line.lower()
+                if "favor" in l:
+                    generated_text = "a favor"
+                    break
+                elif "en contra" in l:
+                    generated_text = "en contra"
+                    break
+                elif "abstención" in l or "abstencion" in l:
+                    generated_text = "abstención"
+                    break
+
         generated_text = generated_text.lower().strip()
         generated_text = re.sub(r'[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]', '', generated_text)
         generated_text = generated_text if generated_text != "" else "blank"

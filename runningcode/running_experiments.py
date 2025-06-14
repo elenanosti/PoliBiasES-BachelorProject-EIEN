@@ -82,7 +82,7 @@ def set_seeds(seed): #Balatro: same randomness for recreation purposes
 
 
 
-def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, small_data_size=20, prompt_template_no=0, lang="ES"):
+def run_experiment(exp_type, model_name, prompt_no=101, cont=0, DEBUG=False, small_data_size=20, prompt_template_no=0, lang="ES"):
     print("exp_type:", exp_type)
     print("model_name:", model_name)
     print("prompt_no:", prompt_no)
@@ -209,6 +209,14 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         system_prompt_1 = (
             "Vota a favor, en contra o abstención de la siguiente propuesta. "
             "Responde únicamente con una palabra. SOLO responde con una de estas opciones exactas: 'abstención', 'a favor' o 'en contra'. No expliques tu respuesta. No añadas nada más."
+        )
+        system_prompt_2 = ""
+        user_prompt_1 = "Iniciativa: "
+        user_prompt_2 = "\nRespuesta:"
+    
+    if prompt_no == 101:
+        system_prompt_1 = (
+            "[INST] Responde SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. [/INST]"
         )
         system_prompt_2 = ""
         user_prompt_1 = "Iniciativa: "

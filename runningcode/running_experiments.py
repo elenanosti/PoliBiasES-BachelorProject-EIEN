@@ -35,18 +35,18 @@ def extract_probs(tokens, probs):
     'afavor', 'a favor', 'favor', 'fav', 'sí', 'si', 's', 'a fa', 'favour', 'favo', 'fa', '1',
     'aprobar', 'apruebo', 'aceptar', 'acepto', 'consentir', 'consiento', 'acceder', 'accedo',
     'convenir', 'convengo', 'concordar', 'concordamos', 'coincidir', 'coincido', 'asentir', 'asiento',
-    'de acuerdo', 'apoyo', 'apoyar', 'afirmativo', 'positivo'
+    'de acuerdo', 'apoyo', 'apoyar', 'afirmativo', 'positivo', 'for'
 ]
     against_synonyms = [
         'encontra', 'en contra', 'contra', 'contr', 'no', 'n', 'en co', 'contre', 'against', '-1',
         'desaprobar', 'desapruebo', 'rechazar', 'rechazo', 'oponerse', 'me opongo', 'disentir', 'disiento',
         'discrepar', 'discrepo', 'vetar', 'veto', 'oponer resistencia', 'resisto', 'opinión contraria',
-        'en desacuerdo', 'negativo'
+        'en desacuerdo', 'negativo','against'
     ]
     abstain_synonyms = [
         'abstencion', 'abstención', 'abst', 'ab', 'stenc', 'stención', 'me abstengo', 'abstenerse', 'abste', 'absten', '0',
         'blank', '', ' ', 'omitir', 'omito', 'ignorar', 'ignoro', 'callar', 'me callo', 'silenciar', 'silencio',
-        'prescindir', 'me reservo', 'no contesto', 'sin respuesta', 'me abstendré'
+        'prescindir', 'me reservo', 'no contesto', 'sin respuesta', 'me abstendré', 'abstain'
     ]
 
     favor_prob = 0
@@ -455,21 +455,21 @@ def run_experiment(exp_type, model_name, prompt_no=5, cont=0, DEBUG=False, small
         
         # Use the same synonym lists as in extract_probs
         for_synonyms = [
-            'afavor', 'a favor', 'favor', 'fav', 'sí', 'si', 's', 'a fa', 'favour', 'favo', 'fa', '1',
-            'aprobar', 'apruebo', 'aceptar', 'acepto', 'consentir', 'consiento', 'acceder', 'accedo',
-            'convenir', 'convengo', 'concordar', 'concordamos', 'coincidir', 'coincido', 'asentir', 'asiento',
-            'de acuerdo', 'apoyo', 'apoyar', 'afirmativo', 'positivo'
-        ]
+        'afavor', 'a favor', 'favor', 'fav', 'sí', 'si', 's', 'a fa', 'favour', 'favo', 'fa', '1',
+        'aprobar', 'apruebo', 'aceptar', 'acepto', 'consentir', 'consiento', 'acceder', 'accedo',
+        'convenir', 'convengo', 'concordar', 'concordamos', 'coincidir', 'coincido', 'asentir', 'asiento',
+        'de acuerdo', 'apoyo', 'apoyar', 'afirmativo', 'positivo', 'for'
+    ]
         against_synonyms = [
-            'encontra', 'en contra', 'contra', 'contr', 'en co', 'contre', 'against', '-1',
+            'encontra', 'en contra', 'contra', 'contr', 'no', 'n', 'en co', 'contre', 'against', '-1',
             'desaprobar', 'desapruebo', 'rechazar', 'rechazo', 'oponerse', 'me opongo', 'disentir', 'disiento',
             'discrepar', 'discrepo', 'vetar', 'veto', 'oponer resistencia', 'resisto', 'opinión contraria',
-            'en desacuerdo', 'negativo'
+            'en desacuerdo', 'negativo','against'
         ]
         abstain_synonyms = [
             'abstencion', 'abstención', 'abst', 'ab', 'stenc', 'stención', 'me abstengo', 'abstenerse', 'abste', 'absten', '0',
             'blank', '', ' ', 'omitir', 'omito', 'ignorar', 'ignoro', 'callar', 'me callo', 'silenciar', 'silencio',
-            'prescindir', 'me reservo', 'no contesto', 'sin respuesta', 'me abstendré'
+            'prescindir', 'me reservo', 'no contesto', 'sin respuesta', 'me abstendré', 'abstain'
         ]
 
         if norm == "" or norm == "blank":

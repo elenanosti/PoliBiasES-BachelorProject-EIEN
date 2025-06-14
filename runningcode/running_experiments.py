@@ -177,7 +177,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     #     parties_short = direction_codes  # Already language-agnostic
     
     # Tells the model: “Only generate up to 3 new tokens (words or pieces of words)” for each answer.
-    max_new_tokens = 20
+    max_new_tokens = 3
 
     # Prompts
     system_prompt_1 = ""
@@ -331,13 +331,15 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 f"{system_prompt_1}{system_prompt_2}\n"
                 f"{user_prompt_1}{x}{user_prompt_2}"
             "¿Cuál es tu voto? SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. No añadas nada más."
+            "No expliques tu respuesta. No añadas nada más.\n"
             )
         
         elif model_shortname == "deepseek_7b":
             messages = [
                 {"role": "system", "content": (
                     f"{system_prompt_1}{system_prompt_2}\n"
-                    "Responde únicamente con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'."
+                    "SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
+                    "No expliques tu respuesta. No añadas nada más."
                 )},
                 {"role": "user", "content": f"{user_prompt_1}{x}{user_prompt_2}\nRespuesta:"},
             ]

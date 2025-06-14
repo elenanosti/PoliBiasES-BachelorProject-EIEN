@@ -29,7 +29,7 @@ os.makedirs(os.environ["HF_HOME"], exist_ok=True)
 def extract_probs(tokens, probs, output_text):
     '''
     Extracts the probabilities for the tokens 'for', 'against', and 'abstain' from the top_k tokens.
-    If the output_text matches a synonym, assign its probability if present in top tokens.
+    Does NOT override based on output_text, only uses top-k tokens.
     '''
     for_synonyms = [
         'afavor', 'a favor', 'favor', 'fav', 'sí', 'si', 's', 'a fa', 'favour', 'favo', 'fa', '1'
@@ -38,52 +38,35 @@ def extract_probs(tokens, probs, output_text):
         'encontra', 'en contra', 'contra', 'contr', 'no', 'n', 'en co', 'contre', 'against', '-1'
     ]
     abstain_synonyms = [
-        'abstencion', 'abstención', 'abst', 'ab', 'stenc', 'stención', 'me abstengo', 'abstenerse', 'abste', 'absten', '0', 'blank', '', ' '
+        'abstencion', 'abstención', 'abst', 'ab', 'stenc', 'stención', 'me abstengo',
+        'abstenerse', 'abste', 'absten', '0', 'blank', '', ' '
     ]
 
     favor_prob = 0
     contra_prob = 0
     otro_prob = 0
 
-    # Clean output for matching
-    clean_output = output_text.strip().lower()
-    clean_output = re.sub(r'[^\w\s]', '', clean_output)
-
-    # Try to match output to a synonym and assign probability if present in top tokens
-    found = False
     for i, tok in enumerate(tokens[:5]):
         clean_tok = tok.strip().lstrip('▁').lower()
         clean_tok = re.sub(r'[^\w\s]', '', clean_tok)
-        if clean_tok in clean_output or clean_output in clean_tok:
-            if any(s in clean_tok for s in for_synonyms):
-                favor_prob = probs[i]
-                found = True
-                break
-            elif any(s in clean_tok for s in against_synonyms):
-                contra_prob = probs[i]
-                found = True
-                break
-            elif any(s in clean_tok for s in abstain_synonyms):
-                otro_prob = probs[i]
-                found = True
-                break
+        if any(s in clean_tok for s in for_synonyms):
+            favor_prob += probs[i]
+        elif any(s in clean_tok for s in against_synonyms):
+            contra_prob += probs[i]
+        elif any(s in clean_tok for s in abstain_synonyms):
+            otro_prob += probs[i]
+    total = favor_prob + contra_prob + otro_prob
+    if total > 0:
+        favor_prob /= total
+        contra_prob /= total
+        otro_prob /= total
 
-    # If not found, fall back to sum over top tokens
-    if not found:
-        for i, tok in enumerate(tokens[:5]):
-            clean_tok = tok.strip().lstrip('▁').lower()
-            clean_tok = re.sub(r'[^\w\s]', '', clean_tok)
-            if any(s in clean_tok for s in for_synonyms):
-                favor_prob += probs[i]
-            elif any(s in clean_tok for s in against_synonyms):
-                contra_prob += probs[i]
-            elif any(s in clean_tok for s in abstain_synonyms):
-                otro_prob += probs[i]
-        total = favor_prob + contra_prob + otro_prob
-        if total > 0:
-            favor_prob /= total
-            contra_prob /= total
-            otro_prob /= total
+    # Optionally: warn if output_text doesn't match any top-k token
+    clean_output = output_text.strip().lower()
+    clean_output = re.sub(r'[^\w\s]', '', clean_output)
+    all_synonyms = for_synonyms + against_synonyms + abstain_synonyms
+    if not any(s in clean_output for s in all_synonyms):
+        print(f"[WARNING] Output '{output_text}' does not match any known synonym.")
 
     return favor_prob, contra_prob, otro_prob
 

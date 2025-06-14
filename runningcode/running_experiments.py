@@ -330,7 +330,8 @@ def run_experiment(exp_type, model_name, prompt_no=5, cont=0, DEBUG=False, small
             input_prompt = (
                 #f"{system_prompt_1}{system_prompt_2}\n"
                 f"{user_prompt_1}{x}{user_prompt_2}"
-                "No expliques tu respuesta. No añadas nada más.\n"
+                #"No expliques tu respuesta. No añadas nada más.\n"
+                "Do not explain your answer. Do not add anything else.\n"
             )
         
         elif model_shortname == "deepseek_7b":

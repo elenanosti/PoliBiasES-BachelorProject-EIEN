@@ -423,7 +423,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 pad_token_id=pad_token_id,
                 max_new_tokens=max_new_tokens,
                 do_sample=False, # deterministic
-                temperature=1,   # deterministic
+                temperature=0,   # deterministic
                 output_scores=True,
                 return_dict_in_generate=True,
             )

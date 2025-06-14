@@ -520,11 +520,15 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         if norm in main_labels:
             vote_text = norm
             vote_value = main_labels[norm]
-        # 2. Partial/short matches for "en contra"
+        # 2. If "favor" is present, always "a favor"
+        elif "favor" in norm:
+            vote_text = "a favor"
+            vote_value = 1
+        # 3. If output is "en", "en co", "encont", "encontra", "contra" (and does NOT contain "favor")
         elif norm in ["en", "en co", "encont", "encontra", "contra"]:
             vote_text = "en contra"
             vote_value = -1
-        # 3. Synonym match (word boundaries)
+        # 4. Synonym match (word boundaries)
         elif any(re.search(rf"\b{s}\b", norm) for s in for_synonyms):
             vote_text = "a favor"
             vote_value = 1

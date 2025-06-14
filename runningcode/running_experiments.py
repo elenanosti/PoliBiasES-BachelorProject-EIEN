@@ -328,9 +328,9 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         
         elif model_shortname == "mistral_7b":
             input_prompt = (
-                f"{system_prompt_1}{system_prompt_2}\n"
+                #f"{system_prompt_1}{system_prompt_2}\n"
                 f"{user_prompt_1}{x}{user_prompt_2}"
-            "¿Cuál es tu voto? SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. No añadas nada más."
+            "Responde SOLO con: 'a favor', 'en contra' o 'abstención'."
             "No expliques tu respuesta. No añadas nada más.\n"
             )
         

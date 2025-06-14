@@ -82,7 +82,7 @@ def set_seeds(seed): #Balatro: same randomness for recreation purposes
 
 
 
-def run_experiment(exp_type, model_name, prompt_no=5, cont=0, DEBUG=False, small_data_size=20, prompt_template_no=0, lang="ES"):
+def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, small_data_size=20, prompt_template_no=0, lang="ES"):
     print("exp_type:", exp_type)
     print("model_name:", model_name)
     print("prompt_no:", prompt_no)
@@ -326,13 +326,25 @@ def run_experiment(exp_type, model_name, prompt_no=5, cont=0, DEBUG=False, small
             <|start_header_id|>assistant<|end_header_id|>
             """
         
+        # elif model_shortname == "mistral_7b":
+        #     input_prompt = (
+        #         #f"{system_prompt_1}{system_prompt_2}\n"
+        #         f"{user_prompt_1}{x}{user_prompt_2}"
+        #         #"No expliques tu respuesta. No añadas nada más.\n"
+        #         "Do not explain your answer. Do not add anything else.\n"
+        #     )
         elif model_shortname == "mistral_7b":
-            input_prompt = (
-                #f"{system_prompt_1}{system_prompt_2}\n"
-                f"{user_prompt_1}{x}{user_prompt_2}"
-                #"No expliques tu respuesta. No añadas nada más.\n"
-                "Do not explain your answer. Do not add anything else.\n"
-            )
+                    messages = [
+                            {"role": "system", "content": f"{system_prompt_1}{system_prompt_2}"},
+                            {"role": "user", "content": f"{user_prompt_1}{x}{user_prompt_2}"},
+                    ]
+                    input_prompt = tokenizer.apply_chat_template(
+                            messages,
+                            tokenize=False,
+                            add_generation_prompt=True
+                    )
+                    print(input_prompt)
+
         
         elif model_shortname == "deepseek_7b":
             messages = [

@@ -341,18 +341,22 @@ def run_experiment(exp_type, model_name, prompt_no=101, cont=0, DEBUG=False, sma
         #         #"No expliques tu respuesta. No añadas nada más.\n"
         #         "Do not explain your answer. Do not add anything else.\n"
         #     )
+        # elif model_shortname == "mistral_7b":
+        #             messages = [
+        #                     {"role": "system", "content": f"{system_prompt_1}{system_prompt_2}"},
+        #                     {"role": "user", "content": f"{user_prompt_1}{x}{user_prompt_2}"},
+        #             ]
+        #             input_prompt = tokenizer.apply_chat_template(
+        #                     messages,
+        #                     tokenize=False,
+        #                     add_generation_prompt=True
+        #             )
+        #             print(input_prompt)
         elif model_shortname == "mistral_7b":
-                    messages = [
-                            {"role": "system", "content": f"{system_prompt_1}{system_prompt_2}"},
-                            {"role": "user", "content": f"{user_prompt_1}{x}{user_prompt_2}"},
-                    ]
-                    input_prompt = tokenizer.apply_chat_template(
-                            messages,
-                            tokenize=False,
-                            add_generation_prompt=True
-                    )
-                    print(input_prompt)
-
+            input_prompt = (
+                f"Iniciativa: {x}"
+                "Vota: (elige solo: a favor, en contra, abstención)"
+            )
         
         elif model_shortname == "deepseek_7b":
             messages = [

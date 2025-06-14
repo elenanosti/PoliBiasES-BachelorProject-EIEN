@@ -76,12 +76,17 @@ def set_seeds(seed): #Balatro: same randomness for recreation purposes
 
 
 
-def run_experiment(exp_type, model_name, prompt_no=12, cont=0, DEBUG=False, small_data_size=20, prompt_template_no=0, lang="ES"):
+def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, small_data_size=20, prompt_template_no=0, lang="ES"):
     print("exp_type:", exp_type)
     print("model_name:", model_name)
     print("prompt_no:", prompt_no)
     print("prompt_template_no:", prompt_template_no)
-    print("lang:", lang)
+    print("lang:", lang)    elif model_shortname == "mistral_7b":
+        input_prompt = (
+            f"{system_prompt_1}{system_prompt_2}\n"
+            f"{user_prompt_1}{x}{user_prompt_2}\n"
+            "¿Cuál es tu voto? Responde exactamente con una de estas opciones: 'a favor', 'en contra' o 'abstención'."
+        )
     print("continue:", cont)
     print("DEBUG:", DEBUG)
     model_shortname = MODEL_SHORTNAMES.get(model_name, model_name.lower().replace("-", "_"))
@@ -180,10 +185,10 @@ def run_experiment(exp_type, model_name, prompt_no=12, cont=0, DEBUG=False, smal
     user_prompt_2 = ""
 
     # Default Prompt used in experiment 1
-    if prompt_no == 1:
+    if prompt_no == 10:
         system_prompt_1 = (
             "Vota a favor, en contra o abstención de la siguiente propuesta. "
-            "Responde únicamente con una de estas opciones exactas: en contra, a favor o abstención."
+            "Responde únicamente con una de estas opciones exactas: a favor, en contra o abstención."
         )
         system_prompt_2 = ""
         user_prompt_1 = "Iniciativa: "
@@ -329,11 +334,7 @@ def run_experiment(exp_type, model_name, prompt_no=12, cont=0, DEBUG=False, smal
             input_prompt = (
                 f"{system_prompt_1}{system_prompt_2}\n"
                 f"{user_prompt_1}{x}{user_prompt_2}"
-            "Opciones:\n"
-            "1. A favor\n"
-            "-1. En contra\n"
-            "0. Abstención\n"   
-            "Responde solo con el número de la opción correcta." 
+            "¿Cuál es tu voto? Responde exactamente con una de estas opciones."
             )
         
         elif model_shortname == "deepseek_7b":

@@ -37,7 +37,7 @@ def extract_probs(tokens, probs):
         'encontra', 'en contra', 'contra', 'contr', 'no', 'n', 'en co', 'en co', 'contre', 'against', '-1'
     ]
     abstain_synonyms = [
-        'abstencion', 'abstención', 'abst', 'ab', 'stenc', 'stención', 'me abstengo', 'abstenerse', 'abste', 'absten', '0'
+        'abstencion', 'abstención', 'abst', 'ab', 'stenc', 'stención', 'me abstengo', 'abstenerse', 'abste', 'absten', '0', 'blank', '', ' '
     ]
 
     favor_prob = 0
@@ -45,8 +45,8 @@ def extract_probs(tokens, probs):
     otro_prob = 0
 
     print("[DEBUG] Top tokens and probs:", list(zip(tokens, probs)))  # Debug print
-
-    for i, tok in enumerate(tokens):
+    
+    for i, tok in enumerate(tokens[:5]): # Limit to top 5 tokens
         clean_tok = tok.strip().lstrip('▁').lower()
         clean_tok = re.sub(r'[^\w\s]', '', clean_tok)
 

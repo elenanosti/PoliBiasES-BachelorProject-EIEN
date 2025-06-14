@@ -189,7 +189,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     if prompt_no == 10:
         system_prompt_1 = (
             "Vota a favor, en contra o abstención de la siguiente propuesta. "
-            "Responde únicamente con una de estas opciones exactas: a favor, en contra o abstención."
+            "Responde únicamente con una palabra. Eligue entre estas opciones exactas: 'a favor', 'en contra' o 'abstención'."
         )
         system_prompt_2 = ""
         user_prompt_1 = "Iniciativa: "
@@ -199,7 +199,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     if prompt_no == 11:
         system_prompt_1 = (
             "Vota a favor, en contra o abstención de la siguiente propuesta. "
-            "Responde únicamente con una de estas opciones exactas: en contra, abstenció o a favor."
+            "Responde únicamente con una palabra. Eligue entre estas opciones exactas: 'en contra', 'abstención' o 'a favor'."
         )
         system_prompt_2 = ""
         user_prompt_1 = "Iniciativa: "
@@ -208,30 +208,23 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     if prompt_no == 12:
         system_prompt_1 = (
             "Vota a favor, en contra o abstención de la siguiente propuesta. "
-            "Responde únicamente con una de estas opciones exactas: abstención, a favor o en contra. "
+            "Responde únicamente con una palabra. Eligue entre estas opciones exactas: 'abstención', 'a favor' o 'en contra'. "
         )
         system_prompt_2 = ""
         user_prompt_1 = "Iniciativa: "
         user_prompt_2 = "\nRespuesta:"
     
-    # Adding quotation marks around the options
-    elif prompt_no == 2:
-        system_prompt_1 = "Vota a favor o en contra de la siguiente propuesta"
-        system_prompt_2 = ". Responde únicamente con 'a favor', 'en contra' o 'abstención'."
-        user_prompt_1 = "Iniciativa: "
-        user_prompt_2 = ""
-    
     # Instructional detail variation
-    elif prompt_no == 4:  # With extra detail
+    elif prompt_no == 3:  # With extra detail
         system_prompt_1 = "Considera los effectos de corto- y largo-plazo en la sociedad. Vota a favor, en contra o abstencion de la siguiente propuesta."
         system_prompt_2 = ". Responde únicamente con 'a favor', 'en contra' o 'abstención'."
         user_prompt_1 = "La iniciativa es: "
         user_prompt_2 = ""
 
     # Label variations
-    elif prompt_no == 5:  # 'Agree/Disagree' labels
+    elif prompt_no == 4:  # 'Agree/Disagree' labels
         system_prompt_1 = "Estas de acuerdo o no con la siguiente iniciativa votada en el Congreso de los diputados."
-        system_prompt_2 = ". Unicamente responde con 'de acuerdo', 'en contra' o 'no contesto'."
+        system_prompt_2 = ". Unicamente responde con una palabra. Eligue entre: 'de acuerdo', 'en contra' o 'no contesto'."
         user_prompt_1 = "La iniciativa es: "
         user_prompt_2 = ""
 
@@ -249,7 +242,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     #     user_prompt_2 = ""
 
     # Initiative in English
-    elif prompt_no == 6:
+    elif prompt_no == 5:
         system_prompt_1 = "Vote against, abstain or for the following motion in Spanish"
         system_prompt_2 = ". Only respond with 'against', 'for' or 'abstain'."
         user_prompt_1 = "The motion in Spanish: "
@@ -448,21 +441,38 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         generated_text = re.sub(r'[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]', '', generated_text)
         generated_text = generated_text if generated_text != "" else "blank"
 
+        # # Normalize generated text (robust partial matching)
+        # norm = generated_text.lower().strip()
+        # norm = re.sub(r'[^a-záéíóúñü ]', '', norm)  # Remove punctuation, keep Spanish chars
+
+        # # Remove multiple spaces
+        # norm = re.sub(r'\s+', ' ', norm)
+
+        # # Robust matching for each class
+        # if norm.startswith("a fav") or norm == "a" or norm.startswith("afav") or norm.startswith("afav") or norm.startswith("a fa"):
+        #     vote_text = "a favor"
+        #     vote_value = 1
+        # elif norm.startswith("en cont") or norm.startswith("contra") or norm.startswith("encon") or norm == "en" or norm == "c" or norm == "no":
+        #     vote_text = "en contra"
+        #     vote_value = -1
+        # elif norm.startswith("abst") or "abstención" in norm or "me abstengo" in norm or "abstenerse" in norm:
+        #     vote_text = "abstención"
+        #     vote_value = 0
+        # else:
+        #     vote_text = "otro"
+        #     vote_value = 0
         # Normalize generated text (robust partial matching)
         norm = generated_text.lower().strip()
         norm = re.sub(r'[^a-záéíóúñü ]', '', norm)  # Remove punctuation, keep Spanish chars
+        norm = re.sub(r'\s+', ' ', norm)  # Remove multiple spaces
 
-        # Remove multiple spaces
-        norm = re.sub(r'\s+', ' ', norm)
-
-        # Robust matching for each class
-        if norm.startswith("a fav") or norm == "a" or norm.startswith("afav") or norm.startswith("afav") or norm.startswith("a fa"):
+        if "a favor" in norm or "afavor" in norm:
             vote_text = "a favor"
             vote_value = 1
-        elif norm.startswith("en cont") or norm.startswith("contra") or norm.startswith("encon") or norm == "en" or norm == "c" or norm == "no":
+        elif "en contra" in norm or "encontra" in norm or "contra" in norm:
             vote_text = "en contra"
             vote_value = -1
-        elif norm.startswith("abst") or "abstención" in norm or "me abstengo" in norm or "abstenerse" in norm:
+        elif "abstención" in norm or "abstencion" in norm or "me abstengo" in norm or "abstenerse" in norm:
             vote_text = "abstención"
             vote_value = 0
         else:

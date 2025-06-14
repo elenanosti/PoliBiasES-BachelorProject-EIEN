@@ -516,11 +516,15 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         against_synonyms = [...]
         abstain_synonyms = [...]
 
-        # 1. Exact match (including main labels)
+        # 1. Exact match
         if norm in main_labels:
-            vote_text = "a favor" if norm.startswith("a favor") else norm
+            vote_text = norm
             vote_value = main_labels[norm]
-        # 2. Synonym match (word boundaries)
+        # 2. Partial/short matches for "en contra"
+        elif norm in ["en", "en co", "encont", "encontra", "contra"]:
+            vote_text = "en contra"
+            vote_value = -1
+        # 3. Synonym match (word boundaries)
         elif any(re.search(rf"\b{s}\b", norm) for s in for_synonyms):
             vote_text = "a favor"
             vote_value = 1
@@ -530,7 +534,6 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         elif any(re.search(rf"\b{s}\b", norm) for s in abstain_synonyms):
             vote_text = "abstención"
             vote_value = 0
-        # 3. Fallback: blank/other
         elif norm == "" or norm == "blank":
             vote_text = "abstención"
             vote_value = 0

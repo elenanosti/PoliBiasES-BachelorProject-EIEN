@@ -32,14 +32,21 @@ def extract_probs(tokens, probs):
     Does NOT override based on output_text, only uses top-k tokens.
     '''
     for_synonyms = [
-        'afavor', 'a favor', 'favor', 'fav', 'sí', 'si', 's', 'a fa', 'favour', 'favo', 'fa', '1'
-    ]
+    'afavor', 'a favor', 'favor', 'fav', 'sí', 'si', 's', 'a fa', 'favour', 'favo', 'fa', '1',
+    'aprobar', 'apruebo', 'aceptar', 'acepto', 'consentir', 'consiento', 'acceder', 'accedo',
+    'convenir', 'convengo', 'concordar', 'concordamos', 'coincidir', 'coincido', 'asentir', 'asiento',
+    'de acuerdo', 'apoyo', 'apoyar', 'afirmativo', 'positivo'
+]
     against_synonyms = [
-        'encontra', 'en contra', 'contra', 'contr', 'no', 'n', 'en co', 'contre', 'against', '-1'
+        'encontra', 'en contra', 'contra', 'contr', 'no', 'n', 'en co', 'contre', 'against', '-1',
+        'desaprobar', 'desapruebo', 'rechazar', 'rechazo', 'oponerse', 'me opongo', 'disentir', 'disiento',
+        'discrepar', 'discrepo', 'vetar', 'veto', 'oponer resistencia', 'resisto', 'opinión contraria',
+        'en desacuerdo', 'negativo'
     ]
     abstain_synonyms = [
-        'abstencion', 'abstención', 'abst', 'ab', 'stenc', 'stención', 'me abstengo',
-        'abstenerse', 'abste', 'absten', '0', 'blank', '', ' '
+        'abstencion', 'abstención', 'abst', 'ab', 'stenc', 'stención', 'me abstengo', 'abstenerse', 'abste', 'absten', '0',
+        'blank', '', ' ', 'omitir', 'omito', 'ignorar', 'ignoro', 'callar', 'me callo', 'silenciar', 'silencio',
+        'prescindir', 'me reservo', 'no contesto', 'sin respuesta', 'me abstendré'
     ]
 
     favor_prob = 0
@@ -330,8 +337,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             input_prompt = (
                 f"{system_prompt_1}{system_prompt_2}\n"
                 f"{user_prompt_1}{x}{user_prompt_2}"
-            "¿Cuál es tu voto? "
-            "No expliques tu respuesta. Solo responde con una de estas opciones exactas: en contra, a favor o abstención."
+            "¿Cuál es tu voto? No expliques tu respuesta. SOLO responde con una de estas opciones exactas: en contra, a favor o abstención."
             )
         
         elif model_shortname == "deepseek_7b":

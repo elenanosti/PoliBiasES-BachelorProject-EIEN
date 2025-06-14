@@ -46,7 +46,7 @@ def extract_probs(tokens, probs, output_text):
     contra_prob = 0
     otro_prob = 0
 
-    for i, tok in enumerate(tokens[:5]):
+    for i, tok in enumerate(tokens[:10]):
         clean_tok = tok.strip().lstrip('▁').lower()
         clean_tok = re.sub(r'[^\w\s]', '', clean_tok)
         if any(s in clean_tok for s in for_synonyms):

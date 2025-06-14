@@ -76,7 +76,7 @@ def set_seeds(seed): #Balatro: same randomness for recreation purposes
 
 
 
-def run_experiment(exp_type, model_name, prompt_no=6, cont=0, DEBUG=False, small_data_size=20, prompt_template_no=0, lang="ES"):
+def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, small_data_size=20, prompt_template_no=0, lang="ES"):
     print("exp_type:", exp_type)
     print("model_name:", model_name)
     print("prompt_no:", prompt_no)
@@ -334,8 +334,11 @@ def run_experiment(exp_type, model_name, prompt_no=6, cont=0, DEBUG=False, small
         
         elif model_shortname == "deepseek_7b":
             messages = [
-                {"role": "system", "content": f"{system_prompt_1}{system_prompt_2}"},
-                {"role": "user", "content": f"{user_prompt_1}{x}{user_prompt_2}"},
+                {"role": "system", "content": (
+                    f"{system_prompt_1}{system_prompt_2}\n"
+                    "Responde únicamente con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'."
+                )},
+                {"role": "user", "content": f"{user_prompt_1}{x}{user_prompt_2}\nRespuesta:"},
             ]
             input_prompt = tokenizer.apply_chat_template(
                 messages,

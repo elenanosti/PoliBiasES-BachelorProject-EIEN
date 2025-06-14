@@ -259,8 +259,8 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     else:
         print("unknown prompt")
 
-    temp_high = 1 # Model answers can be creative/random (temperature = 1, fully random).
-    temp_low = 0.0000001 # # Model answers are deterministic (temperature = 0, no randomness).
+    # temp_high = 1 # Model answers can be creative/random (temperature = 1, fully random).
+    # temp_low = 0.0000001 # # Model answers are deterministic (temperature = 0, no randomness).
             
     if model_name == "":
         pass
@@ -423,7 +423,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 pad_token_id=pad_token_id,
                 max_new_tokens=max_new_tokens,
                 do_sample=False, # deterministic
-                temperature=0,   # deterministic
+                temperature=1,   # deterministic
                 output_scores=True,
                 return_dict_in_generate=True,
             )

@@ -492,7 +492,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         'de acuerdo', 'apoyo', 'apoyar', 'afirmativo', 'positivo', 'for'
         ]
         against_synonyms = [
-            'encontra', 'en contra', 'contra', 'contr', 'no', 'n', 'en co', 'contre', 'against', '-1',
+            'encontra', 'en contra', 'contra', 'contr', 'no', 'en', 'en co', 'contre', 'against', '-1',
             'desaprobar', 'desapruebo', 'rechazar', 'rechazo', 'oponerse', 'me opongo', 'disentir', 'disiento',
             'discrepar', 'discrepo', 'vetar', 'veto', 'oponer resistencia', 'resisto', 'opinión contraria',
             'en desacuerdo', 'negativo','against'

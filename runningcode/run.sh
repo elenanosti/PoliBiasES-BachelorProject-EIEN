@@ -3,7 +3,7 @@
 #SBATCH --account=eei440                
 #SBATCH --nodes=1                                        
 #SBATCH --time=0-24:00:00
-#SBATCH --array=0
+#SBATCH --array=0,1,2,3
 
 # === NEW: Set cache directory to scratch space ===
 export LOCAL_SCRATCH="/local/$USER"

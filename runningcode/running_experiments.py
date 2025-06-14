@@ -31,13 +31,13 @@ def extract_probs(tokens, probs):
     extracts the probabilities for the tokens 'for' and 'against' from the top_k tokens which the model generates
     '''
     for_synonyms = [
-        'afavor', 'a favor', 'favor', 'fav', 'sí', 'si', 's', 'a fa', 'a fa', 'favour', 'favo', 'fa'
+        'afavor', 'a favor', 'favor', 'fav', 'sí', 'si', 's', 'a fa', 'a fa', 'favour', 'favo', 'fa', '1'
     ]
     against_synonyms = [
-        'encontra', 'en contra', 'contra', 'contr', 'no', 'n', 'en co', 'en co', 'contre', 'against'
+        'encontra', 'en contra', 'contra', 'contr', 'no', 'n', 'en co', 'en co', 'contre', 'against', '-1'
     ]
     abstain_synonyms = [
-        'abstencion', 'abstención', 'abst', 'ab', 'stenc', 'stención', 'me abstengo', 'abstenerse', 'abste', 'absten'
+        'abstencion', 'abstención', 'abst', 'ab', 'stenc', 'stención', 'me abstengo', 'abstenerse', 'abste', 'absten', '0'
     ]
 
     favor_prob = 0
@@ -329,6 +329,11 @@ def run_experiment(exp_type, model_name, prompt_no=12, cont=0, DEBUG=False, smal
             input_prompt = (
                 f"{system_prompt_1}{system_prompt_2}\n"
                 f"{user_prompt_1}{x}{user_prompt_2}"
+            "Opciones:\n"
+            "1. A favor\n"
+            "-1. En contra\n"
+            "0. Abstención\n"   
+            "Responde solo con el número de la opción correcta." 
             )
         
         elif model_shortname == "deepseek_7b":

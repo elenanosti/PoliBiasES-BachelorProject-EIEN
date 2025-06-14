@@ -26,7 +26,7 @@ from huggingface_hub import login
 os.environ["HF_HOME"] = "/var/scratch/eei440/hf_cache"
 os.makedirs(os.environ["HF_HOME"], exist_ok=True)
 
-def extract_probs(tokens, probs, output_text):
+def extract_probs(tokens, probs):
     '''
     Extracts the probabilities for the tokens 'for', 'against', and 'abstain' from the top_k tokens.
     Does NOT override based on output_text, only uses top-k tokens.
@@ -60,13 +60,6 @@ def extract_probs(tokens, probs, output_text):
         favor_prob /= total
         contra_prob /= total
         otro_prob /= total
-
-    # Optionally: warn if output_text doesn't match any top-k token
-    clean_output = output_text.strip().lower()
-    clean_output = re.sub(r'[^\w\s]', '', clean_output)
-    all_synonyms = for_synonyms + against_synonyms + abstain_synonyms
-    if not any(s in clean_output for s in all_synonyms):
-        print(f"[WARNING] Output '{output_text}' does not match any known synonym.")
 
     return favor_prob, contra_prob, otro_prob
 

@@ -381,16 +381,20 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             ) 
         
         elif model_shortname in ["falcon3_7b", "gemma2_9b"]:
-            # Try plain prompt, no chat template
-            input_prompt = [
-                "Vota SOLO una de las TRES opciónes exactas, nada más:\n"
-                "- a favor\n"
-                "- en contra\n"
-                "- abstención\n"
-                
-                f"Iniciativa: {x}\n"
-                "Respuesta:"
-        ]
+            messages = [
+                {"role": "system", "content": (
+                    "Vota SOLO una de las TRES opciónes exactas, nada más:\n"
+                    "- a favor\n"
+                    "- en contra\n"
+                    "- abstención"
+                )},
+                {"role": "user", "content": f"Iniciativa: {x}\nRespuesta:"},
+            ]
+            input_prompt = tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True
+            )
 
         else:
             print(f"[WARNING] No prompt template defined for model_shortname '{model_shortname}'")

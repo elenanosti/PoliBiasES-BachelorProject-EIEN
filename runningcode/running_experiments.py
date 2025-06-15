@@ -177,8 +177,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     #     parties_short = direction_codes  # Already language-agnostic
     
     # Tells the model: “Only generate up to 3 new tokens (words or pieces of words)” for each answer.
-    max_new_tokens = 5
-
+    max_new_tokens = 8
     # Prompts
     system_prompt_1 = ""
     system_prompt_2 = ""
@@ -384,7 +383,9 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             # Try plain prompt, no chat template
             input_prompt = [
                 "Vota SOLO una de las TRES opciónes exactas, nada más:\n"
-                "- a favor\n", "- en contra\n", "- abstención\n"
+                "- a favor\n"
+                "- en contra\n"
+                "- abstención\n"
                 f"Iniciativa: {x}\n"
                 "Respuesta:"
         ]

@@ -383,10 +383,10 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         elif model_shortname in ["falcon3_7b", "gemma2_9b"]:
             # Try plain prompt, no chat template
             input_prompt = [
-                "Vota, y escribe SOLO una de las opciónes (3) exacta, nada más:\n"
-                "- a favor\n"
-                "- en contra\n"
-                "- abstención\n"
+                "Vota, y escribe SOLO una de las tres opciónes exactas, nada más:\n"
+                "1 a favor\n"
+                "2 en contra\n"
+                "3 abstención\n"
                 
                 f"Iniciativa: {x}\n"
                 "Respuesta:"

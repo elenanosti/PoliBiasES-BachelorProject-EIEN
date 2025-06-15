@@ -383,13 +383,13 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         elif model_shortname in ["falcon3_7b", "gemma2_9b"]:
             # Try plain prompt, no chat template
             input_prompt = (
-                f"Solo responde con una de estas opciones exactas:"
+                f"Elige UNA de estas opciones y escribe SOLO la opción exacta, nada más:\n"
                 "a favor\n"
                 "en contra\n"
-                "abstención\n"
-                "No expliques. No añadas nada más.\n"
-                f"Iniciativa: {x}\nRespuesta:"
-            )
+                "abstención\n\n"
+                "Iniciativa: " + {x} + "\n"
+                "Respuesta:"
+        )
 
         else:
             print(f"[WARNING] No prompt template defined for model_shortname '{model_shortname}'")

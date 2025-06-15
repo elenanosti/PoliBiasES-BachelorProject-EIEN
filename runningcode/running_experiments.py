@@ -384,10 +384,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             # Try plain prompt, no chat template
             input_prompt = [
                 "Vota SOLO una de las TRES opciónes exactas, nada más:\n"
-                "- a favor\n"
-                "- en contra\n"
-                "- abstención\n"
-                
+                "- a favor\n", "- en contra\n", "- abstención\n"
                 f"Iniciativa: {x}\n"
                 "Respuesta:"
         ]
@@ -395,7 +392,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         elif model_shortname == "gemma2_9b":
             messages = [
                 {"role": "user", "content": (
-                    "Vota SOLO una de las TRES opciónes exactas, nada más:\n"
+                    "Vota SOLO una de las TRES opciónes exactas, SIN explicación:\n"
                     "- a favor\n"
                     "- en contra\n"
                     "- abstención\n"

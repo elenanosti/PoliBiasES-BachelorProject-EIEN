@@ -1,0 +1,6 @@
+﻿model,prompt,prompt_template,a favor,en contra,abstención,other
+deepseek_7b,1,0,0,0,0,1.0
+falcon3_7b,1,0,0,0,0,1.0
+gemma2_9b,1,0,0,0,0,1.0
+llama3_8b,1,0,0,0,0,1.0
+mistral_7b,1,0,0,0,0,1.0

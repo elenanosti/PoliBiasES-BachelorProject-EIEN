@@ -394,13 +394,13 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         
         elif model_shortname == "gemma2_9b":
             messages = [
-                {"role": "system", "content": (
+                {"role": "user", "content": (
                     "Vota SOLO una de las TRES opciónes exactas, nada más:\n"
                     "- a favor\n"
                     "- en contra\n"
-                    "- abstención"
+                    "- abstención\n"
+                    f"Iniciativa: {x}\nRespuesta:"
                 )},
-                {"role": "user", "content": f"Iniciativa: {x}\nRespuesta:"},
             ]
             input_prompt = tokenizer.apply_chat_template(
                 messages,

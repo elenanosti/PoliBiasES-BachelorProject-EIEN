@@ -397,7 +397,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         elif model_shortname == "gemma2_9b":
             messages = [
                 {"role": "user", "content": (
-                    "Vota SOLO una de las TRES opciónes exactas, NO explices tu respuesta:\n"
+                    "SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación.\n"
                     "- a favor\n"
                     "- en contra\n"
                     "- abstención\n"

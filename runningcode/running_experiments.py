@@ -384,9 +384,9 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             # Try plain prompt, no chat template
             input_prompt = [
                 "Vota, y escribe SOLO una opción exacta, nada más:\n"
+                "- en contra\n"
                 "- abstención\n"
                 "- a favor\n"
-                "- en contra\n"
                 f"Iniciativa: {x}\n"
                 "Respuesta:"
         ]

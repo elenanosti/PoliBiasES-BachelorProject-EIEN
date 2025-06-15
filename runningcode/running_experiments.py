@@ -380,7 +380,19 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 add_generation_prompt=True
             ) 
         
-        elif model_shortname in ["falcon3_7b", "gemma2_9b"]:
+        elif model_shortname in "falcon3_7b":
+            # Try plain prompt, no chat template
+            input_prompt = [
+                "Vota SOLO una de las TRES opciónes exactas, nada más:\n"
+                "- a favor\n"
+                "- en contra\n"
+                "- abstención\n"
+                
+                f"Iniciativa: {x}\n"
+                "Respuesta:"
+        ]
+        
+        elif model_shortname == "gemma2_9b":
             messages = [
                 {"role": "system", "content": (
                     "Vota SOLO una de las TRES opciónes exactas, nada más:\n"

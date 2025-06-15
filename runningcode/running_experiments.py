@@ -534,10 +534,16 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         if norm in main_labels:
             vote_text = norm
             vote_value = main_labels[norm]
-        # 2. If "favor" is present, always "a favor"
-        elif "favor" in norm:
+        # 2. If "a favor", "en contra", or "abstención" appear anywhere in the output
+        elif "a favor" in norm:
             vote_text = "a favor"
             vote_value = 1
+        elif "en contra" in norm:
+            vote_text = "en contra"
+            vote_value = -1
+        elif "abstención" in norm or "abstencion" in norm:
+            vote_text = "abstención"
+            vote_value = 0
         # 3. If output is "en", "en co", "encont", "encontra", "contra" (and does NOT contain "favor")
         elif norm in ["en", "en co", "encont", "encontra", "contra"]:
             vote_text = "en contra"

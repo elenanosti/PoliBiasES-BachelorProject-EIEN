@@ -214,14 +214,6 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         user_prompt_1 = "Iniciativa: "
         user_prompt_2 = "\nRespuesta:"
     
-    if prompt_no == 101:
-        system_prompt_1 = (
-            "[INST] Responde SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. [/INST]"
-        )
-        system_prompt_2 = ""
-        user_prompt_1 = "Iniciativa: "
-        user_prompt_2 = "\nRespuesta:"
-    
     # Instructional detail variation
     elif prompt_no == 3:  # With extra detail
         system_prompt_1 = "Considera los effectos de corto- y largo-plazo en la sociedad. Vota a favor, en contra o abstencion de la siguiente propuesta."
@@ -389,11 +381,13 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             ) 
         
         elif model_shortname in ["falcon3_7b", "gemma2_9b"]:
-            # Try plain prompt, no chat template
             input_prompt = (
-                f"Solo responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
-                "No expliques. No añadas nada más.\n"
-                f"Iniciativa: {x}\nRespuesta:"
+                f"Elige solo una de estas opciones exactas (escribe solo la opción, nada más):\n"
+                "a favor\n"
+                "en contra\n"
+                "abstención\n"
+                "Iniciativa: " + {x} + "\n"
+                "Respuesta:"
             )
 
         else:

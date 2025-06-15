@@ -177,7 +177,11 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     #     parties_short = direction_codes  # Already language-agnostic
     
     # Tells the model: “Only generate up to 3 new tokens (words or pieces of words)” for each answer.
-    max_new_tokens = 8
+    if model_shortname == "gemma2_9b":
+        max_new_tokens = 8
+    else: 
+        max_new_tokens = 3  # Default for most models
+    
     # Prompts
     system_prompt_1 = ""
     system_prompt_2 = ""
@@ -393,7 +397,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         elif model_shortname == "gemma2_9b":
             messages = [
                 {"role": "user", "content": (
-                    "Vota SOLO una de las TRES opciónes exactas, SIN explicación:\n"
+                    "Vota SOLO una de las TRES opciónes exactas, NO explices tu respuesta:\n"
                     "- a favor\n"
                     "- en contra\n"
                     "- abstención\n"

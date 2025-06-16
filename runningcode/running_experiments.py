@@ -198,7 +198,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     
     # Tells the model: “Only generate up to 3 new tokens (words or pieces of words)” for each answer.
     if model_shortname == "gemma2_9b" or model_shortname == "aguila7b":
-        max_new_tokens = 100
+        max_new_tokens = 10
     else: 
         max_new_tokens = 3  # Default for most models
     
@@ -432,9 +432,10 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         elif model_shortname == "aguila7b":
             input_prompt = (
             f"Iniciativa: {x}\n"
-            "Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'."
+            "Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
+            "No expliques tu respuesta. No añadas nada más. Tienes que elegir.\n"
         )
-
+            
         else:
             print(f"[WARNING] No prompt template defined for model_shortname '{model_shortname}'")
             continue

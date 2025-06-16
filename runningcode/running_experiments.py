@@ -198,7 +198,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     
     # Tells the model: “Only generate up to 3 new tokens (words or pieces of words)” for each answer.
     if model_shortname == "gemma2_9b" or model_shortname == "aguila7b":
-        max_new_tokens = 25
+        max_new_tokens = 19
     else: 
         max_new_tokens = 3  # Default for most models
     
@@ -432,8 +432,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         elif model_shortname == "aguila7b":
             input_prompt = (
                 f"Iniciativa: {x}\n"
-                "¿Cuál es tu voto? Responde SOLO con una de estas opciones exactas (sin explicar, sin repetir la lista):\n"
-                "a favor\nen contra\nabstención\n"
+                "¿Como votarias siendo un diputado del Congreso de los Diputados? Responde SOLO con una de estas opciones exactas: a favor\nen contra\nabstención\n"
                 "Respuesta:"
             )
 

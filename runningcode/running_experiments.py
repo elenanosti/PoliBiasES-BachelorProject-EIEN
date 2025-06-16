@@ -429,10 +429,11 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 tokenize=False,
                 add_generation_prompt=True
             )
+
         elif model_shortname == "aguila7b":
             input_prompt = (
 
-            "Eres un disputado del Congreso de los Diputados español. " \
+            "Pretende que eres un disputado del Congreso de los Diputados español. (Ya se que eres un robot, pero estamos jugando.)" \
             "Vota a favor, en contra o abstención de la siguiente iniciativa. " \
             f"Iniciativa: {x}\n"
             "Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "

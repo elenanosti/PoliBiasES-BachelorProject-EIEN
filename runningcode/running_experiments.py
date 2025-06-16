@@ -133,6 +133,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     else:
         torch_dtype = torch.float32
 
+    """ Trying aguila-7b-instruct model
     # Load model + tokenizer with token
     start = time.time()
     try:
@@ -148,7 +149,21 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     except Exception as e:
         print(f"Failed to load model {model_name}: {e}")
         exit(1)
-
+    """
+    start = time.time()
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(model_path, token=access_token)
+        model = AutoModelForCausalLM.from_pretrained(
+            model_path,
+            torch_dtype=torch_dtype,
+            low_cpu_mem_usage=True,
+            token=access_token
+        )
+        model = model.to(device)
+        print(f"Model loaded in {time.time() - start:.2f} seconds and moved to {device}")
+    except Exception as e:
+        print(f"Failed to load model {model_name}: {e}")
+        exit(1)
 
     # get the motions
     df = get_dataset(DEBUG, small_data_size, variant=0, exp=exp_type, lang=lang)
@@ -677,8 +692,10 @@ MODEL_SHORTNAMES = {
         "Llama-3-70B-instruct": "llama3_70b",
         "Mistral-7B-instruct": "mistral_7b",
         "Gemma-2-9B-instruct": "gemma2_9b",
-        "deepseek-llm-7b-chat": "deepseek_7b"
+        "deepseek-llm-7b-chat": "deepseek_7b",
+        "Aguila-7B-instruct": "aguila7b"
     }    
+
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()

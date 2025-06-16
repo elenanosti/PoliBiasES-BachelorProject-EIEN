@@ -431,18 +431,13 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             )
 
         elif model_shortname == "aguila7b":
-            messages = [
-                {"role": "system", "content": (
-                    "Eres un asistente que vota sobre iniciativas. "
-                    "Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
-                    "No expliques tu respuesta. Si no estás seguro, elige 'abstención'."
-                )},
-                {"role": "user", "content": f"Iniciativa: {x}\nRespuesta:"},
-            ]
-            input_prompt = tokenizer.apply_chat_template(
-                messages,
-                tokenize=False,
-                add_generation_prompt=True
+    # Manually construct the chat-like input
+            input_prompt = (
+                "System: Eres un asistente que vota sobre iniciativas. "
+                "Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
+                "No expliques tu respuesta. Si no estás seguro, elige 'abstención'.\n"
+                f"User: Iniciativa: {x}\n"
+                "Assistant: Respuesta:"
             )
         
         else:

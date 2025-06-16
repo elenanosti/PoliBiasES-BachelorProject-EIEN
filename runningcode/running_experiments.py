@@ -432,7 +432,10 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         elif model_shortname == "aguila7b":
             input_prompt = (
                 f"Iniciativa: {x}\n"
-                "¿Como votarias siendo un diputado del Congreso de los Diputados? Responde SOLO con una de estas opciones exactas: a favor\nen contra\nabstención\n"
+                "Responde SOLO con una de estas opciones:"
+                "- abstención\n"
+                "- en contra\n"
+                "- a favor\n"
                 "Respuesta:"
             )
 

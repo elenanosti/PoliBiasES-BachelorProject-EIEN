@@ -431,12 +431,11 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             )
         elif model_shortname == "aguila7b":
             input_prompt = (
+                "Ejemplo:\n"
+                "Iniciativa: Propuesta para reducir impuestos.\n"
+                "Respuesta: en contra\n\n"
                 f"Iniciativa: {x}\n"
-                "Responde SOLO con una de estas opciones:"
-                "- abstención\n"
-                "- en contra\n"
-                "- a favor\n"
-                "Respuesta:"
+                "¿Cuál es tu voto? Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'."
             )
 
         else:

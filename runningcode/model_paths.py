@@ -8,6 +8,7 @@ MODEL_PATHS = {
     "Gemma-2-9B-instruct": "google/gemma-2b-it",  # No official 9B; this is a placeholder if needed
     "deepseek-llm-7b-chat": "deepseek-ai/deepseek-llm-7b-chat",
     "Llama-3-8B-instruct": "meta-llama/Meta-Llama-3-8B-Instruct",
-    "Llama-3-70B-Instruct": "meta-llama/Meta-Llama-3-70B-Instruct",
+    "Aguila-7B-instruct": "edumunozsala/aguila-7b-instructft-bactrian-x",   
+    #"Llama-3-70B-Instruct": "meta-llama/Meta-Llama-3-70B-Instruct",
 }
 

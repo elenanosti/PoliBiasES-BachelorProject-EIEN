@@ -409,6 +409,16 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 tokenize=False,
                 add_generation_prompt=True
             )
+        elif model_shortname == "aguila7b":
+            # Use a plain, direct prompt (Aguila is not chat-tuned)
+            input_prompt = (
+                "Vota SOLO una de las TRES opciones exactas, nada más:\n"
+                "- a favor\n"
+                "- en contra\n"
+                "- abstención\n"
+                f"Iniciativa: {x}\n"
+                "Respuesta:"
+            )
 
         else:
             print(f"[WARNING] No prompt template defined for model_shortname '{model_shortname}'")

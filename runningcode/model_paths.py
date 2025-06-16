@@ -1,5 +1,5 @@
 from definitions import (
-     mistral_name, falcon3_name, gemma2_name, deepseek_name, llama3_name, llama70_name
+     mistral_name, falcon3_name, gemma2_name, deepseek_name, llama3_name #, llama70_name
 )
 
 MODEL_PATHS = {

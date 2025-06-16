@@ -431,11 +431,13 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             )
         elif model_shortname == "aguila7b":
             input_prompt = (
-                "Vota SOLO una de las TRES opciones exactas, nada más:\n"
-                "a) a favor\n"
-                "b) en contra\n"
-                "c) abstención\n"
-                f"Iniciativa: {x}\nRespuesta:"
+                "Elige SOLO UNA de estas opciones exactas (escribe solo la opción, nada más):\n"
+                "- a favor\n"
+                "- en contra\n"
+                "- abstención\n"
+                "Escribe solo la opción, sin repetir la lista ni añadir explicación."
+                f"Iniciativa: {x}\n"
+                "Respuesta:"
             )
 
         else:

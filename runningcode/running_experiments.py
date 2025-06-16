@@ -432,11 +432,11 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
 
         elif model_shortname == "aguila7b":
             input_prompt = (
-                f"Iniciativa: {x}\n"
-                "Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
+                f"Esta es la iniciativa: {x}\n"
+                "Vota sobre esta iniciativa. Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
                 "No expliques tu respuesta. Si no estás seguro, elige 'abstención'."
-            )
-            
+            )   
+        
         else:
             print(f"[WARNING] No prompt template defined for model_shortname '{model_shortname}'")
             continue

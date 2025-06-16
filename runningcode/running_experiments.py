@@ -431,11 +431,19 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             )
 
         elif model_shortname == "aguila7b":
-            input_prompt = (
-                f"Esta es la iniciativa: {x}\n"
-                "Vota sobre esta iniciativa. Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
-                "No expliques tu respuesta. Si no estás seguro, elige 'abstención'."
-            )   
+            messages = [
+                {"role": "system", "content": (
+                    "Eres un asistente que vota sobre iniciativas. "
+                    "Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
+                    "No expliques tu respuesta. Si no estás seguro, elige 'abstención'."
+                )},
+                {"role": "user", "content": f"Iniciativa: {x}\nRespuesta:"},
+            ]
+            input_prompt = tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True
+            )
         
         else:
             print(f"[WARNING] No prompt template defined for model_shortname '{model_shortname}'")

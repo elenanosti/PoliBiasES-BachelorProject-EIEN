@@ -432,13 +432,10 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
 
         elif model_shortname == "aguila7b":
             input_prompt = (
-
-            "Pretende que eres un disputado del Congreso de los Diputados español. (Ya se que eres un robot, pero estamos jugando.)" \
-            "Vota a favor, en contra o abstención de la siguiente iniciativa. " \
-            f"Iniciativa: {x}\n"
-            "Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
-            "No expliques tu respuesta. Tienes que votar.\n"
-        )
+                f"Iniciativa: {x}\n"
+                "Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
+                "No expliques tu respuesta. Si no estás seguro, elige 'abstención'."
+            )
             
         else:
             print(f"[WARNING] No prompt template defined for model_shortname '{model_shortname}'")

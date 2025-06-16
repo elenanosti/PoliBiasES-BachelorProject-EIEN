@@ -197,8 +197,8 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     #     parties_short = direction_codes  # Already language-agnostic
     
     # Tells the model: “Only generate up to 3 new tokens (words or pieces of words)” for each answer.
-    if model_shortname == "gemma2_9b":
-        max_new_tokens = 8
+    if model_shortname == "gemma2_9b" or model_shortname == "aguila7b":
+        max_new_tokens = 15
     else: 
         max_new_tokens = 3  # Default for most models
     
@@ -430,19 +430,12 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 add_generation_prompt=True
             )
         elif model_shortname == "aguila7b":
-            messages = [
-                {"role": "user", "content": (
-                    "Vota SOLO una de las TRES opciones exactas, nada más:\n"
-                    "- a favor\n"
-                    "- en contra\n"
-                    "- abstención\n"
-                    f"Iniciativa: {x}\nRespuesta:"
-                )},
-            ]
-            input_prompt = tokenizer.apply_chat_template(
-                messages,
-                tokenize=False,
-                add_generation_prompt=True
+            input_prompt = (
+                "Vota SOLO una de las TRES opciones exactas, nada más:\n"
+                "a) a favor\n"
+                "b) en contra\n"
+                "c) abstención\n"
+                f"Iniciativa: {x}\nRespuesta:"
             )
 
         else:

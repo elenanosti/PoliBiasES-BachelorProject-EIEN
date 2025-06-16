@@ -152,13 +152,18 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     """
     start = time.time()
     try:
-        tokenizer = AutoTokenizer.from_pretrained(model_path, token=access_token)
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_path,
+            token=access_token,
+            trust_remote_code=True
+        )
         model = AutoModelForCausalLM.from_pretrained(
             model_path,
             torch_dtype=torch_dtype,
             low_cpu_mem_usage=True,
-            token=access_token
-        )
+            token=access_token,
+            trust_remote_code=True
+     )
         model = model.to(device)
         print(f"Model loaded in {time.time() - start:.2f} seconds and moved to {device}")
     except Exception as e:

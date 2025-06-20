@@ -25,7 +25,10 @@ MODELS=("Gemma-2-9B-instruct") # ("Llama-2-7b""Aguila-7B-instruct" "Llama-3-70B-
 
 PROMPTS=(1)
 PROMPT_TEMPLATES=(0)
-#REPLACES=(2)
+PARTY="Ciudadanos" #['Ciudadanos','Más País','Euzko Alderdi Jeltzalea - Partido Nacionalista Vasco',
+                        # 'Partido Popular','Partido Socialista Obrero Español','Candidatura d\'Unitat Popular',
+                        # 'Esquerra Republicana de Catalunya','Vox','Euskal Herria Bildu', 'Junts per Catalunya']
+STANCE="" # ["de izquierdas", "de derechas", "central"]
 
 MODEL=${MODELS[$SLURM_ARRAY_TASK_ID]}
 
@@ -35,13 +38,13 @@ for prompt in "${PROMPTS[@]}"; do
     #for replace in "${REPLACES[@]}"; do
       echo "Running with model=$MODEL, prompt=$prompt, prompt_template=$prompt_template" #, replace=$replace"
       python3 -u running_experiments.py \
-        --exp=per \
+        --exp=ent \
         --model="$MODEL" \
         --prompt="$prompt" \
         --debug=1 \
-        --datasize=200
-        #--replace="$replace" \
-    #done
+        --datasize=200 \
+        --party="$PARTY" \
+        --stance="$STANCE"
   done
 done
 # -------------------- PARAMETERS --------------------

@@ -164,8 +164,6 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     prompt_suffix = f"prompt={prompt_no}" + (f",TEMPLATE={prompt_template_no}" if prompt_template_no > 0 else "")
     #debug_suffix = (f'_debug' if DEBUG else '')+(f'{small_data_size}' if DEBUG else '')
     results_file = f"results/{model_shortname}_results_{exp_type}_ES_{prompt_suffix}.csv"
-    
-    from_text = " de "  # Use Spanish preposition for "from"
 
     # Picks which parties or personas are being asked to vote.
     if exp_type == "ideology":
@@ -288,8 +286,9 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
        ########################################
         """ CREATING PROMPTS """ 
         ########################################
-
-        party_txt = f'{from_text} el partido: {party_names_ES}' # This is for when doing an entity or persona experiment, where the party is included in the prompt.
+        from_text = " por "  # Use Spanish preposition for "by" {a party}
+        party_txt = f'{from_text}el partido: {party}' if party else "" # This is for when doing an entity or persona experiment, where the party is included in the prompt.
+        stance_txt = f"Tienes una postura políticamente {stance}." if stance else "" # This is for when doing a persona experiment, where the stance is included in the prompt.
         
         # prompt formats from model cards
 
@@ -313,7 +312,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 input_prompt = f"""
                 <|begin_of_text|><|start_header_id|>system<|end_header_id|>
                 {system_prompt_1}{system_prompt_2}
-                Tienes una postura políticamente {direction_ES}. Responde únicamente con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
+                {stance_txt}. Responde únicamente con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
                 <|start_header_id|>user<|end_header_id|>
                 {user_prompt_1}:{x}{user_prompt_2}
                 ¿Cuál es tu voto? Responde exactamente con una de estas opciones: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
@@ -355,7 +354,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 messages = [
                     {"role": "system", "content": (
                         f"{system_prompt_1}{system_prompt_2}\n"
-                        f"Tienes una postura políticamente {direction_ES}. "
+                        f"{stance_txt}\n"
                         "SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
                         "No expliques tu respuesta. No añadas nada más."
                     )},
@@ -398,7 +397,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 ]
             elif exp_type == "persona":
                 input_prompt = [
-                    f"Tienes una postura políticamente {direction_ES}"
+                    f"{stance_txt}"
                     "Vota SOLO una de las TRES opciónes exactas, nada más:\n"
                     "- a favor\n"
                     "- en contra\n"
@@ -440,7 +439,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             elif exp_type == "persona":
                 messages = [
                     {"role": "user", "content": (
-                        f"Tienes una postura políticamente {direction_ES}\n"
+                        f"{stance_txt}\n"
                         "SOLO vota con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación.\n"
                         "- a favor\n"
                         "- en contra\n"
@@ -487,7 +486,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             if exp_type == "persona":
                 input_prompt = (
                     "System: Eres un asistente que vota sobre iniciativas. "
-                    f"Tienes una postura políticamente {direction_ES}"
+                    f"{stance_txt}"
                     "Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
                     "No expliques tu respuesta. Si no estás seguro, elige 'abstención'.\n"
                     f"User: Iniciativa: {x}\n"
@@ -741,16 +740,28 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     result_df.to_csv(results_file, encoding='utf-8-sig', index=True)
     print(f"[DEBUG] Final saved file: {results_file} with {len(result_df)} rows")
     
-
-    if DEBUG and small_data_size == 200 and exp_type == "ideology":
-        update_model_summary(model_shortname, prompt_no, prompt_template_no, result_df, exp_type)
-     
-    if exp_type == "ideology": 
+    # Print the vote distribution
+    if exp_type == "ideology":
         colname = f"{model_shortname}_vote"
         if colname in result_df.columns:
+            print("[DEBUG] Vote distribution for ideology experiment:")
             print(result_df[colname].value_counts() / len(result_df))
         else:
-            print(f"⚠️ Warning: Column '{colname}' not found in model_name.")
+            print(f"⚠️ Warning: Column '{colname}' not found in result_df for ideology experiment.")
+    elif exp_type == "entity":
+        colname = f"{model_shortname}_vote"
+        if colname in result_df.columns:
+            print("[DEBUG] Vote distribution for entity experiment:")
+            print(result_df[colname].value_counts() / len(result_df))
+        else:
+            print(f"⚠️ Warning: Column '{colname}' not found in result_df for entity experiment.")
+    elif exp_type == "persona":
+        colname = f"{model_shortname}_vote"
+        if colname in result_df.columns:
+            print("[DEBUG] Vote distribution for persona experiment:")
+            print(result_df[colname].value_counts() / len(result_df))
+        else:
+            print(f"⚠️ Warning: Column '{colname}' not found in result_df for persona experiment.")
 
 
     elapsed_time = time.time() - start
@@ -780,10 +791,16 @@ if __name__ == "__main__":
     parser.add_argument("--cont", type=int, default=-1, help="continue exp")
     parser.add_argument("--debug", type=int, default=0, help="Debug. 0: No or 1: Yes")
     parser.add_argument("--datasize", type=int, default=20, help="Size of debug dataset (no effect if not debug)")
+    
+    # Optional arguments for entity and persona experiments
+    parser.add_argument("--party", type=str, default="", help="Party name for entity experiments")
+    parser.add_argument("--stance", type=str, default="", help="Political stance for persona experiments")
 
     args = parser.parse_args()
     exp_type = args.exp
     model_name = args.model
+    party = args.party
+    stance = args.stance
 
     model_shortname = MODEL_SHORTNAMES.get(model_name, model_name.lower().replace("-", "_"))
 

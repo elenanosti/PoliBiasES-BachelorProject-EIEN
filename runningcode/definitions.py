@@ -46,7 +46,7 @@ party_names_ES_ex_small = ["PSOE", "PP", "VOX"]  # Example
 party_codes_ex_small = ["psoe", "pp", "vox"]
 
 # Political directions / ideological alignment
-direction_ES = ['izquierda', 'derecha', 'central']
+direction_ES = ['de izquierdas', 'de derechas', 'central']
 direction_codes = ['left', 'right', 'center']
 
 # Party ideology mapping (used for prompt generation and analysis)

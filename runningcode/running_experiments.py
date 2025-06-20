@@ -335,6 +335,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 tokenize=False,
                 add_generation_prompt=True
             )
+            print(f"[DEBUG] Chat templates available: {getattr(tokenizer, 'chat_templates', None)}") #DEBUGPRINT
 
         elif model_shortname in "falcon3_7b":
             # Try plain prompt, no chat template

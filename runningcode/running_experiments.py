@@ -163,8 +163,10 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     # Builds a filename for saving your results, so you always know what experiment they belong to
     prompt_suffix = f"prompt={prompt_no}" + (f",TEMPLATE={prompt_template_no}" if prompt_template_no > 0 else "")
     #debug_suffix = (f'_debug' if DEBUG else '')+(f'{small_data_size}' if DEBUG else '')
-    results_file = f"results/{model_shortname}_results_{exp_type}_ES_{prompt_suffix}.csv"
-
+    results_file = f"results/{model_shortname}_results_{exp_type}_ES_{prompt_suffix}" \
+               f"{f'_stance={re.sub(r'[^a-zA-Z0-9_]', '_', stance)}' if exp_type == 'persona' and stance else ''}" \
+               f"{f'_party={re.sub(r'[^a-zA-Z0-9_]', '_', party)}' if exp_type == 'entity' and party else ''}.csv"
+    
     # Picks which parties or personas are being asked to vote.
     if exp_type == "ideology":
         parties = ['']  # No party-specific prefix

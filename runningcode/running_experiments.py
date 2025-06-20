@@ -699,9 +699,9 @@ MODEL_SHORTNAMES = {
         "Gemma-2-9B-instruct": "gemma2_9b",
         "deepseek-llm-7b-chat": "deepseek_7b",
         "Aguila-7B-instruct": "aguila7b",
-        "Llama-2-7b": "llama_2_7b",
-        "Llama-2-7B-hf": "llama_2_7b"
-    }    
+        "Llama-2-7b": "llama_2_7b",  # Correct mapping
+        "Llama-2-7B-hf": "llama_2_7b"  # Compatibility mapping
+    }
 
 if __name__ == "__main__":
     
@@ -721,6 +721,9 @@ if __name__ == "__main__":
 
     model_shortname = MODEL_SHORTNAMES.get(model_name, model_name.lower().replace("-", "_"))
 
+    print(f"[DEBUG] Model name: {model_name}")
+    print(f"[DEBUG] Model shortname: {model_shortname}")
+    
     # Log in using your token (already saved in file)
     with open("hf_accesstoken.txt") as f:
         content = f.read().strip()

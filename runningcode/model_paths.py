@@ -9,7 +9,6 @@ MODEL_PATHS = {
     "deepseek-llm-7b-chat": "deepseek-ai/deepseek-llm-7b-chat",
     "Llama-3-8B-instruct": "meta-llama/Meta-Llama-3-8B-Instruct",
     "Aguila-7B-instruct": "edumunozsala/aguila-7b-instructft-bactrian-x",
-    "Llama-2-7b": "meta-llama/Llama-2-7b-hf",   
-    #"Llama-3-70B-Instruct": "meta-llama/Meta-Llama-3-70B-Instruct",
+    "Llama-2-7b": "meta-llama/Llama-2-7b-hf",
 }
 

@@ -71,7 +71,6 @@ gemma2_name = 'Gemma2-instruct'
 falcon3_name = 'Falcon3-instruct'
 deepseek_name = 'DeepSeek-instruct'
 aguila_name = 'Aguila-7B-instruct'
-#llama70_name = 'Llama3-70B-instruct'
 
 # Short versions (used in filenames, column labels)
 llama3_name_short = 'Llama3'
@@ -81,7 +80,6 @@ gemma2_name_short = 'Gemma2'
 falcon3_name_short = 'Falcon3'
 deepseek_name_short = 'DeepSeek'
 aguila_name_short = 'Aguila-7B'
-# llama70_name_short = 'Llama3-70B'
 
 
 # Folder for LaTeX output (if needed later)

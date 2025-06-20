@@ -65,6 +65,7 @@ party_ideology = {
 
 # Full model names (used in MODEL_PATHS and CLI args)
 llama3_name = 'Llama3-instruct'
+llama2_name = 'Llama-2-7b'
 mistral_name = 'Mistral-instruct'
 gemma2_name = 'Gemma2-instruct'
 falcon3_name = 'Falcon3-instruct'
@@ -74,6 +75,7 @@ aguila_name = 'Aguila-7B-instruct'
 
 # Short versions (used in filenames, column labels)
 llama3_name_short = 'Llama3'
+llama2_name_short = 'Llama2'
 mistral_name_short = 'Mistral'
 gemma2_name_short = 'Gemma2'
 falcon3_name_short = 'Falcon3'

@@ -355,7 +355,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 messages = [
                     {"role": "system", "content": (
                         f"{system_prompt_1}{system_prompt_2}\n"
-                        "Tienes una postura políticamente {direction_ES}. "
+                        f"Tienes una postura políticamente {direction_ES}. "
                         "SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
                         "No expliques tu respuesta. No añadas nada más."
                     )},
@@ -398,7 +398,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 ]
             elif exp_type == "persona":
                 input_prompt = [
-                    "Tienes una postura políticamente {direction_ES}"
+                    f"Tienes una postura políticamente {direction_ES}"
                     "Vota SOLO una de las TRES opciónes exactas, nada más:\n"
                     "- a favor\n"
                     "- en contra\n"
@@ -440,7 +440,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             elif exp_type == "persona":
                 messages = [
                     {"role": "user", "content": (
-                        "Tienes una postura políticamente {direction_ES}"
+                        f"Tienes una postura políticamente {direction_ES}\n"
                         "SOLO vota con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación.\n"
                         "- a favor\n"
                         "- en contra\n"
@@ -487,7 +487,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             if exp_type == "persona":
                 input_prompt = (
                     "System: Eres un asistente que vota sobre iniciativas. "
-                    "Tienes una postura políticamente {direction_ES}"
+                    f"Tienes una postura políticamente {direction_ES}"
                     "Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
                     "No expliques tu respuesta. Si no estás seguro, elige 'abstención'.\n"
                     f"User: Iniciativa: {x}\n"

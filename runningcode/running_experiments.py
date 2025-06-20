@@ -237,33 +237,6 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         user_prompt_1 = "Iniciativa: "
         user_prompt_2 = "\nRespuesta:"
     
-    # Instructional detail variation
-    elif prompt_no == 3:  # With extra detail
-        system_prompt_1 = "Considera los effectos de corto- y largo-plazo en la sociedad. Vota a favor, en contra o abstencion de la siguiente propuesta."
-        system_prompt_2 = ". Responde únicamente con 'a favor', 'en contra' o 'abstención'."
-        user_prompt_1 = "La iniciativa es: "
-        user_prompt_2 = ""
-
-    # Label variations
-    elif prompt_no == 4:  # 'Agree/Disagree' labels
-        system_prompt_1 = "Estas de acuerdo o no con la siguiente iniciativa votada en el Congreso de los diputados."
-        system_prompt_2 = ". Unicamente responde con una palabra. Eligue entre: 'de acuerdo', 'en contra' o 'no contesto'."
-        user_prompt_1 = "La iniciativa es: "
-        user_prompt_2 = ""
-
-    # Same but synonyms for 'agree' and 'disagree'
-    # elif prompt_no == 5:  # 'Agree/Disagree' labels
-    #     system_prompt_1 = "Estas de acuerdo o no con la siguiente iniciativa votada en el Congreso de los diputados."
-    #     system_prompt_2 = ". Unicamente responde con 'de acuerdo', 'en contra' o 'no contesto'."
-    #     user_prompt_1 = "La iniciativa es: "
-    #     user_prompt_2 = ""
-
-    # elif prompt_no == 5:  # 'Agree/Disagree' labels
-    #     system_prompt_1 = "Estas de acuerdo o no con la siguiente iniciativa votada en el Congreso de los diputados."
-    #     system_prompt_2 = ". Unicamente responde con 'de acuerdo', 'en contra' o 'no contesto'."
-    #     user_prompt_1 = "La iniciativa es: "
-    #     user_prompt_2 = ""
-
     # Initiative in English
     elif prompt_no == 5:
         system_prompt_1 = "Vote against, abstain or for the following motion in Spanish"
@@ -274,8 +247,6 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     else:
         print("unknown prompt")
 
-    # temp_high = 1 # Model answers can be creative/random (temperature = 1, fully random).
-    # temp_low = 0.0000001 # # Model answers are deterministic (temperature = 0, no randomness).
             
     if model_name == "":
         pass
@@ -331,14 +302,15 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                     continue  # <-- This skips to the next item if already answered
 
         # Now, for items that need answers, generate the prompt and call the LLM
-        ########################################
+       
+       ########################################
         """ CREATING PROMPTS """ 
         ########################################
 
         # party_txt = f'{from_text}{party}' # This is for when doing an entity or persona experiment, where the party is included in the prompt.
         
         # prompt formats from model cards
-        if model_shortname =='llama3_8b' or model_shortname == 'llama3_70b':
+        if model_shortname =='llama3_8b' or model_shortname =='llama_2_70b':
             input_prompt = f"""
             <|begin_of_text|><|start_header_id|>system<|end_header_id|>
             {system_prompt_1}{system_prompt_2}
@@ -348,39 +320,8 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             ¿Cuál es tu voto? Responde exactamente con una de estas opciones: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
             <|start_header_id|>assistant<|end_header_id|>
             """
-        elif model_shortname in ['llama2_7b', 'llama_2_7b']:
-            input_prompt = f"""
-            System: {system_prompt_1}{system_prompt_2}
-            User: {user_prompt_1}{x}{user_prompt_2}
-            Assistant: Responde únicamente con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. 
-            No expliques tu respuesta. No añadas nada más. Si no estás seguro, responde 'abstención'.
-            """
-        
-        # elif model_shortname == "mistral_7b":
-        #     input_prompt = (
-        #         #f"{system_prompt_1}{system_prompt_2}\n"
-        #         f"{user_prompt_1}{x}{user_prompt_2}"
-        #         #"No expliques tu respuesta. No añadas nada más.\n"
-        #         "Do not explain your answer. Do not add anything else.\n"
-        #     )
-        # elif model_shortname == "mistral_7b":
-        #             messages = [
-        #                     {"role": "system", "content": f"{system_prompt_1}{system_prompt_2}"},
-        #                     {"role": "user", "content": f"{user_prompt_1}{x}{user_prompt_2}"},
-        #             ]
-        #             input_prompt = tokenizer.apply_chat_template(
-        #                     messages,
-        #                     tokenize=False,
-        #                     add_generation_prompt=True
-        #             )
-        #             print(input_prompt)
-        # elif model_shortname == "mistral_7b":
-        #     input_prompt = (
-        #         f"Iniciativa: {x}"
-        #         "Vota: (elige solo: a favor, en contra, abstención)"
-        #     )
 
-        elif model_shortname == "mistral_7b":
+        elif model_shortname == "mistral_7b" or model_shortname == "deepseek_7b" or model_shortname == "gemma2_9b":
             messages = [
                 {"role": "system", "content": (
                     f"{system_prompt_1}{system_prompt_2}\n"
@@ -394,22 +335,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 tokenize=False,
                 add_generation_prompt=True
             )
-        
-        elif model_shortname == "deepseek_7b":
-            messages = [
-                {"role": "system", "content": (
-                    f"{system_prompt_1}{system_prompt_2}\n"
-                    "SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
-                    "No expliques tu respuesta. No añadas nada más."
-                )},
-                {"role": "user", "content": f"{user_prompt_1}{x}{user_prompt_2}\nRespuesta:"},
-            ]
-            input_prompt = tokenizer.apply_chat_template(
-                messages,
-                tokenize=False,
-                add_generation_prompt=True
-            ) 
-        
+
         elif model_shortname in "falcon3_7b":
             # Try plain prompt, no chat template
             input_prompt = [
@@ -421,24 +347,23 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 "Respuesta:"
         ]
         
-        elif model_shortname == "gemma2_9b":
-            messages = [
-                {"role": "user", "content": (
-                    "SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación.\n"
-                    "- a favor\n"
-                    "- en contra\n"
-                    "- abstención\n"
-                    f"Iniciativa: {x}\nRespuesta:"
-                )},
-            ]
-            input_prompt = tokenizer.apply_chat_template(
-                messages,
-                tokenize=False,
-                add_generation_prompt=True
-            )
+        # elif model_shortname == "gemma2_9b":
+        #     messages = [
+        #         {"role": "user", "content": (
+        #             "SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación.\n"
+        #             "- a favor\n"
+        #             "- en contra\n"
+        #             "- abstención\n"
+        #             f"Iniciativa: {x}\nRespuesta:"
+        #         )},
+        #     ]
+        #     input_prompt = tokenizer.apply_chat_template(
+        #         messages,
+        #         tokenize=False,
+        #         add_generation_prompt=True
+        #     )
 
         elif model_shortname == "aguila7b":
-    # Manually construct the chat-like input
             input_prompt = (
                 "System: Eres un asistente que vota sobre iniciativas. "
                 "Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "

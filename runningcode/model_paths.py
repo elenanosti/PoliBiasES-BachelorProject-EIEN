@@ -1,5 +1,5 @@
 from definitions import (
-     mistral_name, falcon3_name, gemma2_name, deepseek_name, llama3_name #, llama70_name
+     mistral_name, falcon3_name, gemma2_name, deepseek_name, llama3_name, llama2_name # llama70_name
 )
 
 MODEL_PATHS = {
@@ -8,7 +8,8 @@ MODEL_PATHS = {
     "Gemma-2-9B-instruct": "google/gemma-2b-it",  # No official 9B; this is a placeholder if needed
     "deepseek-llm-7b-chat": "deepseek-ai/deepseek-llm-7b-chat",
     "Llama-3-8B-instruct": "meta-llama/Meta-Llama-3-8B-Instruct",
-    "Aguila-7B-instruct": "edumunozsala/aguila-7b-instructft-bactrian-x",   
+    "Aguila-7B-instruct": "edumunozsala/aguila-7b-instructft-bactrian-x",
+    "Llama-2-7b": "meta-llama/Meta-Llama-2-7B",   
     #"Llama-3-70B-Instruct": "meta-llama/Meta-Llama-3-70B-Instruct",
 }
 

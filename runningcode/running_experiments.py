@@ -321,7 +321,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             <|start_header_id|>assistant<|end_header_id|>
             """
 
-        elif model_shortname == "mistral_7b" or model_shortname == "deepseek_7b" or model_shortname == "gemma2_9b":
+        elif model_shortname == "mistral_7b" or model_shortname == "deepseek_7b": # or model_shortname == "gemma2_9b":
             messages = [
                 {"role": "system", "content": (
                     f"{system_prompt_1}{system_prompt_2}\n"
@@ -348,21 +348,21 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 "Respuesta:"
         ]
         
-        # elif model_shortname == "gemma2_9b":
-        #     messages = [
-        #         {"role": "user", "content": (
-        #             "SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación.\n"
-        #             "- a favor\n"
-        #             "- en contra\n"
-        #             "- abstención\n"
-        #             f"Iniciativa: {x}\nRespuesta:"
-        #         )},
-        #     ]
-        #     input_prompt = tokenizer.apply_chat_template(
-        #         messages,
-        #         tokenize=False,
-        #         add_generation_prompt=True
-        #     )
+        elif model_shortname == "gemma2_9b":
+            messages = [
+                {"role": "user", "content": (
+                    "SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación.\n"
+                    "- a favor\n"
+                    "- en contra\n"
+                    "- abstención\n"
+                    f"Iniciativa: {x}\nRespuesta:"
+                )},
+            ]
+            input_prompt = tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True
+            )
 
         elif model_shortname == "aguila7b":
             input_prompt = (

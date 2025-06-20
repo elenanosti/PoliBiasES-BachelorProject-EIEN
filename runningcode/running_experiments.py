@@ -338,7 +338,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         # party_txt = f'{from_text}{party}' # This is for when doing an entity or persona experiment, where the party is included in the prompt.
         
         # prompt formats from model cards
-        if model_shortname in ['llama3_8b', 'llama3_70b', 'llama2_7b', 'llama_2_7b']:
+        if model_shortname =='llama3_8b' or model_shortname == 'llama3_70b':
             input_prompt = f"""
             <|begin_of_text|><|start_header_id|>system<|end_header_id|>
             {system_prompt_1}{system_prompt_2}
@@ -347,6 +347,13 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             {user_prompt_1}{x}{user_prompt_2}
             ¿Cuál es tu voto? Responde exactamente con una de estas opciones: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
             <|start_header_id|>assistant<|end_header_id|>
+            """
+        elif model_shortname in ['llama2_7b', 'llama_2_7b']:
+            input_prompt = f"""
+            System: {system_prompt_1}{system_prompt_2}
+            User: {user_prompt_1}{x}{user_prompt_2}
+            Assistant: Responde únicamente con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. 
+            No expliques tu respuesta. No añadas nada más. Si no estás seguro, responde 'abstención'.
             """
         
         # elif model_shortname == "mistral_7b":

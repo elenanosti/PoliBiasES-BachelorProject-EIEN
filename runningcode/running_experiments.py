@@ -698,7 +698,8 @@ MODEL_SHORTNAMES = {
         "Mistral-7B-instruct": "mistral_7b",
         "Gemma-2-9B-instruct": "gemma2_9b",
         "deepseek-llm-7b-chat": "deepseek_7b",
-        "Aguila-7B-instruct": "aguila7b"
+        "Aguila-7B-instruct": "aguila7b",
+        "Llama-2-7B-hf": "llama2_7b"
     }    
 
 if __name__ == "__main__":

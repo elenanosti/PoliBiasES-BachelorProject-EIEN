@@ -338,7 +338,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         # party_txt = f'{from_text}{party}' # This is for when doing an entity or persona experiment, where the party is included in the prompt.
         
         # prompt formats from model cards
-        if model_shortname == 'llama3_8b' or model_shortname == 'llama3_70b' or model_shortname == 'Llama2_7b':
+        if model_shortname in ['llama3_8b', 'llama3_70b', 'llama2_7b', 'llama_2_7b']:
             input_prompt = f"""
             <|begin_of_text|><|start_header_id|>system<|end_header_id|>
             {system_prompt_1}{system_prompt_2}
@@ -699,7 +699,8 @@ MODEL_SHORTNAMES = {
         "Gemma-2-9B-instruct": "gemma2_9b",
         "deepseek-llm-7b-chat": "deepseek_7b",
         "Aguila-7B-instruct": "aguila7b",
-        "Llama-2-7B-hf": "llama2_7b"
+        "Llama-2-7b": "llama_2_7b",
+        "Llama-2-7B-hf": "llama_2_7b"
     }    
 
 if __name__ == "__main__":

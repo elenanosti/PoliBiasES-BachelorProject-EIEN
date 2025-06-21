@@ -38,7 +38,7 @@ for prompt in "${PROMPTS[@]}"; do
     #for replace in "${REPLACES[@]}"; do
       echo "Running with model=$MODEL, prompt=$prompt, prompt_template=$prompt_template" #, replace=$replace"
       python3 -u running_experiments.py \
-        --exp=ide \
+        --exp=per \
         --model="$MODEL" \
         --prompt="$prompt" \
         --debug=1 \

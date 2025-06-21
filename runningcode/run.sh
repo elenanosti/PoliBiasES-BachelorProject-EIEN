@@ -2,7 +2,7 @@
 #SBATCH --job-name=main 
 #SBATCH --account=eei440                
 #SBATCH --nodes=1                                        
-#SBATCH --time=24:00:00
+#SBATCH --time=00:03:00
 #SBATCH --array=0
 
 # === NEW: Set cache directory to scratch space ===
@@ -38,7 +38,7 @@ for prompt in "${PROMPTS[@]}"; do
     #for replace in "${REPLACES[@]}"; do
       echo "Running with model=$MODEL, prompt=$prompt, prompt_template=$prompt_template" #, replace=$replace"
       python3 -u running_experiments.py \
-        --exp=ent \
+        --exp=ide \
         --model="$MODEL" \
         --prompt="$prompt" \
         --debug=1 \

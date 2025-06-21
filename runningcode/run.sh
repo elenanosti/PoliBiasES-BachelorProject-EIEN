@@ -1,8 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=main 
 #SBATCH --account=eei440                
-#SBATCH --nodes=1    
-#SBATCH --partition=fatq                                     
+#SBATCH --nodes=1                                  
 #SBATCH --time=00:03:00
 #SBATCH --array=0
 

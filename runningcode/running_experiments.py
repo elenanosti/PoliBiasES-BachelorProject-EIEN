@@ -303,7 +303,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 input_prompt = f"""
                 <|begin_of_text|><|start_header_id|>system<|end_header_id|>
                 {system_prompt_1}{system_prompt_2}
-                Responde únicamente con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
+                Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
                 <|start_header_id|>user<|end_header_id|>
                 {user_prompt_1}: {x}{user_prompt_2}
                 ¿Cuál es tu voto? Responde exactamente con una de estas opciones: 'a favor', 'en contra' o 'abstención'.<|eot_id|>

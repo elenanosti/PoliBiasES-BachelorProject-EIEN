@@ -297,7 +297,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         ##############################
         # PROMPT FOR ALL LLAMA TYPES #
         ##############################
-        if model_shortname =='llama3_8b' or model_shortname =='llama_2_70b':
+        if model_shortname =='llama3_8b' or model_shortname =='llama_2_7b':
             # IDEOLOGY EXPERIMENT
             if exp_type == "ideology":
                 input_prompt = f"""

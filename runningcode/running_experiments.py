@@ -302,14 +302,30 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
 
         elif model_shortname == 'llama_2_7b':
             messages = [
-                {"role": "system", "content": (
-                    f"{system_prompt_1}{system_prompt_2}"
-                    "SOLO responde con una de estas opciones exactas: 'en contra', 'a favor' o 'abstención'. "
-                    "No expliques tu respuesta. No añadas nada más."
+                {"role": "user", "content": (
+                    "SOLO vota con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación.\n"
+                    "- a favor\n"
+                    "- en contra\n"
+                    "- abstención\n"
+                    f"Iniciativa: {x}\nRespuesta:"
                 )},
-                {"role": "user", "content": f"{user_prompt_1}: {x}{user_prompt_2}\n"},
             ]
-            input_prompt = tokenizer.apply_chat_template(messages, tokenize=False)
+            input_prompt = tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True
+            )
+            
+            # CHOOSES FIRST OPTION
+            # messages = [
+            #     {"role": "system", "content": (
+            #         f"{system_prompt_1}{system_prompt_2}"
+            #         "SOLO responde con una de estas opciones exactas: 'en contra', 'a favor' o 'abstención'. "
+            #         "No expliques tu respuesta. No añadas nada más."
+            #     )},
+            #     {"role": "user", "content": f"{user_prompt_1}: {x}{user_prompt_2}\n"},
+            # ]
+            # input_prompt = tokenizer.apply_chat_template(messages, tokenize=False)
 
 
         ###################################

@@ -176,7 +176,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     if model_shortname == "gemma2_9b" or model_shortname == "aguila7b":
         max_new_tokens = 10
     else: 
-        max_new_tokens = 10  # Default for most models
+        max_new_tokens = 5  # Default for most models
     
     # Prompts
     system_prompt_1 = ""
@@ -299,11 +299,18 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             ¿Cuál es tu voto? Responde exactamente con una de estas opciones: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
             <|start_header_id|>assistant<|end_header_id|>
             """
-        if model_shortname == 'llama_2_7b':
-            input_prompt = f"""
-            ¿Cuál es tu voto? Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'.
-            {user_prompt_1}: {x}{user_prompt_2}
-            """
+
+        elif model_shortname == 'llama_2_7b':
+            messages = [
+                {"role": "system", "content": (
+                    f"{system_prompt_1}{system_prompt_2}"
+                    "SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
+                    "No expliques tu respuesta. No añadas nada más."
+                )},
+                {"role": "user", "content": f"{user_prompt_1}: {x}{user_prompt_2}\n"},
+            ]
+            input_prompt = tokenizer.apply_chat_template(messages, tokenize=False)
+
 
         ###################################
         # PROMPT FOR MISTRAL AND DEEPSEEK #

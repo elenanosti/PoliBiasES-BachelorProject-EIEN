@@ -174,7 +174,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     if model_shortname == "gemma2_9b" or model_shortname == "aguila7b":
         max_new_tokens = 10
     else: 
-        max_new_tokens = 3  # Default for most models
+        max_new_tokens = 5 # Default for most models
     
     # Prompts
     system_prompt_1 = ""

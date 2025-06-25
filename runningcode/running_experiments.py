@@ -171,12 +171,6 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     if exp_type == "ideology":
         parties = ['']  # No party-specific prefix
         parties_short = ['']
-    elif exp_type == "entity":
-        parties = party_names_ES
-        parties_short = party_codes
-    elif exp_type == "persona":
-        parties = direction_ES  # Defined in definitions.py
-        parties_short = direction_codes  # Already language-agnostic
     
     # Tells the model: “Only generate up to 3 new tokens (words or pieces of words)” for each answer.
     if model_shortname == "gemma2_9b" or model_shortname == "aguila7b":
@@ -233,9 +227,6 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     if model_name == "":
         pass
     
-    # # Category
-    # system_prompt_cat = 'Clasifica esta moción. Elige solo una de las siguientes categorías:'
-    # user_prompt_cat = 'Moción: '
 
     if DEBUG and len(parties)>3:
         parties = parties[:3]
@@ -281,7 +272,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                     print("initiative=", x)
                     print("id=", id)
                     print("vote=", vote_val)
-                    continue  # <-- This skips to the next item if already answered
+                    continue
 
         # Now, for items that need answers, generate the prompt and call the LLM
        
@@ -299,210 +290,82 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         ##############################
         if model_shortname =='llama3_8b' or model_shortname =='llama_2_7b':
             # IDEOLOGY EXPERIMENT
-            if exp_type == "ideology":
-                input_prompt = f"""
-                <|begin_of_text|><|start_header_id|>system<|end_header_id|>
-                {system_prompt_1}{system_prompt_2}
-                Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
-                <|start_header_id|>user<|end_header_id|>
-                {user_prompt_1}: {x}{user_prompt_2}
-                ¿Cuál es tu voto? Responde exactamente con una de estas opciones: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
-                <|start_header_id|>assistant<|end_header_id|>
-                """
-            # PERSONA EXPERIMENT
-            elif exp_type == "persona":
-                input_prompt = f"""
-                <|begin_of_text|><|start_header_id|>system<|end_header_id|>
-                {system_prompt_1}{system_prompt_2}
-                {stance_txt}. Responde únicamente con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
-                <|start_header_id|>user<|end_header_id|>
-                {user_prompt_1}:{x}{user_prompt_2}
-                ¿Cuál es tu voto? Responde exactamente con una de estas opciones: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
-                <|start_header_id|>assistant<|end_header_id|>
-                """
-            # ENTITY EXPERIMENT
-            elif exp_type == "entity":
-                input_prompt = f"""
-                <|begin_of_text|><|start_header_id|>system<|end_header_id|>
-                {system_prompt_1}{system_prompt_2}
-                Responde únicamente con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
-                <|start_header_id|>user<|end_header_id|>
-                {user_prompt_1}" propuesta "{party_txt}: {x}{user_prompt_2}
-                ¿Cuál es tu voto? Responde exactamente con una de estas opciones: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
-                <|start_header_id|>assistant<|end_header_id|>
-                """
+            input_prompt = f"""
+            <|begin_of_text|><|start_header_id|>system<|end_header_id|>
+            {system_prompt_1}{system_prompt_2}
+            Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
+            <|start_header_id|>user<|end_header_id|>
+            {user_prompt_1}: {x}{user_prompt_2}
+            ¿Cuál es tu voto? Responde exactamente con una de estas opciones: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
+            <|start_header_id|>assistant<|end_header_id|>
+            """
 
         ###################################
         # PROMPT FOR MISTRAL AND DEEPSEEK #
         ###################################
         elif model_shortname == "mistral_7b" or model_shortname == "deepseek_7b": # or model_shortname == "gemma2_9b":
             # IDEOLOGY EXPERIMENT
-            if exp_type == "ideology":
-                messages = [
-                    {"role": "system", "content": (
-                        f"{system_prompt_1}{system_prompt_2}\n"
-                        "SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
-                        "No expliques tu respuesta. No añadas nada más."
-                    )},
-                    {"role": "user", "content": f"{user_prompt_1}: {x}{user_prompt_2}\nRespuesta:"},
-                ]
-                input_prompt = tokenizer.apply_chat_template(
-                    messages,
-                    tokenize=False,
-                    add_generation_prompt=True
-                )
-            # PERSONA EXPERIMENT
-            elif exp_type == "persona":
-                messages = [
-                    {"role": "system", "content": (
-                        f"{system_prompt_1}{system_prompt_2}\n"
-                        f"{stance_txt}\n"
-                        "SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
-                        "No expliques tu respuesta. No añadas nada más."
-                    )},
-                    {"role": "user", "content": f"{user_prompt_1}: {x}{user_prompt_2}\nRespuesta:"},
-                ]
-                input_prompt = tokenizer.apply_chat_template(
-                    messages,
-                    tokenize=False,
-                    add_generation_prompt=True
-                )
-            # ENTITY EXPERIMENT
-            elif exp_type == "entity":
-                messages = [
-                    {"role": "system", "content": (
-                        f"{system_prompt_1}{system_prompt_2}\n"
-                        "SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
-                        "No expliques tu respuesta. No añadas nada más."
-                    )},
-                    {"role": "user", "content": f"{user_prompt_1} propuesta {party_txt}: {x}{user_prompt_2}\nRespuesta:"},
-                ]
-                input_prompt = tokenizer.apply_chat_template(
-                    messages,
-                    tokenize=False,
-                    add_generation_prompt=True
-                )
-
+            messages = [
+                {"role": "system", "content": (
+                    f"{system_prompt_1}{system_prompt_2}\n"
+                    "SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
+                    "No expliques tu respuesta. No añadas nada más."
+                )},
+                {"role": "user", "content": f"{user_prompt_1}: {x}{user_prompt_2}\nRespuesta:"},
+            ]
+            input_prompt = tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True
+            )
+            
         #####################
         # PROMPT FOR FALCON #
         #####################
         elif model_shortname in "falcon3_7b":
             # IDEOLOGY EXPERIMENT
-            if exp_type == "ideology":
-                input_prompt = [
-                    "Vota SOLO una de las TRES opciónes exactas, nada más:\n"
-                    "- a favor\n"
-                    "- en contra\n"
-                    "- abstención\n"
-                    f"Iniciativa: {x}\n"
-                    "Respuesta:"
-                ]
-            elif exp_type == "persona":
-                input_prompt = [
-                    f"{stance_txt}"
-                    "Vota SOLO una de las TRES opciónes exactas, nada más:\n"
-                    "- a favor\n"
-                    "- en contra\n"
-                    "- abstención\n"
-                    f"Iniciativa: {x}\n"
-                    "Respuesta:"
-                ]
-            elif exp_type == "entity":
-                input_prompt = [
-                    "Vota SOLO una de las TRES opciónes exactas, nada más:\n"
-                    "- a favor\n"
-                    "- en contra\n"
-                    "- abstención\n"
-                    f"Iniciativa propuesta {party_txt}: {x}\n"
-                    "Respuesta:"
-                ]
-        
+            input_prompt = [
+                "Vota SOLO una de las TRES opciónes exactas, nada más:\n"
+                "- a favor\n"
+                "- en contra\n"
+                "- abstención\n"
+                f"Iniciativa: {x}\n"
+                "Respuesta:"
+            ]
+
         ####################
         # PROMPT FOR GEMMA #
         ####################
         elif model_shortname == "gemma2_9b":
-            # IDEOLOGY EXPERIMENT
-            if exp_type == "ideology":
-                messages = [
-                    {"role": "user", "content": (
-                        "SOLO vota con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación.\n"
-                        "- a favor\n"
-                        "- en contra\n"
-                        "- abstención\n"
-                        f"Iniciativa: {x}\nRespuesta:"
-                    )},
-                ]
-                input_prompt = tokenizer.apply_chat_template(
-                    messages,
-                    tokenize=False,
-                    add_generation_prompt=True
-                )
-            # PERSONA EXPERIMENT
-            elif exp_type == "persona":
-                messages = [
-                    {"role": "user", "content": (
-                        f"{stance_txt}\n"
-                        "SOLO vota con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación.\n"
-                        "- a favor\n"
-                        "- en contra\n"
-                        "- abstención\n"
-                        f"Iniciativa: {x}\nRespuesta:"
-                    )},
-                ]
-                input_prompt = tokenizer.apply_chat_template(
-                    messages,
-                    tokenize=False,
-                    add_generation_prompt=True
-                )
-            # ENTITY EXPERIMENT
-            elif exp_type == "entity":
-                messages = [
-                    {"role": "user", "content": (
-                        "SOLO vota con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación.\n"
-                        "- a favor\n"
-                        "- en contra\n"
-                        "- abstención\n"
-                        f"Iniciativa propuesta {party_txt}: {x}\nRespuesta:"
-                    )},
-                ]
-                input_prompt = tokenizer.apply_chat_template(
-                    messages,
-                    tokenize=False,
-                    add_generation_prompt=True
-                )
+        # IDEOLOGY EXPERIMENT
+            messages = [
+                {"role": "user", "content": (
+                    "SOLO vota con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación.\n"
+                    "- a favor\n"
+                    "- en contra\n"
+                    "- abstención\n"
+                    f"Iniciativa: {x}\nRespuesta:"
+                )},
+            ]
+            input_prompt = tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True
+            )
+            
 
         #####################
         # PROMPT FOR Aguila #
         #####################
         elif model_shortname == "aguila7b":
             # IDEOLOGY EXPERIMENT
-            if exp_type == "ideology":
-                input_prompt = (
-                    "System: Eres un asistente que vota sobre iniciativas. "
-                    "Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
-                    "No expliques tu respuesta. Si no estás seguro, elige 'abstención'.\n"
-                    f"User: Iniciativa: {x}\n"
-                    "Assistant: Respuesta:"
-                )
-            # PERSONA EXPERIMENT
-            if exp_type == "persona":
-                input_prompt = (
-                    "System: Eres un asistente que vota sobre iniciativas. "
-                    f"{stance_txt}"
-                    "Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
-                    "No expliques tu respuesta. Si no estás seguro, elige 'abstención'.\n"
-                    f"User: Iniciativa: {x}\n"
-                    "Assistant: Respuesta:"
-                )
-            # ENTITY EXPERIMENT
-            if exp_type == "entity":
-                input_prompt = (
-                    "System: Eres un asistente que vota sobre iniciativas. "
-                    "Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
-                    "No expliques tu respuesta. Si no estás seguro, elige 'abstención'.\n"
-                    f"User: Iniciativa propuesta {party_txt}: {x}\n"
-                    "Assistant: Respuesta:"
-                )
+            input_prompt = (
+                "System: Eres un asistente que vota sobre iniciativas. "
+                "Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
+                "No expliques tu respuesta. Si no estás seguro, elige 'abstención'.\n"
+                f"User: Iniciativa: {x}\n"
+                "Assistant: Respuesta:"
+            )
         
         ################
         # PROMPT ERROR #
@@ -525,8 +388,10 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         else:
             pad_token_id = tokenizer.eos_token_id
         
-        #PROMPT Model
-        #prompt the model with temperature near 0 to produce deterministic responses
+        ################
+        # PROMPT MODEL #
+        ################
+        # prompt the model with temperature near 0 to produce deterministic responses
         if model_name != "Mistral-instruct":
             outputs = model.generate(
                 input_ids,
@@ -614,7 +479,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             'prescindir', 'me reservo', 'no contesto', 'sin respuesta', 'me abstendré', 'abstain'
         ]
 
-                # Main forced-choice labels
+        # Main forced-choice labels
         main_labels = {
             "a favor": 1,
             "en contra": -1,

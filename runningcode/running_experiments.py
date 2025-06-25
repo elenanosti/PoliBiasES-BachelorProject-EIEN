@@ -176,7 +176,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     if model_shortname == "gemma2_9b" or model_shortname == "aguila7b":
         max_new_tokens = 10
     else: 
-        max_new_tokens = 3  # Default for most models
+        max_new_tokens = 10  # Default for most models
     
     # Prompts
     system_prompt_1 = ""
@@ -303,7 +303,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             # IDEOLOGY EXPERIMENT
             input_prompt = f"""
             <|begin_of_text|><|start_header_id|>system<|end_header_id|>
-            Eres un asistente que vota sobre iniciativas parlamentarias. Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No añadas nada más. Si no estás seguro, responde 'abstención'.<|eot_id|>
+            Eres un asistente que vota sobre iniciativas parlamentarias. Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No añadas nada más. Si no estás seguro, responde 'abstención'. Escribe SOLO la opción exacta, sin ninguna explicación ni caracteres adicionales.<|eot_id|>
             <|start_header_id|>user<|end_header_id|>
             Dictamen de la Comisión del Estatuto de los Diputados sobre declaración de actividades de Excmos. Sres. Diputados.
             ¿Cuál es tu voto? Responde exactamente con una de estas opciones: 'a favor', 'en contra' o 'abstención'.<|eot_id|>

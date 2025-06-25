@@ -566,25 +566,50 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             logits = outputs_temp0.scores   
 
         # Calculate the top_k tokens and probabilities for each generated token
-        top_k = 20
-        all_top_tokens = []
-        all_top_probs = []
+        # top_k = 20
+        # all_top_tokens = []
+        # all_top_probs = []
 
-        for step_logits in logits:
-            probs = torch.softmax(step_logits[0], dim=-1)
-            top_probs, top_indices = torch.topk(probs, top_k)
-            top_probs = top_probs.tolist()
-            top_indices = top_indices.tolist()
-            top_tokens = tokenizer.convert_ids_to_tokens(top_indices)
-            all_top_tokens.extend(top_tokens)
-            all_top_probs.extend(top_probs)
+        # for step_logits in logits:
+        #     probs = torch.softmax(step_logits[0], dim=-1)
+        #     top_probs, top_indices = torch.topk(probs, top_k)
+        #     top_probs = top_probs.tolist()
+        #     top_indices = top_indices.tolist()
+        #     top_tokens = tokenizer.convert_ids_to_tokens(top_indices)
+        #     all_top_tokens.extend(top_tokens)
+        #     all_top_probs.extend(top_probs)
+        # === Get probabilities of main vote options from first step ===
+        
+        first_logits = outputs.scores[0][0]  # first generated token's logits
+        probs = torch.softmax(first_logits, dim=-1)
+
+        # Tokenize vote options — take first token for each
+        vote_options = {
+            "a favor": tokenizer.tokenize("a favor")[0],
+            "en contra": tokenizer.tokenize("en contra")[0],
+            "abstención": tokenizer.tokenize("abstención")[0],
+        }
+
+        # Convert to token IDs
+        vote_token_ids = {k: tokenizer.convert_tokens_to_ids(v) for k, v in vote_options.items()}
+
+        # Extract probabilities
+        favor_prob = probs[vote_token_ids["a favor"]].item()
+        contra_prob = probs[vote_token_ids["en contra"]].item()
+        otro_prob = probs[vote_token_ids["abstención"]].item()
+
+        # Normalize
+        total = favor_prob + contra_prob + otro_prob
+        favor_prob /= total
+        contra_prob /= total
+        otro_prob /= total
 
         # Print top tokens and probabilities for debugging
-        print("[DEBUG] Top tokens:", all_top_tokens)
-        print("[DEBUG] Top probs:", all_top_probs)
+        # print("[DEBUG] Top tokens:", all_top_tokens)
+        # print("[DEBUG] Top probs:", all_top_probs)
 
         # Extract the probabilities for the tokens 'for' and 'against' from the top_k tokens
-        favor_prob, contra_prob, otro_prob = extract_probs(all_top_tokens, all_top_probs)
+        #favor_prob, contra_prob, otro_prob = extract_probs(all_top_tokens, all_top_probs)
 
         # Use both 'initiative' and 'id' for DataFrame mask
         mask = (result_df['initiative'] == x.strip()) & (result_df['id'] == id)

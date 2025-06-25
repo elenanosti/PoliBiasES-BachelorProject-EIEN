@@ -288,7 +288,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         ##############################
         # PROMPT FOR ALL LLAMA TYPES #
         ##############################
-        if model_shortname =='llama3_8b' or model_shortname =='llama_2_7b':
+        if model_shortname =='llama3_8b': # or model_shortname =='llama_2_7b':
             # IDEOLOGY EXPERIMENT
             input_prompt = f"""
             <|begin_of_text|><|start_header_id|>system<|end_header_id|>
@@ -298,6 +298,15 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             {user_prompt_1}: {x}{user_prompt_2}
             ¿Cuál es tu voto? Responde exactamente con una de estas opciones: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
             <|start_header_id|>assistant<|end_header_id|>
+            """
+        if model_shortname == 'llama_2_7b':
+            # IDEOLOGY EXPERIMENT
+            input_prompt = f"""
+            <|begin_of_text|><|start_header_id|>system<|end_header_id|>
+            Eres un asistente que vota sobre iniciativas parlamentarias. Responde SOLO con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No añadas nada más. Si no estás seguro, responde 'abstención'.<|eot_id|>
+            <|start_header_id|>user<|end_header_id|>
+            Dictamen de la Comisión del Estatuto de los Diputados sobre declaración de actividades de Excmos. Sres. Diputados.
+            ¿Cuál es tu voto? Responde exactamente con una de estas opciones: 'a favor', 'en contra' o 'abstención'.<|eot_id|>
             """
 
         ###################################

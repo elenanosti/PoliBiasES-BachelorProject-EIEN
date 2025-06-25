@@ -304,7 +304,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             messages = [
                 {"role": "system", "content": (
                     f"{system_prompt_1}{system_prompt_2}"
-                    "SOLO responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. "
+                    "SOLO responde con una de estas opciones exactas: 'en contra', 'a favor' o 'abstención'. "
                     "No expliques tu respuesta. No añadas nada más."
                 )},
                 {"role": "user", "content": f"{user_prompt_1}: {x}{user_prompt_2}\n"},

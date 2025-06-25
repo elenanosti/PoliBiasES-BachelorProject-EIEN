@@ -301,7 +301,8 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         elif model_shortname == 'llama_2_7b':
             messages = [
                 {"role": "user", "content": (
-                    "SOLO vota con una de estas opciones exactas. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación: \n"
+                    "SOLO vota con una de estas opciones exactas. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación:\n"
+                    "¿Cuál es tu voto? Responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'.\n"
                     "- a favor\n"
                     "- en contra\n"
                     "- abstención\n"
@@ -313,8 +314,9 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 tokenize=False,
                 add_generation_prompt=True
             )
+            # Debug tokenization of options
             tokens = tokenizer(["a favor", "en contra", "abstención"], add_special_tokens=False)
-            print(tokens)
+            print("Tokenized options:", tokens)
             
             # CHOOSES FIRST OPTION
             # messages = [

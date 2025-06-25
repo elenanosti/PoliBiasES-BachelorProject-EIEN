@@ -39,6 +39,7 @@ for prompt in "${PROMPTS[@]}"; do
         --prompt="$prompt" \
         --debug=1 \
         --datasize=200 \
+    
   done
 done
 # -------------------- PARAMETERS --------------------

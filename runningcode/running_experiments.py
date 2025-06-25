@@ -313,6 +313,8 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                 tokenize=False,
                 add_generation_prompt=True
             )
+            tokens = tokenizer(["a favor", "en contra", "abstención"], add_special_tokens=False)
+            print(tokens)
             
             # CHOOSES FIRST OPTION
             # messages = [

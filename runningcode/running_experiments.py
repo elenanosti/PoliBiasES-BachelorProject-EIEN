@@ -71,9 +71,7 @@ def extract_probs(tokens, probs):
     return favor_prob, contra_prob, otro_prob
 
 
-def set_seeds(seed): #Balatro: same randomness for recreation purposes
-    #random.seed(seed)   # Do not use random
-    #np.random.seed(seed) # Do not use numpy
+def set_seeds(seed): # same randomness for recreation purposes
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
@@ -285,9 +283,9 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         
         # prompt formats from model cards
 
-        ##############################
-        # PROMPT FOR ALL LLAMA TYPES #
-        ##############################
+        ##########################
+        # PROMPT FOR LLAMA TYPES #
+        ##########################
         if model_shortname =='llama3_8b': # or model_shortname =='llama_2_7b':
             # IDEOLOGY EXPERIMENT
             input_prompt = f"""
@@ -303,7 +301,7 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         elif model_shortname == 'llama_2_7b':
             messages = [
                 {"role": "user", "content": (
-                    "SOLO vota con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación.\n"
+                    "SOLO vota con una de estas opciones exactas. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación: \n"
                     "- a favor\n"
                     "- en contra\n"
                     "- abstención\n"

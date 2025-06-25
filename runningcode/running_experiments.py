@@ -302,7 +302,6 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             messages = [
                 {"role": "user", "content": (
                     "SOLO vota con una de estas opciones exactas. No expliques tu respuesta. No añadas nada más. Escribe SOLO la opción, sin ninguna explicación:\n"
-                    "¿Cuál es tu voto? Responde con una de estas opciones exactas: 'a favor', 'en contra' o 'abstención'.\n"
                     "- a favor\n"
                     "- en contra\n"
                     "- abstención\n"

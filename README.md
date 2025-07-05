@@ -38,5 +38,11 @@ The following open-weight LLMs were evaluated:
 
 All models were accessed via HuggingFace.
 
+## Repository Structure
+
+- runningcode/ Code and notebooks
+- data/ Dataset of initiatives and votes
+- results_latex/ Figures and plots
+- README.md Project description
 
 

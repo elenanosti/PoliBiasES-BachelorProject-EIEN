@@ -40,9 +40,10 @@ All models were accessed via HuggingFace.
 
 ## Repository Structure
 
-- runningcode/ Code and notebooks
-- data/ Dataset of initiatives and votes
-- results_latex/ Figures and plots
 - README.md Project description
+- runningcode/ Code and notebooks
+  - data/ Dataset of initiatives and votes
+  - results_latex/ Figures and plots
 
+running_experiment.py is the main script to run the experiments. This script was run using the Das-6 provided by the VU. if this script is run using the same structure as this repository, the results can be recreated. 
 

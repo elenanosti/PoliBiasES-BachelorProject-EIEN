@@ -18,13 +18,6 @@ party_codes = [
     'EH Bildu',
     'Junts'
 ]
-# example: exclude Cs if needed
-#party_codes_ex_Cs = ['PSOE', 'PP', 'VOX', 'ERC', 'CUP', 'PNV', 'MasPais']  
-
-# example: exclude smaller parties
-#excluded_parties = ['Mixto', 'Partido Independiente', 'UPyD']
-#party_codes_ex_small = [p for p in party_codes if p not in excluded_parties]
-
 
 
 # Full party names in Spanish (used for prompt generation)

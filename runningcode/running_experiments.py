@@ -19,10 +19,9 @@ from model_paths import MODEL_PATHS
 import json
 import os
 
-# === NEW: Import login function from huggingface_hub ===
+# Import login function from huggingface_hub
 from huggingface_hub import login
 
-# Set HF cache to scratch
 os.environ["HF_HOME"] = "/var/scratch/eei440/hf_cache"
 os.makedirs(os.environ["HF_HOME"], exist_ok=True)
 
@@ -90,10 +89,9 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     model_shortname = MODEL_SHORTNAMES.get(model_name, model_name.lower().replace("-", "_"))
 
     set_seeds(RANDOM_SEED) # Defined in definitions.py
-    # This means: if you run the experiment again with the same data and settings, you’ll get the same answers
+    
 
-    # Read tokens from JSON-style file
-    access_tokens = {} # Get Hugging Face “password” (called an access token) so I am allowed to use the models.
+    access_tokens = {} 
     with open("hf_accesstoken.txt", "r") as f:
         content = f.read().strip()
         if content.startswith("{"):
@@ -101,7 +99,6 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         else:
             access_tokens = {"default": content}
 
-    # Pick token based on model name: Pick the right password (token) for the model you want to use
     if "llama" in model_name.lower():
         access_token = access_tokens.get("llama", "")
     else:
@@ -116,11 +113,9 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    # Optional: Clear GPU memory (if using CUDA)
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
 
-    # Determine torch dtype
     if torch.cuda.is_available():
         try:
             gpu_name = torch.cuda.get_device_name()
@@ -150,31 +145,29 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         print(f"Failed to load model {model_name}: {e}")
         exit(1)
 
-    # get the motions
     df = get_dataset(DEBUG, small_data_size, variant=0, exp=exp_type, lang=lang)
-    result_df = df[['id', 'initiative']].copy()  # Ensure they both have the same rows!
+    result_df = df[['id', 'initiative']].copy()  
 
-    df['initiative'] = df['initiative'].astype(str).str.strip() # Ensure initiative is a string and stripped of whitespace
+    df['initiative'] = df['initiative'].astype(str).str.strip() 
     result_df['initiative'] = result_df['initiative'].astype(str).str.strip() 
 
     
-    # Builds a filename for saving your results, so you always know what experiment they belong to
+
     prompt_suffix = f"prompt={prompt_no}" + (f",TEMPLATE={prompt_template_no}" if prompt_template_no > 0 else "")
-    #debug_suffix = (f'_debug' if DEBUG else '')+(f'{small_data_size}' if DEBUG else '')
     results_file = f"results/{model_shortname}_results_{exp_type}_ES_{prompt_suffix}" \
                f"{f'_stance={re.sub(r'[^a-zA-Z0-9_]', '_', stance)}' if exp_type == 'persona' and stance else ''}" \
                f"{f'_party={re.sub(r'[^a-zA-Z0-9_]', '_', party)}' if exp_type == 'entity' and party else ''}.csv"
     
-    # Picks which parties or personas are being asked to vote.
+
     if exp_type == "ideology":
-        parties = ['']  # No party-specific prefix
+        parties = [''] 
         parties_short = ['']
     
-    # Tells the model: “Only generate up to 3 new tokens (words or pieces of words)” for each answer.
+
     if model_shortname == "gemma2_9b" or model_shortname == "aguila7b":
         max_new_tokens = 10
     else: 
-        max_new_tokens = 5 # Default for most models
+        max_new_tokens = 5
     
     # Prompts
     system_prompt_1 = ""
@@ -229,14 +222,10 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     if DEBUG and len(parties)>3:
         parties = parties[:3]
     
-    #initialize df to store results
-    # Ensure all initiatives are strings and stripped
     df['initiative'] = df['initiative'].astype(str).str.strip()
 
-    # Results CSV path
     temp_results_path = results_file.replace(".csv", "_TEMP.csv")
 
-    # Initialize or continue result_df
     if cont < 0 or not os.path.exists(temp_results_path):
         result_df = df[['id', 'initiative']].copy()
         result_df['initiative'] = result_df['initiative'].astype(str).str.strip()
@@ -247,7 +236,6 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     else:
         result_df = pd.read_csv(temp_results_path, index_col=0)
 
-        # Make sure 'initiative' exists and is aligned
         if 'initiative' not in result_df.columns:
             raise ValueError("Missing 'initiative' column in result_df!")
 
@@ -257,12 +245,11 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
     print(result_df.index)
     start = time.time()
 
-    suffix = ""  # No party suffix for ideology experiment
+    suffix = ""  
     
     for i, (x, id) in enumerate(zip(df['initiative'], df['id'])):
         if f'{model_shortname}{suffix}_vote' in result_df.columns:
             mask = (result_df['initiative'] == x.strip()) & (result_df['id'] == id)
-            # Only skip if row is found and vote is NOT NaN (i.e., it's already done)
             if mask.any():
                 vote_val = result_df.loc[mask, f'{model_shortname}{suffix}_vote'].values[0]
                 if pd.notna(vote_val):
@@ -272,7 +259,6 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
                     print("vote=", vote_val)
                     continue
 
-        # Now, for items that need answers, generate the prompt and call the LLM
        
        ########################################
         """ CREATING PROMPTS """ 
@@ -486,10 +472,9 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         generated_text = generated_text if generated_text != "" else "blank"
 
         norm = generated_text.lower().strip()
-        norm = re.sub(r'[^a-záéíóúñü ]', '', norm)  # Remove punctuation, keep Spanish chars
-        norm = re.sub(r'\s+', ' ', norm)  # Remove multiple spaces
-        
-        # Use the same synonym lists as in extract_probs
+        norm = re.sub(r'[^a-záéíóúñü ]', '', norm) 
+        norm = re.sub(r'\s+', ' ', norm) 
+
         for_synonyms = [
         'afavor', 'a favor', 'favor', 'fav', 'sí', 'si', 's', 'a fa', 'favour', 'favo', 'fa', '1',
         'aprobar', 'apruebo', 'aceptar', 'acepto', 'consentir', 'consiento', 'acceder', 'accedo',
@@ -508,24 +493,21 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
             'prescindir', 'me reservo', 'no contesto', 'sin respuesta', 'me abstendré', 'abstain'
         ]
 
-        # Main forced-choice labels
         main_labels = {
             "a favor": 1,
             "en contra": -1,
             "abstención": 0,
-            "abstencion": 0,  # Accept both spellings
+            "abstencion": 0,
         }
 
-        # Synonym lists (as before)
         for_synonyms = [...]
         against_synonyms = [...]
         abstain_synonyms = [...]
 
-        # 1. Exact match
         if norm in main_labels:
             vote_text = norm
             vote_value = main_labels[norm]
-        # 2. If "a favor", "en contra", or "abstención" appear anywhere in the output
+
         elif "a favor" in norm:
             vote_text = "a favor"
             vote_value = 1
@@ -535,11 +517,9 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         elif "abstención" in norm or "abstencion" in norm:
             vote_text = "abstención"
             vote_value = 0
-        # 3. If output is "en", "en co", "encont", "encontra", "contra" (and does NOT contain "favor")
         elif norm in ["en", "en co", "encont", "encontra", "contra"]:
             vote_text = "en contra"
             vote_value = -1
-        # 4. Synonym match (word boundaries)
         elif any(re.search(rf"\b{s}\b", norm) for s in for_synonyms):
             vote_text = "a favor"
             vote_value = 1
@@ -565,53 +545,26 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
         else:
             logits = outputs_temp0.scores   
 
-        # Calculate the top_k tokens and probabilities for each generated token
-        # top_k = 20
-        # all_top_tokens = []
-        # all_top_probs = []
-
-        # for step_logits in logits:
-        #     probs = torch.softmax(step_logits[0], dim=-1)
-        #     top_probs, top_indices = torch.topk(probs, top_k)
-        #     top_probs = top_probs.tolist()
-        #     top_indices = top_indices.tolist()
-        #     top_tokens = tokenizer.convert_ids_to_tokens(top_indices)
-        #     all_top_tokens.extend(top_tokens)
-        #     all_top_probs.extend(top_probs)
-        # === Get probabilities of main vote options from first step ===
-        
-        first_logits = outputs.scores[0][0]  # first generated token's logits
+        first_logits = outputs.scores[0][0] 
         probs = torch.softmax(first_logits, dim=-1)
 
-        # Tokenize vote options — take first token for each
         vote_options = {
             "a favor": tokenizer.tokenize("a favor")[0],
             "en contra": tokenizer.tokenize("en contra")[0],
             "abstención": tokenizer.tokenize("abstención")[0],
         }
 
-        # Convert to token IDs
         vote_token_ids = {k: tokenizer.convert_tokens_to_ids(v) for k, v in vote_options.items()}
 
-        # Extract probabilities
         favor_prob = probs[vote_token_ids["a favor"]].item()
         contra_prob = probs[vote_token_ids["en contra"]].item()
         otro_prob = probs[vote_token_ids["abstención"]].item()
 
-        # Normalize
         total = favor_prob + contra_prob + otro_prob
         favor_prob /= total
         contra_prob /= total
         otro_prob /= total
 
-        # Print top tokens and probabilities for debugging
-        # print("[DEBUG] Top tokens:", all_top_tokens)
-        # print("[DEBUG] Top probs:", all_top_probs)
-
-        # Extract the probabilities for the tokens 'for' and 'against' from the top_k tokens
-        #favor_prob, contra_prob, otro_prob = extract_probs(all_top_tokens, all_top_probs)
-
-        # Use both 'initiative' and 'id' for DataFrame mask
         mask = (result_df['initiative'] == x.strip()) & (result_df['id'] == id)
 
         print(f"\n[DEBUG] Processing ID: {id}")
@@ -639,29 +592,23 @@ def run_experiment(exp_type, model_name, prompt_no=10, cont=0, DEBUG=False, smal
 
         if i % 1 == 0:
             temp_file = results_file.replace(".csv", "_TEMP.csv")
-    
-            # 1. Save temporary file
+
             result_df.to_csv(temp_file, encoding='utf-8-sig', index=True)
             print(f"Saved {temp_file}")
 
-            # 2. Git commit and push
             commit_message = f"Autosave {model_name} after {i} motions"
             os.system(f"git add {temp_file}")
             os.system(f"git commit -m '{commit_message}'")
             os.system("git push origin main")
 
-            # 3. Remove local file to save space
             os.remove(temp_file)
             print(f"Deleted local {temp_file} after pushing to GitHub")
 
-    
-    #save the df
-    #print(result_df)
+
     result_df.to_csv(results_file.replace(".csv", "_TEMP.csv"), encoding='utf-8-sig', index=True)
     result_df.to_csv(results_file, encoding='utf-8-sig', index=True)
     print(f"[DEBUG] Final saved file: {results_file} with {len(result_df)} rows")
-    
-    # Print the vote distribution
+
     if exp_type == "ideology":
         colname = f"{model_shortname}_vote"
         if colname in result_df.columns:
@@ -697,8 +644,8 @@ MODEL_SHORTNAMES = {
         "Gemma-2-9B-instruct": "gemma2_9b",
         "deepseek-llm-7b-chat": "deepseek_7b",
         "Aguila-7B-instruct": "aguila7b",
-        "Llama-2-7b": "llama_2_7b",  # Correct mapping
-        "Llama-2-7B-hf": "llama_2_7b"  # Compatibility mapping
+        "Llama-2-7b": "llama_2_7b",
+        "Llama-2-7B-hf": "llama_2_7b"
     }
 
 if __name__ == "__main__":
@@ -708,12 +655,10 @@ if __name__ == "__main__":
     parser.add_argument("--model", type=str, default="Falcon3-7B-instruct", help="model to run")
     parser.add_argument("--prompt", type=int, default=1, help="prompt no")
     parser.add_argument("--template", type=int, default=0, help="prompt template, for models with more than one.")
-    #parser.add_argument("--replace", type=int, default=0, help="remove start")
     parser.add_argument("--cont", type=int, default=-1, help="continue exp")
     parser.add_argument("--debug", type=int, default=0, help="Debug. 0: No or 1: Yes")
     parser.add_argument("--datasize", type=int, default=20, help="Size of debug dataset (no effect if not debug)")
-    
-    # Optional arguments for entity and persona experiments
+
     parser.add_argument("--party", type=str, default="", help="Party name for entity experiments")
     parser.add_argument("--stance", type=str, default="", help="Political stance for persona experiments")
 
@@ -727,8 +672,7 @@ if __name__ == "__main__":
 
     print(f"[DEBUG] Model name: {model_name}")
     print(f"[DEBUG] Model shortname: {model_shortname}")
-    
-    # Log in using your token (already saved in file)
+
     with open("hf_accesstoken.txt") as f:
         content = f.read().strip()
         if content.startswith("{"):
@@ -736,12 +680,10 @@ if __name__ == "__main__":
         else:
             access_tokens = {"default": content}
 
-    # Pick token based on model name
     if "llama" in model_name.lower():
         access_token = access_tokens.get("llama", "")
     else:
         access_token = access_tokens.get("default", "")
-    # === END: Import login function from huggingface_hub ===
 
     prompt_no = args.prompt
     prompt_template_no = args.template
